@@ -1,0 +1,19 @@
+@theme static {
+	--color-bg-1: #fff;
+	--color-bg-2: #ddd;
+
+	--color-fg-1: #000;
+	--color-fg-2: #333;
+
+	--color-border: #ddd;
+
+	--color-accent-1: #000;
+	--color-on-accent-1: #fff;
+}
+
+@layer base {
+	body {
+		background: var(--color-bg-1);
+		color: var(--color-fg-1);
+	}
+}

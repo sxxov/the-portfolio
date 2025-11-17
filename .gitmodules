@@ -1,0 +1,3 @@
+[submodule "wp-content/themes/bare"]
+	path = wp-content/themes/bare
+	url = https://github.com/sxxov/bare

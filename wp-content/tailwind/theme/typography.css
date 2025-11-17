@@ -1,0 +1,155 @@
+@theme static {
+	--font-display: 'Space Grotesk', sans-serif;
+	--font-sans: 'Space Grotesk', sans-serif;
+	--font-mono: 'Space Mono', monospace;
+
+	--vw-pt: 1440;
+	--vh-pt: 720;
+	--pt-px: calc(clamp(0.875rem, calc(1.145lvw * 2 - (22px)), 1rem) / 16);
+
+	--text-xs: calc(10 * var(--pt-px));
+	--text-sm: calc(14 * var(--pt-px));
+	--text-base: calc(16 * var(--pt-px));
+	--text-md: calc(18 * var(--pt-px));
+	--text-lg: calc(20 * var(--pt-px));
+	--text-xl: calc(24 * var(--pt-px));
+	--text-2xl: calc(32 * var(--pt-px));
+}
+
+/* scaffolding */
+@layer base {
+	.h1,
+	.h2,
+	.h3,
+	.h4,
+	.h5,
+	.h6,
+	.hb {
+		font-size: calc(
+			clamp(
+				var(--size-pt) * var(--pt-px),
+				(var(--size-pt) / var(--vw-pt)) * 100lvw,
+				(var(--size-pt) / var(--vh-pt)) * 100lvh
+			)
+		);
+		line-height: calc(var(--leading-pt) / var(--size-pt));
+		font-weight: calc(var(--weight-pt));
+		letter-spacing: calc((var(--tracking-pt) / var(--size-pt)) * 1em);
+	}
+
+	body {
+		font-size: var(--text-base);
+		font-weight: var(--font-weight-normal);
+		line-height: var(--leading-normal);
+		letter-spacing: var(--tracking-normal);
+	}
+
+	:root {
+		font-synthesis: none;
+	}
+}
+
+/* body */
+@theme static {
+	--weight-pt: 500;
+	--size-pt: 16;
+	--leading-pt: 21;
+	--tracking-pt: 0;
+
+	--text-base: calc(var(--size-pt) * var(--pt-px));
+	--leading-normal: calc(var(--leading-pt) / var(--size-pt));
+	--font-weight-normal: calc(var(--weight-pt));
+	--tracking-normal: calc((var(--tracking-pt) / var(--size-pt)) * 1em);
+}
+
+@layer base {
+	body {
+		font-family: var(--font-sans);
+		font-style: normal;
+	}
+}
+
+/* button */
+@utility hb {
+	--weight-pt: 600;
+	--size-pt: 16;
+	--leading-pt: 18;
+	--tracking-pt: 0;
+
+	font-family: var(--font-sans);
+	font-style: italic;
+	font-size: var(--text-base);
+}
+
+/* headings */
+@utility h1 {
+	--weight-pt: 700;
+	--size-pt: 120;
+	--leading-pt: 110;
+	--tracking-pt: -4;
+
+	font-family: var(--font-display);
+	font-style: normal;
+
+	@media (width < 640px) {
+		--size-pt: 80;
+		--leading-pt: 80;
+		--tracking-pt: -2;
+	}
+}
+
+@utility h2 {
+	--weight-pt: 600;
+	--size-pt: 60;
+	--leading-pt: 60;
+	--tracking-pt: -2;
+
+	font-family: var(--font-display);
+	font-style: normal;
+
+	@media (width < 640px) {
+		--size-pt: 50;
+		--leading-pt: 50;
+		--tracking-pt: -2;
+	}
+}
+
+@utility h3 {
+	--weight-pt: 600;
+	--size-pt: 35;
+	--leading-pt: 40;
+	--tracking-pt: -1;
+
+	font-family: var(--font-display);
+	font-style: normal;
+}
+
+@utility h4 {
+	--weight-pt: 500;
+	--size-pt: 20;
+	--leading-pt: 26;
+	--tracking-pt: 0;
+
+	font-family: var(--font-display);
+	font-style: normal;
+}
+
+@utility h5 {
+	--weight-pt: 600;
+	--size-pt: 16;
+	--leading-pt: 20;
+	--tracking-pt: 0;
+
+	font-family: var(--font-display);
+	font-style: normal;
+}
+
+@utility h5 {
+	--weight-pt: 600;
+	--size-pt: 16;
+	--leading-pt: 20;
+	--tracking-pt: 0;
+
+	font-family: var(--font-display);
+	font-style: normal;
+}

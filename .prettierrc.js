@@ -1,0 +1,21 @@
+export default {
+	trailingComma: 'all',
+	useTabs: true,
+	tabWidth: 4,
+	singleQuote: true,
+	jsxSingleQuote: true,
+	endOfLine: 'lf',
+	singleAttributePerLine: false,
+	htmlWhitespaceSensitivity: 'css',
+	experimentalTernaries: true,
+	experimentalOperatorPosition: 'end',
+	jsdocTagsOrder: '{"template": 24.5}',
+	tsdoc: true,
+	plugins: [
+		'prettier-plugin-jsdoc',
+		'prettier-plugin-html-no-eq-empty',
+		'prettier-plugin-tailwindcss',
+		'prettier-plugin-classnames',
+		'prettier-plugin-merge',
+	],
+};

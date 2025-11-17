@@ -1,0 +1,39 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"checkJs": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"useDefineForClassFields": false,
+		"allowSyntheticDefaultImports": true,
+		"verbatimModuleSyntax": false,
+		"experimentalDecorators": true,
+		"noImplicitOverride": true,
+		"forceConsistentCasingInFileNames": true,
+		"useUnknownInCatchVariables": true,
+		"exactOptionalPropertyTypes": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"incremental": true,
+		"paths": {
+			"/+std/*": ["./wp-content/themes/bear/+std/*"],
+			"/+theme/*": ["./wp-content/themes/bear/+theme/*"],
+			"/+app/*": ["./wp-content/+app/*"],
+		}
+	},
+	"exclude": [
+		"node_modules",
+		"wp-admin",
+		"wp-includes",
+		"wp-content/plugins"
+	],
+	"include": ["types/**/*", "**/*.js", "**/*.ts", ".*rc.*", "*.config.*"]
+}

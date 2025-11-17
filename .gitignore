@@ -1,0 +1,30 @@
+# common
+.DS_Store
+node_modules/
+error_log
+.trash/
+
+# wordpress
+/xmlrpc.php
+/index.php
+/readme.html
+/cgi-bin/
+/.well-known/
+/wp-*
+!wp-content/
+/wp-content/debug.log
+/wp-content/cache/
+/wp-content/languages/
+/wp-content/themes/twenty*
+/wp-content/plugins/akismet/
+/wp-content/plugins/hello.php
+
+# plugins
+/wp-content/ai1wm-backups/
+/wp-content/plugins/all-in-one-wp-migration/storage/
+/wp-content/updraft/
+/wp-content/compressx/
+/wp-content/compressx-nextgen/
+/wp-content/uploads/wpide/
+/wp-content/uploads-webpc/
+

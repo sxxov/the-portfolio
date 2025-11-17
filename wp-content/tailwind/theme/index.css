@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+
+/* modules */
+@import './colors.css';
+@import './animation.css';
+@import './layout.css';
+@import './typography.css';
+
+/* plugins */
+@plugin '../plugins/grid-area';
+@plugin '../plugins/grid-auto-fit';
+@plugin '../plugins/hocus';
+@plugin '../plugins/inset-size';
+@plugin '../plugins/outset';
+@plugin '../plugins/text-stroke';
+@plugin '../plugins/x';
