@@ -1,0 +1,54 @@
+services:
+    db:
+        image: mariadb:12.0.2
+        restart: unless-stopped
+        environment:
+            MARIADB_DATABASE: ${DB_NAME}
+            MARIADB_USER: ${DB_USER}
+            MARIADB_PASSWORD: ${DB_PASSWORD}
+            MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+        volumes:
+            - db:/var/lib/mysql
+        networks:
+            private:
+    wordpress:
+        image: wordpress:6.8.3-php8.4-apache
+        restart: unless-stopped
+        hostname: ${SITE_HOST}
+        command:
+            - apache2-foreground
+            - -C
+            - 'ServerName ${SITE_HOST}'
+        volumes:
+            - wordpress:/var/www/html
+            - ./wp-content:/var/www/html/wp-content
+        environment:
+            VIRTUAL_HOST: ${SITE_HOST}
+            WORDPRESS_DB_HOST: db:3306
+            WORDPRESS_DB_NAME: ${DB_NAME}
+            WORDPRESS_DB_USER: ${DB_USER}
+            WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+            WORDPRESS_CONFIG_EXTRA: |
+                $$_SERVER['HTTPS'] = 'on';
+                define('WP_HOME', 'https://${SITE_HOST}');
+                define('WP_SITEURL', 'https://${SITE_HOST}');
+        env_file:
+            - .env
+        depends_on:
+            - db
+        networks:
+            private:
+            public:
+                aliases:
+                    - ${SITE_HOST}.yxorp
+
+volumes:
+    wordpress:
+    db:
+
+networks:
+    private:
+        driver: bridge
+    public:
+        name: yxorp
+        external: true

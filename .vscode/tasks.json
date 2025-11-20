@@ -1,0 +1,24 @@
+// tasks for running project containers via npm scripts
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "npm: up",
+			"type": "npm",
+			"script": "up",
+			"group": "build"
+		},
+		{
+			"label": "npm: down",
+			"type": "npm",
+			"script": "down",
+			"group": "build"
+		},
+		{
+			"label": "npm: down && up",
+			"type": "shell",
+			"command": "npm run down && npm run up",
+			"group": "build"
+		}
+	]
+}

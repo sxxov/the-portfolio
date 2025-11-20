@@ -4,6 +4,8 @@
 	"repository": "github:sxxov/bareplate",
 	"private": true,
 	"scripts": {
+		"up": "docker-compose up -d --build",
+		"down": "docker-compose down",
 		"preinstall": "npm run configure:origin",
 		"install": "npm run install:submodule && npm run install:bare",
 		"postinstall": "patch-package && npm run install:wp",

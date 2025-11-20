@@ -7,10 +7,10 @@
 @import './typography.css';
 
 /* plugins */
-@plugin '../plugins/grid-area';
-@plugin '../plugins/grid-auto-fit';
-@plugin '../plugins/hocus';
-@plugin '../plugins/inset-size';
-@plugin '../plugins/outset';
-@plugin '../plugins/text-stroke';
-@plugin '../plugins/x';
+@plugin '../plugins/grid-area/index.js';
+@plugin '../plugins/grid-auto-fit/index.js';
+@plugin '../plugins/hocus/index.js';
+@plugin '../plugins/inset-size/index.js';
+@plugin '../plugins/outset/index.js';
+@plugin '../plugins/text-stroke/index.js';
+@plugin '../plugins/x/index.js';
