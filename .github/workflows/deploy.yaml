@@ -47,7 +47,7 @@ jobs:
                           safe_value=$(printf '%s' "$value" | sed 's/"/\\"/g')
 
                           # Print as "KEY="value""
-                          printf '%s="%s"\n' "$key" "$safe_value" >> "$outfile"
+                          printf '%s="%s"\n' "$key" "$safe_value" >> "$OUT_FILE"
                       done
                   }
 
