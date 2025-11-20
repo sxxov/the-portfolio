@@ -6,14 +6,7 @@ error_log
 .env
 *.env
 
-# wordpress
-/xmlrpc.php
-/index.php
-/readme.html
-/cgi-bin/
-/.well-known/
-/wp-*
-!wp-content/
+# wp-content
 /wp-content/debug.log
 /wp-content/cache/
 /wp-content/languages/
@@ -29,4 +22,3 @@ error_log
 /wp-content/compressx-nextgen/
 /wp-content/uploads/wpide/
 /wp-content/uploads-webpc/
-
