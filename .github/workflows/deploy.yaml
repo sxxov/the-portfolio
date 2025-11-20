@@ -18,6 +18,7 @@ jobs:
             - uses: actions/checkout@v3
               with:
                   submodules: recursive
+                  token: ${{ secrets.DEPLOY_CHECKOUT_GH_TOKEN || github.token }}
 
             - name: Export environment variables
               env:
