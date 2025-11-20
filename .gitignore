@@ -3,6 +3,8 @@
 node_modules/
 error_log
 .trash/
+.env
+*.env
 
 # wordpress
 /xmlrpc.php
