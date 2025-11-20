@@ -31,22 +31,24 @@ jobs:
                   : > "$OUT_FILE"
 
                   dump_json_to_env() {
-                    local json="$1"
+                      local json="$1"
 
-                    # Ignore empty / unset / "null"
-                    [ -z "${json:-}" ] && return
-                    [ "$json" = "null" ] && return
+                      # Ignore empty / unset / "null"
+                      [ -z "${json:-}" ] && return
+                      [ "$json" = "null" ] && return
 
-                    jq -r '
-                      to_entries[]
-                      | .key
-                        + "=\""
-                        + (.value
-                            | tostring          # turn everything into a string
-                            | gsub("\""; "\\\"") # escape double quotes
-                          )
-                        + "\""
-                    ' <<<"$json" >> "$OUT_FILE"
+                      jq -r '
+                          to_entries[]
+                          | select(.key | test("^(?i)(github_|deploy_)") | not)
+                          | [.key, (.value | tostring)]
+                          | @tsv
+                      ' <<<"$json" | while IFS=$'\t' read -r key value; do
+                          # Escape quotes inside value
+                          safe_value=$(printf '%s' "$value" | sed 's/"/\\"/g')
+
+                          # Print as "KEY="value""
+                          printf '%s="%s"\n' "$key" "$safe_value" >> "$outfile"
+                      done
                   }
 
                   # Order matters: later lines override earlier ones if keys collide.
