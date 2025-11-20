@@ -17,13 +17,42 @@ jobs:
         steps:
             - uses: actions/checkout@v3
 
-            - name: Exporting environment variables
-              env: ${{ secrets }}
+            - name: Export environment variables
+              env:
+                  SECRETS: ${{ toJson(secrets) }}
+                  VARS: ${{ toJson(vars) }}
               run: |
-                  {
-                      echo "# Generated from GitHub Actions on $(date)"
-                      printenv | sort | grep -v '^(GITHUB_|DEPLOY_)'
-                  } > .env
+                  set -euo pipefail
+
+                  # Where you want the .env file
+                  OUT_FILE=".env"
+
+                  # Truncate existing file
+                  : > "$OUT_FILE"
+
+                  dump_json_to_env() {
+                    local json="$1"
+
+                    # Ignore empty / unset / "null"
+                    [ -z "${json:-}" ] && return
+                    [ "$json" = "null" ] && return
+
+                    jq -r '
+                      to_entries[]
+                      | .key
+                        + "=\""
+                        + (.value
+                            | tostring          # turn everything into a string
+                            | gsub("\""; "\\\"") # escape double quotes
+                          )
+                        + "\""
+                    ' <<<"$json" >> "$OUT_FILE"
+                  }
+
+                  # Order matters: later lines override earlier ones if keys collide.
+                  # e.g. VARS first, then SECRETS override them:
+                  dump_json_to_env "${VARS:-}"
+                  dump_json_to_env "${SECRETS:-}"
 
             - # https://github.com/marketplace/actions/ssh-deploy
               name: Deploy to server using SSH
