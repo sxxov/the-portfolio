@@ -9,8 +9,6 @@ jobs:
         environment:
             name: ${{ github.ref_name }}
 
-        if: ${{ vars.DEPLOY_HOST != '' && vars.DEPLOY_USER != '' }}
-
         concurrency:
             group:
                 # only ever run one deploy job at a time
