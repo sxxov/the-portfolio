@@ -39,17 +39,25 @@ jobs:
                   SCRIPT_BEFORE: |
                       cd ~/
 
+                      # stop yxorp
+                      if [ -d "yxorp" ]; then
+                          pushd yxorp
+                          docker compose down
+                          popd
+                      fi
+
                       # stop the app
                       if [ -d "${{ github.event.repository.name }}" ]; then
                           pushd "${{ github.event.repository.name }}"
                           docker compose down
                           popd
                       fi
+                  SCRIPT_AFTER: |
+                      cd ~/
 
                       # ensure yxorp is installed next to the app & up to date
                       if [ -d "yxorp" ]; then
                           pushd yxorp
-                          docker compose down
                           git fetch
                           git pull
                           cp "../${{ github.event.repository.name }}/.env" .env
@@ -62,6 +70,7 @@ jobs:
                           docker compose up -d --build
                           popd
                       fi
-                  SCRIPT_AFTER: |
-                      cd ~/${{ github.event.repository.name }}
+
+                      pushd ${{ github.event.repository.name }}
                       docker compose up -d --build
+                      popd
