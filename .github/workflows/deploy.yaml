@@ -70,16 +70,16 @@ jobs:
                   SCRIPT_BEFORE: |
                       cd ~/
 
-                      # stop yxorp
-                      if [ -d "yxorp" ]; then
-                          pushd yxorp
+                      # stop the app
+                      if [ -d "${{ github.event.repository.name }}" ]; then
+                          pushd "${{ github.event.repository.name }}"
                           docker compose down
                           popd
                       fi
 
-                      # stop the app
-                      if [ -d "${{ github.event.repository.name }}" ]; then
-                          pushd "${{ github.event.repository.name }}"
+                      # stop yxorp
+                      if [ -d "yxorp" ]; then
+                          pushd yxorp
                           docker compose down
                           popd
                       fi
