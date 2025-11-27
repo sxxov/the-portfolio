@@ -22,6 +22,7 @@ services:
         volumes:
             - wordpress:/var/www/html
             - ./wp-content:/var/www/html/wp-content
+            - ./.htaccess:/var/www/html/.htaccess:rw
         environment:
             VIRTUAL_HOST: ${SITE_HOST}
             WORDPRESS_DB_HOST: db:3306
