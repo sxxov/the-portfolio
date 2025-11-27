@@ -6,12 +6,14 @@ import { derive, Signal } from '/+std/signal/Signal.js';
 export const TheatreProjectBehavior = behavior(
 	'theatre-project',
 	class {
-		'' = t.string.default('untitled');
+		'' = t.string;
 		state = new Signal(/** @type {unknown | undefined} */ (undefined));
 		project = derive(
 			{ name: this[''], state: this.state },
 			({ $name, $state }) =>
-				getProject($name, $state ? { state: $state } : undefined),
+				$name ?
+					getProject($name, $state ? { state: $state } : undefined)
+				:	undefined,
 		).readonly;
 	},
 	() => {
