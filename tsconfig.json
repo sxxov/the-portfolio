@@ -8,12 +8,11 @@
 		"strict": true,
 		"noEmit": true,
 		"esModuleInterop": true,
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
+		"module": "esnext",
+		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"useDefineForClassFields": false,
-		"allowSyntheticDefaultImports": true,
 		"verbatimModuleSyntax": false,
 		"experimentalDecorators": true,
 		"noImplicitOverride": true,
@@ -24,9 +23,9 @@
 		"noUncheckedIndexedAccess": true,
 		"incremental": true,
 		"paths": {
-			"/+std/*": ["./wp-content/themes/bear/+std/*"],
-			"/+theme/*": ["./wp-content/themes/bear/+theme/*"],
-			"/+app/*": ["./wp-content/+app/*"],
+			"/+std/*": ["./wp-content/themes/bare/+std/*"],
+			"/+theme/*": ["./wp-content/themes/bare/+theme/*"],
+			"/+app/*": ["./wp-content/+app/*"]
 		}
 	},
 	"exclude": [
