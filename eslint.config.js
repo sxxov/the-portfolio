@@ -1,28 +1,24 @@
-// @ts-expect-error no types
-import onlyWarn from 'eslint-plugin-only-warn';
+import 'eslint-plugin-only-warn';
 import prettier from 'eslint-plugin-prettier/recommended';
 import tseslint from 'typescript-eslint';
-// @ts-expect-error no types
 import xoTypeScript from 'eslint-config-xo-typescript';
-import globals from 'globals';
-/** @import {Linter} from 'eslint' */
+import jsdoc from 'eslint-plugin-jsdoc';
+import eslint from '@eslint/js';
+/** @import { Linter } from "eslint" */
 
 const config = /** @type {const} @satisfies {Linter.Config[]} */ ([
-	.../** @type {Linter.Config[]} */ (tseslint.configs.strictTypeChecked),
-	{
-		plugins: {
-			'only-warn': onlyWarn,
-		},
-
-		languageOptions: {
-			globals: {
-				...Object.fromEntries(
-					Object.entries(globals.node).map(([key]) => [key, 'off']),
-				),
-				...globals.browser,
-			},
-		},
-	},
+	eslint.configs.recommended,
+	(() => {
+		const it = jsdoc.configs['flat/logical-typescript'];
+		delete it.rules;
+		return it;
+	})(),
+	(() => {
+		const it = jsdoc.configs['flat/logical-typescript-flavor'];
+		delete it.rules;
+		return it;
+	})(),
+	...tseslint.configs.recommendedTypeChecked,
 	...xoTypeScript.map((/** @type {Linter.Config} */ config) => {
 		if (config.rules) {
 			for (const [k] of Object.entries(config.rules)) {
@@ -39,58 +35,41 @@ const config = /** @type {const} @satisfies {Linter.Config[]} */ ([
 	{
 		rules: {
 			'no-console': 'error',
+			'object-shorthand': ['error', 'properties'],
+			'max-nested-callbacks': ['error', 6],
 			'dot-notation': 'off',
-			'@typescript-eslint/dot-notation': 'error',
-			'@typescript-eslint/consistent-type-assertions': 'off',
 			'no-labels': 'off',
 			'no-unused-labels': 'off',
 			'no-extra-label': 'off',
 			'no-unused-vars': 'off',
 			'no-eq-null': 'off',
-
-			eqeqeq: [
-				'error',
-				'always',
-				{
-					null: 'ignore',
-				},
-			],
-
-			'@typescript-eslint/class-literal-property-style': [
-				'error',
-				'fields',
-			],
 			'no-await-in-loop': 'off',
 			'new-cap': 'off',
-
-			'@typescript-eslint/array-type': [
-				'error',
-				{
-					default: 'array',
-				},
-			],
+			'capitalized-comments': 'off',
+			'no-empty-pattern': 'off',
+			'func-names': 'off',
+			'no-return-assign': 'off',
+			'max-params': 'off',
+			'no-inner-declarations': 'off',
+			'no-bitwise': 'off',
+			'no-lonely-if': 'off',
+			'no-label-var': 'off',
 
 			'@typescript-eslint/naming-convention': [
 				'error',
 				{
-					selector: ['variable', 'accessor', 'objectLiteralProperty'],
+					selector: [
+						'variable',
+						'classProperty',
+						'accessor',
+						'objectLiteralProperty',
+					],
 					format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
 					leadingUnderscore: 'forbid',
 					trailingUnderscore: 'forbid',
 
 					filter: {
-						regex: '(^\\d)|[^\\w$]|^$',
-						match: false,
-					},
-				},
-				{
-					selector: ['classProperty'],
-					format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
-					leadingUnderscore: 'forbid',
-					trailingUnderscore: 'allow',
-
-					filter: {
-						regex: '(^\\d)|[^\\w$]|^$',
+						regex: '(^\\d)|[^\\w$]|^$|_',
 						match: false,
 					},
 				},
@@ -146,13 +125,15 @@ const config = /** @type {const} @satisfies {Linter.Config[]} */ ([
 					modifiers: ['requiresQuotes'],
 				},
 			],
-
-			'capitalized-comments': 'off',
+			'@typescript-eslint/dot-notation': 'error',
+			'@typescript-eslint/array-type': ['error', { default: 'array' }],
+			'@typescript-eslint/class-literal-property-style': [
+				'error',
+				'fields',
+			],
+			'@typescript-eslint/consistent-type-assertions': 'off',
 			'@typescript-eslint/no-redeclare': 'off',
-			'no-empty-pattern': 'off',
-			'func-names': 'off',
-			'no-return-assign': 'off',
-
+			'@typescript-eslint/no-restricted-types': 'off',
 			'@typescript-eslint/no-unsafe-assignment': 'off',
 			'@typescript-eslint/no-unsafe-call': 'off',
 			'@typescript-eslint/no-unsafe-member-access': 'off',
@@ -160,12 +141,44 @@ const config = /** @type {const} @satisfies {Linter.Config[]} */ ([
 			'@typescript-eslint/no-unsafe-argument': 'off',
 			'@typescript-eslint/restrict-plus-operands': 'off',
 			'@typescript-eslint/parameter-properties': 'off',
-			'no-inner-declarations': 'off',
-			'@typescript-eslint/prefer-readonly': 'off',
 			'@typescript-eslint/no-require-imports': 'off',
 			'@typescript-eslint/prefer-nullish-coalescing': 'off',
-
+			'@typescript-eslint/no-empty-object-type': [
+				'error',
+				{
+					allowInterfaces: 'with-single-extends',
+					allowObjectTypes: 'always',
+				},
+			],
+			'@typescript-eslint/no-invalid-void-type': [
+				'error',
+				{
+					allowInGenericTypeArguments: true,
+					allowAsThisParameter: true,
+				},
+			],
+			'@typescript-eslint/no-non-null-assertion': 'off',
+			'@typescript-eslint/promise-function-async': 'off',
+			'@typescript-eslint/no-namespace': 'off',
+			'@typescript-eslint/no-deprecated': 'off',
+			'@typescript-eslint/switch-exhaustiveness-check': [
+				'error',
+				{
+					allowDefaultCaseForExhaustiveSwitch: true,
+					considerDefaultExhaustiveForUnions: true,
+					requireDefaultForNonUnion: true,
+				},
+			],
 			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/member-ordering': 'off',
+			'@typescript-eslint/no-unsafe-type-assertion': 'off',
+			'@typescript-eslint/consistent-type-definitions': 'off',
+			'@typescript-eslint/no-extraneous-class': 'off',
+
+			'jsdoc/no-undefined-types': [
+				'error',
+				{ markVariablesAsUsed: true, disableReporting: true },
+			],
 		},
 	},
 ]);
