@@ -1,0 +1,23 @@
+[data-additive-shimmer] {
+	background: linear-gradient(
+		120deg,
+		transparent 0%,
+		rgb(255 255 255 / 0%) 30%,
+		rgb(255 255 255 / 60%) 45%,
+		rgb(255 255 255 / 0%) 60%,
+		transparent 100%
+	);
+	background-size: 200% 100%;
+	animation: additive-shimmer 6s infinite var(--ease-in-out);
+	mix-blend-mode: plus-lighter;
+}
+
+@keyframes additive-shimmer {
+	from {
+		background-position: 200% 0;
+	}
+
+	to {
+		background-position: -200% 0;
+	}
+}

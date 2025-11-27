@@ -1,0 +1,329 @@
+import { SparkRenderer, SplatFileType, SplatMesh } from '@sparkjsdev/spark';
+import {
+	BlendFunction,
+	BloomEffect,
+	EffectComposer,
+	EffectPass,
+	LUT3DEffect,
+	ToneMappingEffect,
+} from 'postprocessing';
+import { HalfFloatType, Material, Mesh } from 'three';
+import { HoverOrbitControls } from '/+app/animation/hover-orbit/HoverOrbitControls.js';
+import cameraGlb from './models/camera.glb.js';
+import lutDjangoCube from './models/lut-django.cube.js';
+import sceneSog from './models/scene.sog.js';
+import soul0Glb from './models/soul-0.glb.js';
+import soul1Glb from './models/soul-1.glb.js';
+import soul2Glb from './models/soul-2.glb.js';
+import soul3Glb from './models/soul-3.glb.js';
+import soul4Glb from './models/soul-4.glb.js';
+import { ParkChapter } from './ParkChapter.js';
+import { SoulMaterial } from './shaders/SoulMaterial.js';
+import { requestAsset } from '/+app/delivery/asset/asset.js';
+import { pipeChunksIntoUint8Array } from '/+app/delivery/pipes/pipeChunksIntoUint8Array.js';
+import { FluidDisplacementPass } from '/+app/effect/passes/fluid/FluidDisplacementPass.js';
+import { PeelingRenderPass } from '/+app/effect/passes/peeling/PeelingRenderPass.js';
+import { CameraAnimation } from '/+app/model/CameraAnimation.js';
+import { requestGltf } from '/+app/model/gltf.js';
+import { requestLutCube } from '/+app/model/lutCube.js';
+import { OrchestratorChapterBehavior } from '/+app/story/orchestrator/data-orchestrator-chapter/OrchestratorChapterBehavior.js';
+import { OrchestratorBehavior } from '/+app/story/orchestrator/data-orchestrator/OrchestratorBehavior.js';
+import { TheatreSheetBehavior } from '/+app/theatre/data-theatre-sheet/TheatreSheetBehavior.js';
+import { behavior } from '/+std/behavioral/behavior.js';
+import { bin, derive, subscribe } from '/+std/signal/Signal.js';
+import { subscribeTransformTheatreValueToMesh } from '/+app/theatre/schemas/transform/subscribeTransformTheatreValueToMesh.js';
+import { TransformTheatreSchema } from '/+app/theatre/schemas/transform/TransformTheatreSchema.js';
+import { HoverOrbitTheatreSchema } from '/+app/animation/hover-orbit/HoverOrbitTheatreSchema.js';
+import { subscribeHoverOrbitTheatreValueToControls } from '/+app/animation/hover-orbit/subscribeHoverOrbitTheatreValueToControls.js';
+import { PromiseSignal } from '/+std/signal/PromiseSignal.js';
+import { trackProgressPromise } from '/+app/delivery/progress/progress.js';
+/** @import { Object3D, Scene } from "three" */
+/** @import { EffectMaterial } from "postprocessing" */
+
+const { asset: sceneAsset } = requestAsset(sceneSog, pipeChunksIntoUint8Array);
+const { asset: cameraAsset } = requestGltf(cameraGlb);
+const { asset: soul0Asset } = requestGltf(soul0Glb);
+const { asset: soul1Asset } = requestGltf(soul1Glb);
+const { asset: soul2Asset } = requestGltf(soul2Glb);
+const { asset: soul3Asset } = requestGltf(soul3Glb);
+const { asset: soul4Asset } = requestGltf(soul4Glb);
+const { asset: lutDjangoAsset } = requestLutCube(lutDjangoCube);
+
+export const ParkChapterBehavior = behavior(
+	'park-chapter',
+	class {},
+	(element, {}, { getContext }) => {
+		const chapter = derive({ cameraAsset }, ({ $cameraAsset }) => {
+			if (!$cameraAsset) return;
+
+			return new ParkChapter(new CameraAnimation($cameraAsset));
+		});
+		const group = derive({ chapter }, ({ $chapter }) => {
+			if (!$chapter) return;
+
+			return $chapter.group;
+		});
+		const subscribeGroup = (/** @type {Object3D} */ object) => {
+			return subscribe({ group }, ({ $group }) => {
+				if (!$group) return;
+
+				$group.add(object);
+				return () => {
+					$group.remove(object);
+				};
+			});
+		};
+
+		return subscribe(
+			{
+				orchestrator: getContext(OrchestratorBehavior),
+				orchestratorChapter: getContext(OrchestratorChapterBehavior),
+				theatreSheet: getContext(TheatreSheetBehavior),
+			},
+			({ $orchestrator, $orchestratorChapter, $theatreSheet }) => {
+				if (!$orchestrator || !$orchestratorChapter || !$theatreSheet)
+					return;
+
+				const _ = bin();
+				const { attach, seek } = $theatreSheet;
+				const {
+					canvas,
+					chapterProgress,
+					render,
+					renderer,
+					scene,
+					camera,
+					viewportSize,
+				} = $orchestrator;
+
+				chapter: {
+					$orchestratorChapter.chapter.in(chapter);
+				}
+
+				height: {
+					$orchestratorChapter.height.in(
+						derive(
+							{ viewportSize, chapter },
+							({ $viewportSize: { height: vh }, $chapter }) =>
+								(($chapter?.duration ?? 0) / 1000) * vh,
+						),
+					);
+				}
+
+				seek: {
+					_._ = chapterProgress.subscribe(seek);
+				}
+
+				orbit: {
+					const value = attach('orbit', {
+						...HoverOrbitTheatreSchema,
+					});
+					const controls = derive(
+						{ camera, canvas },
+						({ $camera, $canvas }) => {
+							if (!$camera || !$canvas) return;
+
+							return new HoverOrbitControls($camera, $canvas);
+						},
+					);
+					_._ = controls.subscribe((it) => () => {
+						it?.dispose();
+					});
+					_._ = controls.subscribe((it) => {
+						if (!it) return;
+
+						return subscribeHoverOrbitTheatreValueToControls(
+							value,
+							it,
+						);
+					});
+					_._ = subscribe(
+						{ render, value, controls },
+						({ $render, $controls }) => {
+							if (!$render || !$controls) return;
+
+							const { deltaTime } = $render;
+							$controls.update(deltaTime);
+						},
+					);
+				}
+
+				splat: void (async () => {
+					const meshLoaded = new PromiseSignal(false);
+					trackProgressPromise(meshLoaded);
+
+					const fileBytes = await sceneAsset;
+					if (!fileBytes) return;
+
+					const mesh = new SplatMesh({
+						fileBytes,
+						fileName: sceneSog,
+						fileType: SplatFileType.PCSOGSZIP,
+						onLoad: () => { meshLoaded.resolve(true); },
+					});
+					_._ = subscribeGroup(mesh);
+
+					const splatRenderer = derive(
+						{ renderer },
+						({ $renderer }) => {
+							const it = new SparkRenderer({
+								renderer: $renderer,
+								maxStdDev: Math.sqrt(5),
+							});
+							// it.defaultView.encodeLinear = true;
+							return it;
+						},
+					);
+					_._ = subscribe({ splatRenderer }, ({ $splatRenderer }) => {
+						scene.add($splatRenderer);
+						return () => { $splatRenderer.remove(); };
+					});
+
+					const value = attach('splat', {
+						...TransformTheatreSchema,
+					});
+					_._ = subscribeTransformTheatreValueToMesh(value, mesh);
+				})();
+
+				souls: _._ = (() => {
+					const _ = bin();
+
+					const controller = new AbortController();
+					_._ = () => {
+						controller.abort();
+					};
+					const { signal } = controller;
+
+					for (const [index, soulAsset] of [
+						soul0Asset,
+						soul1Asset,
+						soul2Asset,
+						soul3Asset,
+						soul4Asset,
+					].entries())
+						void (async () => {
+							const gltf = await soulAsset;
+							if (!gltf) return;
+
+							if (signal.aborted) return;
+
+							const { scene: model } = gltf;
+							_._ = subscribeGroup(model);
+
+							const modelOriginalMaterials = new Map();
+							override: model.traverse((it) => {
+								if (
+									!(it instanceof Mesh) ||
+									!(it.material instanceof Material)
+								)
+									return;
+
+								modelOriginalMaterials.set(it, it.material);
+								const material = new SoulMaterial();
+								it.material = material;
+							});
+							revert: _._ = () => {
+								for (const [
+									model,
+									material,
+								] of modelOriginalMaterials)
+									model.material = material;
+								modelOriginalMaterials.clear();
+							};
+
+							const value = attach(`soul/${index}`, {
+								...TransformTheatreSchema,
+							});
+							_._ = subscribeTransformTheatreValueToMesh(
+								value,
+								model,
+							);
+						})();
+
+					return _;
+				})();
+
+				render: {
+					const passes = derive(
+						{ camera, lutDjangoAsset },
+						({ $camera, $lutDjangoAsset }) => {
+							if (!$camera) return;
+
+							return [
+								new PeelingRenderPass(scene, $camera),
+								new FluidDisplacementPass(),
+								(() => {
+									const it = new EffectPass(
+										$camera,
+										...[
+											new BloomEffect({
+												blendFunction:
+													BlendFunction.ADD,
+												mipmapBlur: true,
+												luminanceThreshold: 0.4,
+												luminanceSmoothing: 0.2,
+												intensity: 3.0,
+											}),
+											...($lutDjangoAsset ?
+												[
+													new LUT3DEffect(
+														$lutDjangoAsset.texture3D,
+													),
+												]
+											:	[]),
+											new ToneMappingEffect(),
+										],
+									);
+									// this is needed due to `SplatRenderer` emitting non-linear colors.
+									// even if we were to force it to use linear, its render starts to
+									// have major banding, i think due to some internal render targets it's
+									// using (for read-backs?) that use 8-bit buffers.
+									/** @type {EffectMaterial} */ (
+										it.fullscreenMaterial
+									).encodeOutput = false;
+									return it;
+								})(),
+							];
+						},
+					);
+					const composer = derive(
+						{ renderer, passes },
+						({ $renderer, $passes }) => {
+							if (!$passes) return;
+
+							const it = new EffectComposer($renderer, {
+								stencilBuffer: true,
+								frameBufferType: HalfFloatType,
+							});
+							for (const pass of $passes) it.addPass(pass);
+
+							return it;
+						},
+					);
+					_._ = composer.subscribe((it) => () => {
+						it?.dispose();
+					});
+					_._ = subscribe(
+						{ viewportSize, composer },
+						({ $viewportSize: { width, height }, $composer }) => {
+							if (!$composer) return;
+
+							$composer.setSize(width, height, false);
+						},
+					);
+					_._ = subscribe(
+						{ render, composer },
+						({ $render, $composer }) => {
+							if (!$render || !$composer) return;
+
+							const { deltaTime } = $render;
+							$composer.render(deltaTime);
+						},
+					);
+				}
+
+				return _;
+			},
+		);
+	},
+);

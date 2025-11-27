@@ -15,6 +15,15 @@
 		"install:submodule": "git submodule update --init",
 		"install:bare": "pushd wp-content/themes/bare && npm i && popd"
 	},
+	"dependencies": {
+		"@sparkjsdev/spark": "^0.1.10",
+		"@theatre/core": "^0.7.2",
+		"@theatre/studio": "^0.7.2",
+		"iterator-helpers-polyfill": "^3.0.1",
+		"pawe": "^0.1.4",
+		"postprocessing": "^6.38.0",
+		"three": "^0.181.2"
+	},
 	"devDependencies": {
 		"@eslint/compat": "^2.0.0",
 		"@eslint/eslintrc": "^3.3.1",
@@ -22,6 +31,7 @@
 		"@stylistic/stylelint-plugin": "^4.0.0",
 		"@types/eslint": "^9.6.1",
 		"@types/node": "^24.10.1",
+		"@types/three": "^0.181.0",
 		"@wordpress/env": "^10.35.0",
 		"clang-format": "^1.8.0",
 		"eslint": "^9.39.1",
@@ -29,19 +39,21 @@
 		"eslint-config-xo": "^0.49.0",
 		"eslint-config-xo-typescript": "^9.0.0",
 		"eslint-plugin-html": "^8.1.3",
+		"eslint-plugin-jsdoc": "^61.4.1",
 		"eslint-plugin-only-warn": "^1.1.0",
 		"eslint-plugin-prettier": "^5.5.4",
 		"patch-package": "^8.0.1",
 		"prettier": "^3.6.2",
 		"prettier-plugin-classnames": "^0.8.5",
 		"prettier-plugin-html-no-eq-empty": "^0.0.3",
+		"prettier-plugin-inline-blocks": "^0.0.3",
 		"prettier-plugin-jsdoc": "^1.5.0",
 		"prettier-plugin-merge": "^0.8.0",
 		"prettier-plugin-tailwindcss": "^0.7.1",
-		"stylelint": "^16.25.0",
+		"stylelint": "^16.26.0",
 		"stylelint-config-standard": "^39.0.1",
 		"tailwindcss": "^4.1.17",
 		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.46.4"
+		"typescript-eslint": "^8.47.0"
 	}
 }

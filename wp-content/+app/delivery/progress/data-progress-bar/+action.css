@@ -1,0 +1,66 @@
+[data-progress-bar] {
+	pointer-events: none;
+	user-select: none;
+
+	position: fixed;
+	z-index: 6969;
+	top: 0;
+	left: 0;
+	width: calc(var(--progress-interpolated, 0) * 100%);
+	height: 1px;
+
+	mix-blend-mode: difference;
+
+	background: linear-gradient(
+		to right,
+		#fff 0%,
+		#fff8 10%,
+		#fffa 60%,
+		#fff 80%
+	);
+	background-size: 80% auto;
+
+	animation: progress-bar-shine 2s linear infinite;
+
+	transition-property: opacity, width;
+	transition-duration: 1s, 1s;
+	transition-timing-function: var(--ease-out), var(--ease-out);
+
+	&::after {
+		content: '';
+		display: inline-block;
+
+		position: absolute;
+		right: -2px;
+		top: 0;
+		width: 100%;
+		height: 10px;
+
+		border-bottom-right-radius: 9999px;
+		background: linear-gradient(-120deg, #fff 5px, #fff8 120px, #fff0);
+		mask-image: linear-gradient(to bottom, #fff 10%, #fff0);
+		filter: blur(1px) brightness(10);
+
+		transition-property: opacity;
+		transition-duration: 1s;
+		transition-timing-function: var(--ease-in-out);
+	}
+
+	&[data-progress-done] {
+		opacity: 0;
+
+		transition-duration: 2s, 1s;
+		transition-timing-function: var(--ease-in), var(--ease-in-out);
+
+		&::after {
+			opacity: 0;
+			transition-timing-function: var(--ease-in);
+		}
+	}
+}
+
+@keyframes progress-bar-shine {
+	to {
+		background-position: 400% center;
+	}
+}
