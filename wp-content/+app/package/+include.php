@@ -2,13 +2,12 @@
 
 namespace app\package;
 
-use const app\NS;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-const DEPENDENCY_DECLARATION_PROXY_SCRIPT_ID = NS . '/package/imports/proxy';
-const DEPENDENCY_DECLARATION_LOADER_SCRIPT_ID = NS . '/package/imports/loader';
+const DEPENDENCY_DECLARATION_PROXY_SCRIPT_ID = 'package/imports/proxy';
+const DEPENDENCY_DECLARATION_LOADER_SCRIPT_ID = 'package/imports/loader';
 
 add_action('enqueue_block_assets', function () {
 	enqueue_imports();
