@@ -42,10 +42,11 @@ function enqueue_imports() {
 			$specifier,
 			$url,
 			deps: [],
+			version: null,
 		);
 	wp_enqueue_script_module(
 		DEPENDENCY_DECLARATION_PROXY_SCRIPT_ID,
-		'data:text/javascript,export {}',
+		'data:text/javascript,',
 		deps: array_keys($imports),
 		version: null,
 	);
@@ -86,6 +87,7 @@ function get_imports() {
 		// compute public url under wp-content
 		$relFromContent = ltrim(str_replace(WP_CONTENT_DIR, '', $path), DIRECTORY_SEPARATOR);
 		$url = content_url($relFromContent);
+		$url = add_query_arg(['ver' => filemtime($path)], $url);
 
 		$imports[$specifier] = $url;
 	}
