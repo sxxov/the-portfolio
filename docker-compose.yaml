@@ -25,6 +25,7 @@ services:
             - ./.htaccess:/var/www/html/.htaccess:rw
         environment:
             VIRTUAL_HOST: ${SITE_HOST}
+            WORDPRESS_DEBUG: true
             WORDPRESS_DB_HOST: db:3306
             WORDPRESS_DB_NAME: ${DB_NAME}
             WORDPRESS_DB_USER: ${DB_USER}
