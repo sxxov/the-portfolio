@@ -3,7 +3,7 @@ import { ChildProxyHandler } from '../../proxy/ChildProxyHandler.js';
 import { WhiteMaterial } from './shaders/WhiteMaterial.js';
 import { OccludedChildrenProxyHandler } from './OccludedChildrenProxyHandler.js';
 import { SparkRenderer, SplatMesh } from '@sparkjsdev/spark';
-/** @import {Mesh, Scene} from 'three' */
+/** @import { Mesh, Scene } from "three" */
 
 class ChildrenInterception {
 	/** @readonly */

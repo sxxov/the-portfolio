@@ -2,7 +2,7 @@ import { Material } from 'three';
 import { ChildProxyHandler } from '../../proxy/ChildProxyHandler.js';
 import { InvisibleMaterial } from './shaders/InvisibleMaterial.js';
 import { OccluderChildrenProxyHandler } from './OccluderChildrenProxyHandler.js';
-/** @import {Mesh, Scene} from 'three' */
+/** @import { Mesh, Scene } from "three" */
 
 class MaterialInterception {
 	/** @readonly */

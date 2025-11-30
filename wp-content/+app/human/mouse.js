@@ -1,6 +1,6 @@
 import { viewportSize } from '/+std/viewport/viewportSize.js';
 import { Signal } from '/+std/signal/Signal.js';
-/** @import {Point} from '/+std/unit/Point.js' */
+/** @import { Point } from "/+std/unit/Point.js" */
 
 export const mouse = new Signal(
 	/** @type {Point} */ ({

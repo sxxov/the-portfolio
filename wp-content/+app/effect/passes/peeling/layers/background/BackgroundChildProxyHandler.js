@@ -1,7 +1,7 @@
 import { ChildProxyHandler } from '../../proxy/ChildProxyHandler.js';
 import { BackgroundChildrenProxyHandler } from './BackgroundChildrenProxyHandler.js';
 import { Mesh } from 'three';
-/** @import {Scene} from 'three' */
+/** @import { Scene } from "three" */
 
 class VisibleInterception {
 	/** @readonly */

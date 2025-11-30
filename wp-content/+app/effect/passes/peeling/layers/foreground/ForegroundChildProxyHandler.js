@@ -1,7 +1,7 @@
 import { SparkRenderer, SplatMesh } from '@sparkjsdev/spark';
 import { ChildProxyHandler } from '../../proxy/ChildProxyHandler.js';
 import { ForegroundChildrenProxyHandler } from './ForegroundChildrenProxyHandler.js';
-/** @import {Mesh, Scene} from 'three' */
+/** @import { Mesh, Scene } from "three" */
 
 class ChildrenInterception {
 	/** @readonly */

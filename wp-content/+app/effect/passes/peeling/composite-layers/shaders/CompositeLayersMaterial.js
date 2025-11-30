@@ -2,7 +2,7 @@ import { ShaderMaterial, Vector4 } from 'three';
 import compositeLayersVert from './compositeLayers.vert.js';
 import compositeLayersFrag from './compositeLayers.frag.js';
 import { declare } from '/+std/type/utilities/declare.js';
-/** @import {Texture, Blending} from 'three' */
+/** @import { Blending, Texture } from "three" */
 
 export class CompositeLayersMaterial extends ShaderMaterial {
 	/** @override */

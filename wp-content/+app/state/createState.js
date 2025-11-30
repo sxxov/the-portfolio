@@ -1,5 +1,5 @@
 import { derive, Signal } from '/+std/signal/Signal.js';
-/** @import {StateAccumulation} from './StateAccumulation.js' */
+/** @import { StateAccumulation } from "./StateAccumulation.js" */
 
 /** @template {StateAccumulation<any>} const T */
 export function createState(/** @type {T['step'][]} */ sequence) {

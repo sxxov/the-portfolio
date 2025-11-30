@@ -1,4 +1,4 @@
-/** @import {Texture} from 'three' */
+/** @import { Texture } from "three" */
 
 export function resizeTexture(
 	/** @type {Texture} */ texture,

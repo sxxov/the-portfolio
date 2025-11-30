@@ -1,5 +1,5 @@
 import { bin, Signal } from '/+std/signal/Signal.js';
-/** @import {Point} from '/+std/unit/Point.js' */
+/** @import { Point } from "/+std/unit/Point.js" */
 
 export const pointers = new Signal(/** @type {Point[]} */ ([]), ({ set }) => {
 	const _ = bin();

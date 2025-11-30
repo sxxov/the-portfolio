@@ -1,5 +1,5 @@
 import { PromiseSignal } from '/+std/signal/PromiseSignal.js';
-/** @import {Starter} from '/+std/signal/Signal.js' */
+/** @import { Starter } from "/+std/signal/Signal.js" */
 
 /**
  * @template T

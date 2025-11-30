@@ -1,7 +1,7 @@
 import { ChildProxyHandler } from './ChildProxyHandler.js';
 import { some } from '/+std/functional/some.js';
-/** @import {Object3D} from 'three' */
-/** @import {InterceptionPredicate} from './InterceptionPredicate.js' */
+/** @import { Object3D } from "three" */
+/** @import { InterceptionPredicate } from "./InterceptionPredicate.js" */
 
 /**
  * @abstract

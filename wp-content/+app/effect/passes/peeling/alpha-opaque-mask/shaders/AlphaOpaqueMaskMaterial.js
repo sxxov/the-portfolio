@@ -2,7 +2,7 @@ import { DoubleSide, ShaderMaterial } from 'three';
 import { declare } from '/+std/type/utilities/declare.js';
 import alphaOpaqueMaskVert from './alphaOpaqueMask.vert.js';
 import alphaOpaqueMaskFrag from './alphaOpaqueMask.frag.js';
-/** @import {Texture} from 'three' */
+/** @import { Texture } from "three" */
 
 export class AlphaOpaqueMaskMaterial extends ShaderMaterial {
 	/** @override */

@@ -1,4 +1,4 @@
-/** @import {RenderTarget} from 'three' */
+/** @import { RenderTarget } from "three" */
 
 import { resizeTexture } from './resizeTexture.js';
 

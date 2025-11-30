@@ -1,7 +1,7 @@
 import { SparkRenderer, SplatMesh } from '@sparkjsdev/spark';
 import { ChildrenProxyHandler } from '../../proxy/ChildrenProxyHandler.js';
 import { OccluderChildProxyHandler } from './OccluderChildProxyHandler.js';
-/** @import {Object3D} from 'three' */
+/** @import { Object3D } from "three" */
 
 class Interception {
 	/** @protected @readonly */
