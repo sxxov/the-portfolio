@@ -29,7 +29,6 @@ export class CameraAnimation {
 		})();
 		const seek = (/** @type {number} */ progress) => {
 			mixer.time = 0;
-			console.log(mixer.getRoot(), animations);
 			for (const clip of animations) {
 				const action = mixer.clipAction(clip);
 				action.time = 0;
