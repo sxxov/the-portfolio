@@ -1,6 +1,10 @@
 import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrchestratorChapterBehavior } from '../data-orchestrator-chapter/OrchestratorChapterBehavior.js';
-import { behavior, getAttachedBehavior } from '/+std/behavioral/behavior.js';
+import {
+	attachBehavior,
+	behavior,
+	getAttachedBehavior,
+} from '/+std/behavioral/behavior.js';
 import { watchElementSize } from '/+std/dom/watchElementSize.js';
 import { some } from '/+std/functional/some.js';
 import { scrollY } from '/+std/human/scroll.js';
@@ -8,6 +12,8 @@ import { clamp01 } from '/+std/math/clamp01.js';
 import { map01 } from '/+std/math/map01.js';
 import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
 import { viewportSize } from '/+std/viewport/viewportSize.js';
+import { TheatreProjectBehavior } from '/+app/theatre/data-theatre-project/TheatreProjectBehavior.js';
+import state from './state.json' with { type: 'json' };
 /** @import { Chapter } from "/+app/story/chapter/Chapter.js" */
 /** @import { Size } from "/+std/unit/Size.js" */
 /** @import { OrchestratorRenderContext } from "./OrchestratorRenderContext.js" */
@@ -42,6 +48,7 @@ export const OrchestratorBehavior = behavior(
 					});
 				}),
 		);
+		resolutionScale = new Signal(1);
 		canvas = new Signal(
 			/** @type {HTMLCanvasElement | undefined} */ (undefined),
 		);
@@ -57,10 +64,18 @@ export const OrchestratorBehavior = behavior(
 			({ subscribe: sub }) =>
 				sub((it) =>
 					subscribe(
-						{ viewportSize: this.viewportSize },
-						({ $viewportSize: { width, height } }) => {
+						{
+							viewportSize: this.viewportSize,
+							resolutionScale: this.resolutionScale,
+						},
+						({
+							$viewportSize: { width, height },
+							$resolutionScale,
+						}) => {
 							it.setSize(width || 1, height || 1);
-							it.setPixelRatio(window.devicePixelRatio);
+							it.setPixelRatio(
+								window.devicePixelRatio * $resolutionScale,
+							);
 						},
 					),
 				),
@@ -213,73 +228,97 @@ export const OrchestratorBehavior = behavior(
 	) => {
 		const _ = bin();
 
-		container.set(element);
-		_._ = () => {
-			container.set(undefined);
-		};
-
-		scroll.in(
-			derive(
-				{ sortedChapters, scrollY, viewportSize },
-				({
-					$sortedChapters,
-					$scrollY,
-					$viewportSize: { height: vh },
-				}) =>
-					$sortedChapters.reduce(
-						(context, { duration }) => {
-							const { cursor } = context;
-							const length = (duration / 1000) * vh;
-
-							context.cursor += length;
-							context.cum += clamp01(
-								map01($scrollY, cursor, cursor + length),
-							);
-							return context;
-						},
-						{ cursor: 0, cum: 0 },
-					).cum,
-			),
-		);
-		chapter.in(
-			derive(
-				{ scroll, sortedChapters, viewportSize },
-				({
-					$scroll,
-					$sortedChapters,
-					$viewportSize: { height: vh },
-				}) => {
-					let cum = 0;
-					const chapter = $sortedChapters.find(({ duration }) => {
-						const start = cum;
-						const length = (duration / 1000) * vh;
-						const end = cum + length;
-						cum += length;
-						return $scroll >= start && $scroll < end;
-					});
-
-					return chapter;
-				},
-			),
-		);
-
-		_._ = subscribe({ chapter }, ({ $chapter }) => {
-			if (!$chapter) return;
-
-			scene.add($chapter.group);
-			return () => {
-				scene.remove($chapter.group);
+		container: {
+			add: {
+				container.set(element);
+			}
+			remove: _._ = () => {
+				container.set(undefined);
 			};
-		});
+		}
 
-		_._ = subscribe(
-			{ chapterProgress, chapter },
-			({ $chapterProgress, $chapter }) => {
+		progress: {
+			scroll.in(
+				derive(
+					{ sortedChapters, scrollY, viewportSize },
+					({
+						$sortedChapters,
+						$scrollY,
+						$viewportSize: { height: vh },
+					}) =>
+						$sortedChapters.reduce(
+							(context, { duration }) => {
+								const { cursor } = context;
+								const length = (duration / 1000) * vh;
+
+								context.cursor += length;
+								context.cum += clamp01(
+									map01($scrollY, cursor, cursor + length),
+								);
+								return context;
+							},
+							{ cursor: 0, cum: 0 },
+						).cum,
+				),
+			);
+		}
+
+		theatre: {
+			_._ = attachBehavior(element, TheatreProjectBehavior, {
+				'': OrchestratorBehavior.name,
+			});
+			const project = getAttachedBehavior(
+				element,
+				TheatreProjectBehavior,
+			);
+			_._ = project.subscribe((it) => { it?.state.set(state); });
+		}
+
+		chapter: {
+			chapter.in(
+				derive(
+					{ scroll, sortedChapters, viewportSize },
+					({
+						$scroll,
+						$sortedChapters,
+						$viewportSize: { height: vh },
+					}) => {
+						let cum = 0;
+						const chapter = $sortedChapters.find(({ duration }) => {
+							const start = cum;
+							const length = (duration / 1000) * vh;
+							const end = cum + length;
+							cum += length;
+							return $scroll >= start && $scroll < end;
+						});
+
+						return chapter;
+					},
+				),
+			);
+
+			_._ = subscribe({ chapter }, ({ $chapter }) => {
 				if (!$chapter) return;
 
-				$chapter.seek($chapterProgress);
-			},
-		);
+				const _ = bin();
+				add: {
+					scene.add($chapter.group);
+				}
+				remove: _._ = () => {
+					scene.remove($chapter.group);
+				};
+				return _;
+			});
+
+			_._ = subscribe(
+				{ chapterProgress, chapter },
+				({ $chapterProgress, $chapter }) => {
+					if (!$chapter) return;
+
+					$chapter.seek($chapterProgress);
+				},
+			);
+		}
 
 		return _;
 	},

@@ -1,0 +1,118 @@
+{
+	"sheetsById": {
+		"park": {
+			"staticOverrides": {
+				"byObject": {
+					"splat": {
+						"position": {
+							"x": 0,
+							"y": 0,
+							"z": 0
+						},
+						"rotation": {
+							"x": 180,
+							"y": 0,
+							"z": 0
+						},
+						"scale": 1
+					},
+					"soul / 0": {
+						"position": {
+							"x": -0.2,
+							"z": -0.5,
+							"y": 0.4599999999999995
+						},
+						"scale": 2,
+						"rotation": {
+							"x": 0,
+							"y": 0,
+							"z": 0
+						}
+					},
+					"orbit": {
+						"radius": 4,
+						"target": {
+							"z": -4,
+							"y": 0,
+							"x": 0
+						}
+					},
+					"soul / 1": {
+						"scale": 2,
+						"position": {
+							"x": 0.13999999999999999,
+							"y": 0.34,
+							"z": -0.5
+						},
+						"rotation": {
+							"x": -7.099999999999972,
+							"y": 34.699999999999925,
+							"z": 41.40000000000001
+						}
+					},
+					"soul / 2": {
+						"scale": 2,
+						"rotation": {
+							"x": 0,
+							"y": 95.99999999999997,
+							"z": 0
+						},
+						"position": {
+							"z": -0.5,
+							"y": 0.3099999999999994,
+							"x": 0.44000000000000017
+						}
+					},
+					"soul / 3": {
+						"position": {
+							"z": -0.5,
+							"y": 0.15999999999999945,
+							"x": -0.2900000000000001
+						},
+						"scale": 2,
+						"rotation": {
+							"x": -18.8,
+							"y": 0,
+							"z": 0
+						}
+					},
+					"soul / 4": {
+						"scale": 2,
+						"rotation": {
+							"x": -49.99999999999998,
+							"y": 26.100000000000037,
+							"z": -22.700000000000028
+						},
+						"position": {
+							"z": -0.5,
+							"x": -0.4700000000000001,
+							"y": 0.2899999999999989
+						}
+					}
+				}
+			},
+			"sequence": {
+				"subUnitsPerUnit": 30,
+				"length": 10,
+				"type": "PositionalSequence",
+				"tracksByObject": {
+					"orbit": {
+						"trackData": {},
+						"trackIdByPropPath": {}
+					}
+				}
+			}
+		}
+	},
+	"definitionVersion": "0.4.0",
+	"revisionHistory": [
+		"ykCOx2QK9DUyJRte",
+		"x2uk11LDFDwl7UKy",
+		"hHayn1mQ8fr_qqeF",
+		"6N6iSPy-4varrQZj",
+		"ndMx6S4cnBP2WXoM",
+		"mP_l3csC1P3kQq6n",
+		"rh4l2C_PGLLwXJNX",
+		"LP9NTa8PZ4OH0mIv"
+	]
+}

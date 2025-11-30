@@ -11,8 +11,8 @@ export const TheatreProjectBehavior = behavior(
 		project = derive(
 			{ name: this[''], state: this.state },
 			({ $name, $state }) =>
-				$name ?
-					getProject($name, $state ? { state: $state } : undefined)
+				$name && $state ?
+					getProject($name, { state: $state })
 				:	undefined,
 		).readonly;
 	},

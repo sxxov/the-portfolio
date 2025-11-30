@@ -1,25 +1,26 @@
-import { AnimationMixer, Object3D } from 'three';
-import { cast } from '/+std/type/utilities/cast.js';
+import { AnimationMixer, Object3D, PerspectiveCamera } from 'three';
 /** @import { GLTF } from "three/addons/loaders/GLTFLoader.js" */
 
 export class CameraAnimation {
 	constructor(/** @type {GLTF} */ gltf) {
 		const { scene: model, animations } = gltf;
 
-		/** @type {Object3D | undefined} */
-		let cameraRig;
+		/** @type {PerspectiveCamera | undefined} */
+		let camera;
 		model.traverse((object) => {
-			if (cameraRig) return;
+			if (camera) return;
 
-			if (object.name.toLowerCase().includes('camera')) {
-				/** @type {typeof cast<Object3D>} */ (cast)(object);
-				cameraRig = object;
-			}
+			if (object instanceof PerspectiveCamera) camera = object;
 		});
-		cameraRig ??= new Object3D();
-		this.cameraRig = cameraRig;
+		camera ??= new PerspectiveCamera();
+		this.camera = camera;
 
-		const mixer = new AnimationMixer(cameraRig);
+		const rig = new Object3D();
+		rig.name = camera.name;
+		rig.add(camera);
+		this.rig = rig;
+
+		const mixer = new AnimationMixer(rig);
 		const duration = (() => {
 			let it = -Infinity;
 			for (const clip of animations)
@@ -28,6 +29,7 @@ export class CameraAnimation {
 		})();
 		const seek = (/** @type {number} */ progress) => {
 			mixer.time = 0;
+			console.log(mixer.getRoot(), animations);
 			for (const clip of animations) {
 				const action = mixer.clipAction(clip);
 				action.time = 0;

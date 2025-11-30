@@ -13,16 +13,10 @@ export class ParkChapter {
 
 	constructor(/** @type {CameraAnimation} */ animation) {
 		this.animation = animation;
-		this.camera = new PerspectiveCamera(
-			getFocalLengthFov(35),
-			1,
-			0.01,
-			1000,
-		);
 		this.duration = animation.duration;
-
-		// this.group.add(animation.cameraRig);
-		animation.cameraRig.add(this.camera);
+		this.camera = animation.camera;
+		this.camera.near = 0.01;
+		this.group.add(animation.rig);
 	}
 
 	seek(/** @type {number} */ progress) {

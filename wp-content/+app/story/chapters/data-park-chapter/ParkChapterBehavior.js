@@ -7,8 +7,10 @@ import {
 	LUT3DEffect,
 	ToneMappingEffect,
 } from 'postprocessing';
-import { HalfFloatType, Material, Mesh } from 'three';
-import { HoverOrbitControls } from '/+app/animation/hover-orbit/HoverOrbitControls.js';
+import { Color, HalfFloatType, Material, Mesh } from 'three';
+import { LinearGradientSkybox } from '../../../environment/linear-gradient/LinearGradientSkybox.js';
+import { FluidDisplacementPass } from '../../../postprocessing/pass/passes/fluid/FluidDisplacementPass.js';
+import { PeelingRenderPass } from '../../../postprocessing/pass/passes/peeling/PeelingRenderPass.js';
 import cameraGlb from './models/camera.glb.js';
 import lutDjangoCube from './models/lut-django.cube.js';
 import sceneSog from './models/scene.sog.js';
@@ -19,24 +21,24 @@ import soul3Glb from './models/soul-3.glb.js';
 import soul4Glb from './models/soul-4.glb.js';
 import { ParkChapter } from './ParkChapter.js';
 import { SoulMaterial } from './shaders/SoulMaterial.js';
+import { HoverOrbitControls } from '/+app/animation/hover-orbit/HoverOrbitControls.js';
+import { HoverOrbitTheatreSchema } from '/+app/animation/hover-orbit/HoverOrbitTheatreSchema.js';
+import { subscribeHoverOrbitTheatreValueToControls } from '/+app/animation/hover-orbit/subscribeHoverOrbitTheatreValueToControls.js';
 import { requestAsset } from '/+app/delivery/asset/asset.js';
 import { pipeChunksIntoUint8Array } from '/+app/delivery/pipes/pipeChunksIntoUint8Array.js';
-import { FluidDisplacementPass } from '/+app/effect/passes/fluid/FluidDisplacementPass.js';
-import { PeelingRenderPass } from '/+app/effect/passes/peeling/PeelingRenderPass.js';
+import { trackProgressPromise } from '/+app/delivery/progress/progress.js';
 import { CameraAnimation } from '/+app/model/CameraAnimation.js';
 import { requestGltf } from '/+app/model/gltf.js';
 import { requestLutCube } from '/+app/model/lutCube.js';
+import { DitheringEffect } from '/+app/postprocessing/effect/effects/dithering/DitheringEffect.js';
 import { OrchestratorChapterBehavior } from '/+app/story/orchestrator/data-orchestrator-chapter/OrchestratorChapterBehavior.js';
 import { OrchestratorBehavior } from '/+app/story/orchestrator/data-orchestrator/OrchestratorBehavior.js';
 import { TheatreSheetBehavior } from '/+app/theatre/data-theatre-sheet/TheatreSheetBehavior.js';
-import { behavior } from '/+std/behavioral/behavior.js';
-import { bin, derive, subscribe } from '/+std/signal/Signal.js';
 import { subscribeTransformTheatreValueToMesh } from '/+app/theatre/schemas/transform/subscribeTransformTheatreValueToMesh.js';
 import { TransformTheatreSchema } from '/+app/theatre/schemas/transform/TransformTheatreSchema.js';
-import { HoverOrbitTheatreSchema } from '/+app/animation/hover-orbit/HoverOrbitTheatreSchema.js';
-import { subscribeHoverOrbitTheatreValueToControls } from '/+app/animation/hover-orbit/subscribeHoverOrbitTheatreValueToControls.js';
+import { behavior } from '/+std/behavioral/behavior.js';
 import { PromiseSignal } from '/+std/signal/PromiseSignal.js';
-import { trackProgressPromise } from '/+app/delivery/progress/progress.js';
+import { bin, derive, subscribe } from '/+std/signal/Signal.js';
 /** @import { Object3D, Scene } from "three" */
 /** @import { EffectMaterial } from "postprocessing" */
 
@@ -94,6 +96,7 @@ export const ParkChapterBehavior = behavior(
 					scene,
 					camera,
 					viewportSize,
+					resolutionScale,
 				} = $orchestrator;
 
 				chapter: {
@@ -110,7 +113,21 @@ export const ParkChapterBehavior = behavior(
 					);
 				}
 
-				seek: {
+				resolution: {
+					const nextResolutionScale = 0.5;
+					const previousResolutionScale = resolutionScale.get();
+
+					add: { resolutionScale.set(nextResolutionScale); }
+					remove: _._ = () => {
+						resolutionScale.update((it) =>
+							it === nextResolutionScale ?
+								previousResolutionScale
+							:	it,
+						);
+					};
+				}
+
+				theatre: {
 					_._ = chapterProgress.subscribe(seek);
 				}
 
@@ -168,7 +185,7 @@ export const ParkChapterBehavior = behavior(
 						({ $renderer }) => {
 							const it = new SparkRenderer({
 								renderer: $renderer,
-								maxStdDev: Math.sqrt(5),
+								maxStdDev: Math.sqrt(6),
 							});
 							// it.defaultView.encodeLinear = true;
 							return it;
@@ -243,6 +260,16 @@ export const ParkChapterBehavior = behavior(
 					return _;
 				})();
 
+				skybox: {
+					const skybox = new LinearGradientSkybox(
+						{ color: new Color(0x000000), at: 0.2 },
+						{ color: new Color(0xfefefe), at: 0.3 },
+						{ color: new Color(0x000000), at: 0.6 },
+					);
+					add: { scene.add(skybox); }
+					remove: _._ = () => { scene.remove(skybox); };
+				}
+
 				render: {
 					const passes = derive(
 						{ camera, lutDjangoAsset },
@@ -258,11 +285,12 @@ export const ParkChapterBehavior = behavior(
 										...[
 											new BloomEffect({
 												blendFunction:
-													BlendFunction.ADD,
+													BlendFunction.SCREEN,
 												mipmapBlur: true,
 												luminanceThreshold: 0.4,
-												luminanceSmoothing: 0.2,
-												intensity: 3.0,
+												luminanceSmoothing: 0.8,
+												intensity: 4.0,
+												resolutionScale: 0.25,
 											}),
 											...($lutDjangoAsset ?
 												[
@@ -272,6 +300,7 @@ export const ParkChapterBehavior = behavior(
 												]
 											:	[]),
 											new ToneMappingEffect(),
+											new DitheringEffect(),
 										],
 									);
 									// this is needed due to `SplatRenderer` emitting non-linear colors.
