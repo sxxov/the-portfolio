@@ -5,6 +5,15 @@
 	font-family: m, serif;
 	font-weight: 300;
 
+	transition-property: opacity, filter;
+	transition-duration: 0.5s, 1s;
+	transition-timing-function: var(--ease-in-out);
+
+	&:not(:has([data-marlide-trace-word])) {
+		opacity: 0;
+		filter: blur(10px);
+	}
+
 	& [data-marlide-trace-word] {
 		white-space: nowrap;
 	}
@@ -308,6 +317,12 @@
 		&[data-marlide-trace-character='\.'] {
 			animation-name: marlide-trace-\.;
 		}
+	}
+}
+
+@keyframes marlide-trace-fade-in {
+	from {
+		opacity: 0;
 	}
 }
 
