@@ -6,6 +6,8 @@ uniform vec4 clearColor;
 
 in vec2 vUv;
 
+out vec4 fragColor;
+
 void blendAdd(inout vec4 dest, vec4 src) {
 	dest.rgb += src.rgb * src.a;
 	dest.a += src.a;
@@ -27,5 +29,5 @@ void main() {
 	blendOver(color, foregroundColor);
 	blendOver(color, occluderColor);
 
-	gl_FragColor = color;
+	fragColor = color;
 }

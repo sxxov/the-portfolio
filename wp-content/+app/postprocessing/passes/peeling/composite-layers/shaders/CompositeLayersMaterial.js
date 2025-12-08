@@ -1,4 +1,4 @@
-import { ShaderMaterial, Vector4 } from 'three';
+import { GLSL3, ShaderMaterial, Vector4 } from 'three';
 import compositeLayersVert from './compositeLayers.vert.js';
 import compositeLayersFrag from './compositeLayers.frag.js';
 import { declare } from '/+std/type/utilities/declare.js';
@@ -23,6 +23,7 @@ export class CompositeLayersMaterial extends ShaderMaterial {
 			name: CompositeLayersMaterial.name,
 			vertexShader: compositeLayersVert,
 			fragmentShader: compositeLayersFrag,
+			glslVersion: GLSL3,
 			depthWrite: false,
 			depthTest: false,
 		});

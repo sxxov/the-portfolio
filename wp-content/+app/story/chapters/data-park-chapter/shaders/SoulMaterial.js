@@ -3,6 +3,7 @@ import {
 	Color,
 	CustomBlending,
 	DoubleSide,
+	GLSL3,
 	ShaderMaterial,
 	Vector4,
 } from 'three';
@@ -28,6 +29,7 @@ export class SoulMaterial extends ShaderMaterial {
 			side: DoubleSide,
 			vertexShader: soulVert,
 			fragmentShader: soulFrag,
+			glslVersion: GLSL3,
 
 			blending: CustomBlending,
 			blendEquation: AddEquation,

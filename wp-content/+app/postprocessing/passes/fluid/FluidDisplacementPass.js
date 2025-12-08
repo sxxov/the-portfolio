@@ -9,7 +9,6 @@ import { Pass } from 'postprocessing';
 import { AdvectionMaterial } from './simulation/passes/advection/shaders/AdvectionMaterial.js';
 import { TouchForceMaterial } from './simulation/passes/touch-force/shaders/TouchForceMaterial.js';
 import { TouchValueMaterial } from './simulation/passes/touch-value/shaders/TouchValueMaterial.js';
-import { resizeRenderTarget } from '../../resize/resizeRenderTarget.js';
 import { pointers } from '/+app/human/pointers.js';
 import { unwrap } from '/+std/type/utilities/unwrap.js';
 import { BoundaryMaterial } from './simulation/passes/boundary/shaders/BoundaryMaterial.js';
@@ -18,6 +17,7 @@ import { JacobiIterationsMaterial } from './simulation/passes/jacobi-iterations/
 import { GradientSubtractionMaterial } from './simulation/passes/gradient-subtraction/shaders/GradientSubtractionMaterial.js';
 import { DisplacementMaterial } from './displacement/shaders/DisplacementMaterial.js';
 import { viewportSize } from '/+std/viewport/viewportSize.js';
+import { resizeRenderTarget } from '/+app/texture/resize/resizeRenderTarget.js';
 /** @import { WebGLRenderer } from "three" */
 /** @import { ArrayOfLength } from "/+std/type/array/ArrayOfLength.js" */
 
@@ -160,6 +160,14 @@ export class FluidDisplacementPass extends Pass {
 	) {
 		if (!inputBuffer) return;
 
+		this.renderSimulation(renderer, deltaTime);
+		this.renderDisplacement(renderer, inputBuffer, outputBuffer);
+	}
+
+	renderSimulation(
+		/** @type {WebGLRenderer} */ renderer,
+		/** @type {number} */ deltaTime,
+	) {
 		const {
 			passCamera,
 
@@ -189,10 +197,6 @@ export class FluidDisplacementPass extends Pass {
 			pressureScene,
 			pressureSubtractionMaterial,
 			pressureSubtractionScene,
-			displacementMaterial,
-			displacementScene,
-
-			renderToScreen,
 		} = this;
 
 		// advect the velocity vector field
@@ -301,6 +305,23 @@ export class FluidDisplacementPass extends Pass {
 		];
 		renderer.setRenderTarget(valueRenderTargets[0]);
 		renderer.render(valueAdvectionScene, passCamera);
+	}
+
+	renderDisplacement(
+		/** @type {WebGLRenderer} */ renderer,
+		/** @type {WebGLRenderTarget} */ inputBuffer,
+		/** @type {WebGLRenderTarget | null} */ outputBuffer,
+	) {
+		const {
+			passCamera,
+
+			valueRenderTargets,
+
+			displacementMaterial,
+			displacementScene,
+
+			renderToScreen,
+		} = this;
 
 		({ texture: displacementMaterial.baseMap } = inputBuffer);
 		[{ texture: displacementMaterial.displacementMap }] =

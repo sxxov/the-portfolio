@@ -17,7 +17,7 @@ import { Pass } from 'postprocessing';
 import { CompositeLayersMaterial } from './composite-layers/shaders/CompositeLayersMaterial.js';
 import { AlphaOpaqueMaskMaterial } from './alpha-opaque-mask/shaders/AlphaOpaqueMaskMaterial.js';
 import { OccludedChildProxyHandler } from './layers/occluded/OccludedChildProxyHandler.js';
-import { resizeRenderTarget } from '../../resize/resizeRenderTarget.js';
+import { resizeRenderTarget } from '/+app/texture/resize/resizeRenderTarget.js';
 /** @import { Camera, Scene, WebGLRenderer } from "three" */
 
 export class PeelingRenderPass extends Pass {

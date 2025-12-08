@@ -5,6 +5,8 @@ uniform vec3 color;
 in vec3 vPosition;
 in vec2 vUv;
 
+out vec4 fragColor;
+
 // https://stegu.github.io/webgl-noise/webdemo/
 // #region noise
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -112,6 +114,6 @@ void main() {
 
 	vec4 diffuseColor = vec4(color, n);
 
-	gl_FragColor.rgb = vec3(diffuseColor.rgb * diffuseColor.a);
-	gl_FragColor.a = diffuseColor.a;
+	fragColor.rgb = vec3(diffuseColor.rgb * diffuseColor.a);
+	fragColor.a = diffuseColor.a;
 }

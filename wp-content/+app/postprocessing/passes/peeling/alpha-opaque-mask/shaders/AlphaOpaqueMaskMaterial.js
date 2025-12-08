@@ -1,4 +1,4 @@
-import { DoubleSide, ShaderMaterial } from 'three';
+import { DoubleSide, GLSL3, ShaderMaterial } from 'three';
 import { declare } from '/+std/type/utilities/declare.js';
 import alphaOpaqueMaskVert from './alphaOpaqueMask.vert.js';
 import alphaOpaqueMaskFrag from './alphaOpaqueMask.frag.js';
@@ -15,6 +15,7 @@ export class AlphaOpaqueMaskMaterial extends ShaderMaterial {
 			name: AlphaOpaqueMaskMaterial.name,
 			vertexShader: alphaOpaqueMaskVert,
 			fragmentShader: alphaOpaqueMaskFrag,
+			glslVersion: GLSL3,
 			side: DoubleSide,
 			toneMapped: false,
 			depthWrite: false,
