@@ -6,51 +6,14 @@ use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
+use function bare\module\runtime\use_module_alias;
+
 const DEPENDENCY_DECLARATION_PROXY_SCRIPT_ID = 'package/imports/proxy';
 const DEPENDENCY_DECLARATION_LOADER_SCRIPT_ID = 'package/imports/loader';
 
-add_action('enqueue_block_assets', function () {
-	enqueue_imports();
-
-	// shove block import map into block editor iframe
-	// https://github.com/WordPress/gutenberg/issues/64482
-	if (is_admin() && get_current_screen()?->is_block_editor()) {
-		$imports = get_imports();
-		$import_json = json_encode($imports, JSON_PRETTY_PRINT);
-
-		wp_register_script(DEPENDENCY_DECLARATION_LOADER_SCRIPT_ID, false);
-		wp_enqueue_script(DEPENDENCY_DECLARATION_LOADER_SCRIPT_ID);
-		wp_add_inline_script(
-			DEPENDENCY_DECLARATION_LOADER_SCRIPT_ID,
-			<<<JS
-			if (window.self !== window.top) {
-				const script = document.createElement('script');
-				script.type = 'importmap';
-				script.textContent = `{ "imports": $import_json }`;
-				document.head.append(script);
-			}
-			JS
-		);
-	}
-}, 1, 0);
-
-function enqueue_imports() {
-	$imports = get_imports();
-
-	foreach ($imports as $specifier => $url)
-		wp_register_script_module(
-			$specifier,
-			$url,
-			deps: [],
-			version: null,
-		);
-	wp_enqueue_script_module(
-		DEPENDENCY_DECLARATION_PROXY_SCRIPT_ID,
-		'data:text/javascript,',
-		deps: array_keys($imports),
-		version: null,
-	);
-}
+$imports = get_imports();
+foreach ($imports as $specifier => $url)
+	use_module_alias($specifier, $url);
 
 function get_imports() {
 	$imports = [];
