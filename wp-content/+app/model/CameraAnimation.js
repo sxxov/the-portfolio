@@ -3,16 +3,13 @@ import { AnimationMixer, Object3D, PerspectiveCamera } from 'three';
 
 export class CameraAnimation {
 	constructor(/** @type {GLTF} */ gltf) {
-		const { scene: model, animations } = gltf;
+		const { cameras, animations } = gltf;
 
-		/** @type {PerspectiveCamera | undefined} */
-		let camera;
-		model.traverse((object) => {
-			if (camera) return;
-
-			if (object instanceof PerspectiveCamera) camera = object;
-		});
-		camera ??= new PerspectiveCamera();
+		const [camera] = cameras;
+		if (!(camera instanceof PerspectiveCamera))
+			throw new Error(
+				`Attempted to create CameraAnimation with GLTF that has no PerspectiveCamera.`,
+			);
 		this.camera = camera;
 
 		const rig = new Object3D();
