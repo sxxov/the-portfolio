@@ -1,5 +1,5 @@
-#ifndef stopCount
-#define stopCount 1
+#ifdef _
+const int stopCount = 1;
 #endif
 
 uniform vec4 stopColors[stopCount];
