@@ -1,6 +1,4 @@
 /* stylelint-disable keyframes-name-pattern */
-@import '../fonts/m.css';
-
 [data-marlide-trace] {
 	font-family: m, serif;
 	font-weight: 300;

@@ -1,7 +1,5 @@
 /* Use this for critical assets that require the font to be loaded, i.e. splash */
 
-@import '../fonts/m.css';
-
 [data-marlide] {
 	font-family: m, serif;
 }
