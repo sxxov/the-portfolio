@@ -1,6 +1,7 @@
 import { getProject } from '@theatre/core';
 import { behavior, t } from '/+std/behavioral/behavior.js';
 import { derive, Signal } from '/+std/signal/Signal.js';
+import { TheatreSheetBehavior } from '../data-theatre-sheet/TheatreSheetBehavior.js';
 /** @import { IProject } from "@theatre/core" */
 
 export const TheatreProjectBehavior = behavior(
@@ -16,7 +17,7 @@ export const TheatreProjectBehavior = behavior(
 				:	undefined,
 		).readonly;
 	},
-	() => {
-		//
+	(element, {}, { registerLocalBehaviors }) => {
+		registerLocalBehaviors(TheatreSheetBehavior);
 	},
 );

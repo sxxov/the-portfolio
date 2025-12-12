@@ -16,6 +16,7 @@
 		"install:bare": "pushd wp-content/themes/bare && npm i && popd"
 	},
 	"dependencies": {
+		"@lottiefiles/dotlottie-web": "^0.57.0",
 		"@sparkjsdev/spark": "^0.1.10",
 		"@theatre/core": "^0.7.2",
 		"@theatre/studio": "^0.7.2",

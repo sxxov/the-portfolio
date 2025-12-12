@@ -1,6 +1,6 @@
 import { type Camera, type Scene, type WebGLRenderer } from 'three';
 import { type OrchestratorBehavior } from './OrchestratorBehavior.js';
-import { type Chapter } from '/+app/story/chapter/Chapter.js';
+import { type ChapterContainer } from '../../chapter/ChapterContainer.js';
 import { type BehaviorInstance } from '/+std/behavioral/factory/BehaviorInstance.js';
 
 export type OrchestratorRenderContext = {
@@ -10,6 +10,6 @@ export type OrchestratorRenderContext = {
 	renderer: WebGLRenderer;
 	scene: Scene;
 	camera: Camera;
-	chapter: Chapter;
+	chapter: ChapterContainer;
 	context: BehaviorInstance<typeof OrchestratorBehavior>;
 };

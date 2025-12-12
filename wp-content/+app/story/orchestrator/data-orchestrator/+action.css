@@ -1,15 +1,14 @@
-[data-orchestrator] {
-	position: relative;
-	overflow: clip;
+@layer base {
+	[data-orchestrator] {
+		position: relative;
+		overflow: clip;
 
-	& [data-orchestrator-chapter] {
-	}
-
-	& [data-orchestrator-canvas] {
-		display: block;
-		height: 100lvh;
-		width: 100%;
-		position: fixed;
-		inset: 0;
+		& [data-orchestrator-canvas] {
+			display: block;
+			height: 100lvh;
+			width: 100%;
+			position: fixed;
+			inset: 0;
+		}
 	}
 }

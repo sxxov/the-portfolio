@@ -18,6 +18,10 @@ import { GradientSubtractionMaterial } from './simulation/passes/gradient-subtra
 import { DisplacementMaterial } from './displacement/shaders/DisplacementMaterial.js';
 import { viewportSize } from '/+std/viewport/viewportSize.js';
 import { resizeRenderTarget } from '/+app/texture/resize/resizeRenderTarget.js';
+import {
+	scrollVelocityX,
+	scrollVelocityY,
+} from '/+app/human/scrollVelocity.js';
 /** @import { WebGLRenderer } from "three" */
 /** @import { ArrayOfLength } from "/+std/type/array/ArrayOfLength.js" */
 
@@ -214,6 +218,9 @@ export class FluidDisplacementPass extends Pass {
 
 		const $pointers = pointers.get();
 		const $viewportSize = viewportSize.get();
+		const $scrollVelocityX = scrollVelocityX.get();
+		const $scrollVelocityY = scrollVelocityY.get();
+		const scrollVelocityAmplitude = 0.1;
 		for (let i = 0; i < 10; i++) {
 			const pointer = $pointers[i];
 			const forceTouch = unwrap(touchForceAdditionMaterial.touches[i]);
@@ -226,14 +233,18 @@ export class FluidDisplacementPass extends Pass {
 				forceTouch.set(
 					x,
 					y,
-					forceTouch.x > 0 ? x - forceTouch.x : 0,
-					forceTouch.y > 0 ? y - forceTouch.y : 0,
+					(forceTouch.x > 0 ? x - forceTouch.x : 0) +
+						$scrollVelocityX * scrollVelocityAmplitude,
+					(forceTouch.y > 0 ? y - forceTouch.y : 0) +
+						$scrollVelocityY * scrollVelocityAmplitude,
 				);
 				valueTouch.set(
 					x,
 					y,
-					valueTouch.x > 0 ? x - valueTouch.x : 0,
-					valueTouch.y > 0 ? y - valueTouch.y : 0,
+					(valueTouch.x > 0 ? x - valueTouch.x : 0) +
+						$scrollVelocityX * scrollVelocityAmplitude,
+					(valueTouch.y > 0 ? y - valueTouch.y : 0) +
+						$scrollVelocityY * scrollVelocityAmplitude,
 				);
 			} else {
 				forceTouch.set(0, 0, 0, 0);

@@ -1,5 +1,6 @@
 @theme static {
-	--font-display: m, sans-serif;
+	--font-display: o, sans-serif;
+	--font-pairing: 'Monsieur La Doulaise', serif;
 	--font-sans: 'Space Grotesk', sans-serif;
 	--font-mono: 'Space Mono', monospace;
 
@@ -85,39 +86,27 @@
 @utility h1 {
 	--weight-pt: 700;
 	--size-pt: 120;
-	--leading-pt: 110;
+	--leading-pt: 72;
 	--tracking-pt: -4;
 
 	font-family: var(--font-display);
 	font-style: normal;
-
-	@media (width < 640px) {
-		--size-pt: 80;
-		--leading-pt: 80;
-		--tracking-pt: -2;
-	}
 }
 
 @utility h2 {
 	--weight-pt: 600;
 	--size-pt: 60;
-	--leading-pt: 60;
+	--leading-pt: 40;
 	--tracking-pt: -2;
 
 	font-family: var(--font-display);
 	font-style: normal;
-
-	@media (width < 640px) {
-		--size-pt: 50;
-		--leading-pt: 50;
-		--tracking-pt: -2;
-	}
 }
 
 @utility h3 {
 	--weight-pt: 600;
 	--size-pt: 35;
-	--leading-pt: 40;
+	--leading-pt: 24;
 	--tracking-pt: -1;
 
 	font-family: var(--font-display);
@@ -127,7 +116,7 @@
 @utility h4 {
 	--weight-pt: 500;
 	--size-pt: 20;
-	--leading-pt: 26;
+	--leading-pt: 14;
 	--tracking-pt: 0;
 
 	font-family: var(--font-display);
@@ -137,7 +126,7 @@
 @utility h5 {
 	--weight-pt: 600;
 	--size-pt: 16;
-	--leading-pt: 20;
+	--leading-pt: 12;
 	--tracking-pt: 0;
 
 	font-family: var(--font-display);
@@ -147,7 +136,7 @@
 @utility h5 {
 	--weight-pt: 600;
 	--size-pt: 16;
-	--leading-pt: 20;
+	--leading-pt: 12;
 	--tracking-pt: 0;
 
 	font-family: var(--font-display);

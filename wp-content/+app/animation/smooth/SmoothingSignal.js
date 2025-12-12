@@ -30,8 +30,13 @@ export class SmoothingSignal extends Signal {
 		 * @type {{
 		 * 	smoothingFactor?: number;
 		 * 	speedPerSecond?: number;
+		 * 	epsilon?: number;
 		 * }}
-		 */ { smoothingFactor = 0.3, speedPerSecond = 1000 } = {},
+		 */ {
+			smoothingFactor = 0.3,
+			speedPerSecond = 1000,
+			epsilon = 0.00001,
+		} = {},
 		/** @type {Starter<SmoothingSignal> | undefined} */ starter = undefined,
 	) {
 		super(value, /** @type {Starter<Signal<number>>} */ (starter));
@@ -41,6 +46,7 @@ export class SmoothingSignal extends Signal {
 
 		this.smoothingFactor = smoothingFactor;
 		this.speedPerSecond = speedPerSecond;
+		this.epsilon = epsilon;
 	}
 
 	/** @override */
@@ -96,7 +102,7 @@ export class SmoothingSignal extends Signal {
 			change += increment;
 		}
 
-		if (remainingDistance < 0.001) {
+		if (remainingDistance < this.epsilon) {
 			this.smoothedValue = this.intrinsicValue;
 			this.rafTickAccumulatedTime = 0;
 			this.rafTickPreviousTime = undefined;

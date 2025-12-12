@@ -1,22 +1,23 @@
 import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
-import { OrchestratorChapterBehavior } from '../data-orchestrator-chapter/OrchestratorChapterBehavior.js';
+import state from './state.json' with { type: 'json' };
+import { TheatreProjectBehavior } from '/+app/theatre/data-theatre-project/TheatreProjectBehavior.js';
 import {
 	attachBehavior,
 	behavior,
 	getAttachedBehavior,
 } from '/+std/behavioral/behavior.js';
 import { watchElementSize } from '/+std/dom/watchElementSize.js';
-import { some } from '/+std/functional/some.js';
-import { scrollY } from '/+std/human/scroll.js';
-import { clamp01 } from '/+std/math/clamp01.js';
-import { map01 } from '/+std/math/map01.js';
-import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
+import { bin, Signal, subscribe } from '/+std/signal/Signal.js';
 import { viewportSize } from '/+std/viewport/viewportSize.js';
-import { TheatreProjectBehavior } from '/+app/theatre/data-theatre-project/TheatreProjectBehavior.js';
-import state from './state.json' with { type: 'json' };
-/** @import { Chapter } from "/+app/story/chapter/Chapter.js" */
+import { OrchestratorCanvasBehavior } from '../data-orchestrator-canvas/OrchestratorCanvasBehavior.js';
+import { OrchestratorChapterBehavior } from '../data-orchestrator-chapter/OrchestratorChapterBehavior.js';
+import { OrchestratorStanzaBehavior } from '../data-orchestrator-stanza/OrchestratorStanzaBehavior.js';
+/** @import { ChapterContainer } from "../../chapter/ChapterContainer.js" */
 /** @import { Size } from "/+std/unit/Size.js" */
 /** @import { OrchestratorRenderContext } from "./OrchestratorRenderContext.js" */
+/** @import { BehaviorInstance } from "/+std/behavioral/factory/BehaviorInstance.js" */
+/** @import { ReadableSignal } from "/+std/signal/Signal.js" */
+/** @import { Rect } from "/+std/unit/Rect.js" */
 
 export const OrchestratorBehavior = behavior(
 	'orchestrator',
@@ -48,7 +49,6 @@ export const OrchestratorBehavior = behavior(
 					});
 				}),
 		);
-		resolutionScale = new Signal(1);
 		canvas = new Signal(
 			/** @type {HTMLCanvasElement | undefined} */ (undefined),
 		);
@@ -64,35 +64,18 @@ export const OrchestratorBehavior = behavior(
 			({ subscribe: sub }) =>
 				sub((it) =>
 					subscribe(
-						{
-							viewportSize: this.viewportSize,
-							resolutionScale: this.resolutionScale,
-						},
-						({
-							$viewportSize: { width, height },
-							$resolutionScale,
-						}) => {
+						{ viewportSize: this.viewportSize },
+						({ $viewportSize: { width, height } }) => {
 							it.setSize(width || 1, height || 1);
-							it.setPixelRatio(
-								window.devicePixelRatio * $resolutionScale,
-							);
+							it.setPixelRatio(window.devicePixelRatio);
 						},
 					),
 				),
 		);
 		scene = new Scene();
 		scroll = new Signal(0);
-		chapter = new Signal(/** @type {Chapter | undefined} */ (undefined));
-		chapterProgress = derive(
-			{ scrollY, viewportSize, chapter: this.chapter },
-			({ $scrollY, $viewportSize: { height: vh }, $chapter }) => {
-				if (!$chapter) return 0;
-
-				const height = ($chapter.duration / 1000) * vh;
-				const progress = clamp01(map01($scrollY, 0, height));
-
-				return progress;
-			},
+		chapter = new Signal(
+			/** @type {ChapterContainer | undefined} */ (undefined),
 		);
 		camera = this.chapter.derive(
 			(it) => it?.camera,
@@ -113,73 +96,17 @@ export const OrchestratorBehavior = behavior(
 					),
 				),
 		);
-		chapters = new Signal(
-			new /** @type {typeof Map<HTMLElement, Chapter>} */ (Map)(),
+		chapterContainerContexts = new Signal(
+			new /**
+			 * @type {typeof Map<
+			 * 	ChapterContainer,
+			 * 	{
+			 * 		rect: ReadableSignal<Rect<number> | Rect<undefined>>;
+			 * 		progress: ReadableSignal<number>;
+			 * 	}
+			 * >}
+			 */ (Map)(),
 		);
-		sortedChapters = new Signal(/** @type {Chapter[]} */ ([]), ({ set }) =>
-			subscribe({ chapters: this.chapters }, ({ $chapters }) => {
-				const _ = bin();
-
-				const entries = new Signal(
-					/** @type {(readonly [number, Chapter])[]} */ ([]),
-				);
-				for (const [element, chapter] of $chapters) {
-					const behavior = getAttachedBehavior(
-						element,
-						OrchestratorChapterBehavior,
-					);
-					_._ = subscribe({ behavior }, ({ $behavior }) => {
-						if (!$behavior) return;
-
-						const _ = bin();
-						const { index } = $behavior;
-
-						_._ = subscribe({ index }, ({ $index }) => {
-							if (!some($index)) return;
-
-							const _ = bin();
-							const entry = /** @type {const} */ ([
-								$index,
-								chapter,
-							]);
-
-							add: {
-								entries.update((it) => {
-									it.push(entry);
-									entries.trigger();
-									return it;
-								});
-							}
-							remove: _._ = () => {
-								entries.update((it) => {
-									it.splice(
-										it.findIndex((it) => it === entry),
-										1,
-									);
-									entries.trigger();
-									return it;
-								});
-							};
-
-							return _;
-						});
-
-						return _;
-					});
-				}
-
-				const sortedChapters = derive({ entries }, ({ $entries }) =>
-					$entries
-						.toSorted(([a], [b]) => a - b)
-						.map(([, chapter]) => chapter),
-				);
-				_._ = subscribe({ sortedChapters }, ({ $sortedChapters }) => {
-					set($sortedChapters);
-				});
-
-				return _;
-			}),
-		).readonly;
 
 		render = new Signal(
 			/** @type {OrchestratorRenderContext | undefined} */ (undefined),
@@ -224,8 +151,15 @@ export const OrchestratorBehavior = behavior(
 	},
 	(
 		element,
-		{ container, chapter, chapterProgress, scene, sortedChapters, scroll },
+		{ container, chapter, chapterContainerContexts, scene, scroll },
+		{ registerLocalBehaviors },
 	) => {
+		registerLocalBehaviors(
+			OrchestratorCanvasBehavior,
+			OrchestratorChapterBehavior,
+			OrchestratorStanzaBehavior,
+		);
+
 		const _ = bin();
 
 		container: {
@@ -237,29 +171,31 @@ export const OrchestratorBehavior = behavior(
 			};
 		}
 
-		progress: {
-			scroll.in(
-				derive(
-					{ sortedChapters, scrollY, viewportSize },
-					({
-						$sortedChapters,
-						$scrollY,
-						$viewportSize: { height: vh },
-					}) =>
-						$sortedChapters.reduce(
-							(context, { duration }) => {
-								const { cursor } = context;
-								const length = (duration / 1000) * vh;
+		scroll: {
+			_._ = subscribe(
+				{ chapterContainerContexts },
+				({ $chapterContainerContexts }) => {
+					const _ = bin();
 
-								context.cursor += length;
-								context.cum += clamp01(
-									map01($scrollY, cursor, cursor + length),
-								);
-								return context;
-							},
-							{ cursor: 0, cum: 0 },
-						).cum,
-				),
+					const key = new Signal({});
+					const progresses = [
+						...$chapterContainerContexts
+							.values()
+							.map(({ progress }) => progress),
+					];
+					for (const progress of progresses)
+						_._ = progress.subscribe(() => { key.set({}); });
+					_._ = key.subscribe(() => {
+						scroll.set(
+							progresses.reduce((prev, progress) => {
+								const $progress = progress.get();
+								return prev + $progress;
+							}, 0),
+						);
+					});
+
+					return _;
+				},
 			);
 		}
 
@@ -275,28 +211,6 @@ export const OrchestratorBehavior = behavior(
 		}
 
 		chapter: {
-			chapter.in(
-				derive(
-					{ scroll, sortedChapters, viewportSize },
-					({
-						$scroll,
-						$sortedChapters,
-						$viewportSize: { height: vh },
-					}) => {
-						let cum = 0;
-						const chapter = $sortedChapters.find(({ duration }) => {
-							const start = cum;
-							const length = (duration / 1000) * vh;
-							const end = cum + length;
-							cum += length;
-							return $scroll >= start && $scroll < end;
-						});
-
-						return chapter;
-					},
-				),
-			);
-
 			_._ = subscribe({ chapter }, ({ $chapter }) => {
 				if (!$chapter) return;
 
@@ -309,15 +223,6 @@ export const OrchestratorBehavior = behavior(
 				};
 				return _;
 			});
-
-			_._ = subscribe(
-				{ chapterProgress, chapter },
-				({ $chapterProgress, $chapter }) => {
-					if (!$chapter) return;
-
-					$chapter.seek($chapterProgress);
-				},
-			);
 		}
 
 		return _;

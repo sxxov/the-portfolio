@@ -31,7 +31,7 @@ export class CameraAnimation {
 				action.time = 0;
 				action.play();
 			}
-			mixer.update(progress * (duration / 1000));
+			mixer.update(progress * (duration / 1_000));
 		};
 
 		this.mixer = mixer;

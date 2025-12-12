@@ -1,3 +1,4 @@
+import { AnBehavior } from '../data-an/AnBehavior.js';
 import { TheatreProjectBehavior } from '../data-theatre-project/TheatreProjectBehavior.js';
 import { behavior, t } from '/+std/behavioral/behavior.js';
 import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
@@ -7,6 +8,8 @@ import { val } from '@theatre/core';
 /** @import { ISheet, ISheetObject, types, UnknownShorthandCompoundProps } from "@theatre/core" */
 /** @import { ReadableSignal } from "/+std/signal/Signal.js" */
 /** @import { Ranged } from "/+std/unit/Ranged.js" */
+/** @import { TheatreValue } from "../types/TheatreValue.js" */
+/** @import { TheatreSchema } from "../types/TheatreSchema.js" */
 
 /**
  * @typedef {InstanceType<
@@ -20,9 +23,7 @@ export const TheatreSheetBehavior = behavior(
 		'' = t.string;
 		sheet = new Signal(/** @type {ISheet | undefined} */ (undefined));
 		props = new Signal(
-			/** @type {Map<string, UnknownShorthandCompoundProps>} */ (
-				new Map()
-			),
+			/** @type {Map<string, TheatreSchema>} */ (new Map()),
 		);
 		objects = new Signal(
 			/** @type {Map<string, ISheetObject>} */ (new Map()),
@@ -45,7 +46,12 @@ export const TheatreSheetBehavior = behavior(
 							attachedNames.add(name);
 
 							update((it) => {
-								it.set(name, $sheet.object(name, value));
+								it.set(
+									name,
+									$sheet.object(name, value, {
+										reconfigure: true,
+									}),
+								);
 								trigger();
 								return it;
 							});
@@ -62,7 +68,7 @@ export const TheatreSheetBehavior = behavior(
 			},
 		);
 		values = new TaskSignal(
-			/** @type {Map<string, ReadableSignal<ISheetObject['value']>>} */ (
+			/** @type {Map<string, ReadableSignal<TheatreValue<{}>>>} */ (
 				new Map()
 			),
 		);
@@ -75,7 +81,7 @@ export const TheatreSheetBehavior = behavior(
 				progress * val($sheet.sequence.pointer.length);
 		};
 
-		/** @template {UnknownShorthandCompoundProps} Props */
+		/** @template {TheatreSchema} Props */
 		attach = (/** @type {string} */ name, /** @type {Props} */ p) => {
 			const { props, values } = this;
 			const normalizedName = name
@@ -104,7 +110,7 @@ export const TheatreSheetBehavior = behavior(
 				// the default/initial value
 				//
 				// this will be `undefined` if `sheet` is not yet available
-				/** @type {ISheetObject<Props>['value'] | undefined} */ (
+				/** @type {TheatreValue<Props> | undefined} */ (
 					this.objects.get().get(normalizedName)?.value
 				),
 				({ set }) => {
@@ -131,11 +137,7 @@ export const TheatreSheetBehavior = behavior(
 						if (!value) return;
 
 						return subscribe({ value }, ({ $value }) => {
-							set(
-								/** @type {ISheetObject<Props>['value']} */ (
-									$value
-								),
-							);
+							set(/** @type {TheatreValue<Props>} */ ($value));
 						});
 					});
 
@@ -144,11 +146,16 @@ export const TheatreSheetBehavior = behavior(
 			).readonly;
 		};
 	},
-	(element, { '': name, objects, values, sheet }, { getContext }) =>
+	(
+		element,
+		{ '': name, objects, values, sheet },
+		{ getContext, registerLocalBehaviors },
+	) =>
 		subscribe(
 			{ project: getContext(TheatreProjectBehavior) },
 			({ $project }) => {
-				// console.log('project', $project);
+				registerLocalBehaviors(AnBehavior);
+
 				if (!$project) return;
 
 				const { project } = $project;

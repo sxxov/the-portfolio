@@ -1,6 +1,6 @@
 import { type Group, type Camera } from 'three';
 
-export type Chapter = {
+export type ChapterContainer = {
 	readonly slug: string;
 	readonly duration: number;
 
