@@ -12,7 +12,7 @@ services:
         networks:
             private:
     wordpress:
-        image: wordpress:6.8.3-php8.4-apache
+        image: wordpress:6.9.0-php8.5-apache
         restart: unless-stopped
         hostname: ${SITE_HOST}
         command:
