@@ -5,6 +5,7 @@ error_log
 .trash/
 .env
 *.env
+Adobe After Effects Auto-Save/
 
 # wp-content
 /wp-content/debug.log
