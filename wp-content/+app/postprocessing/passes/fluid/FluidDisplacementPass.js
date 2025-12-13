@@ -326,7 +326,7 @@ export class FluidDisplacementPass extends Pass {
 		const {
 			passCamera,
 
-			valueRenderTargets,
+			velocityRenderTargets,
 
 			displacementMaterial,
 			displacementScene,
@@ -336,7 +336,7 @@ export class FluidDisplacementPass extends Pass {
 
 		({ texture: displacementMaterial.baseMap } = inputBuffer);
 		[{ texture: displacementMaterial.displacementMap }] =
-			valueRenderTargets;
+			velocityRenderTargets;
 		renderer.setRenderTarget(renderToScreen ? null : outputBuffer);
 		renderer.render(displacementScene, passCamera);
 	}

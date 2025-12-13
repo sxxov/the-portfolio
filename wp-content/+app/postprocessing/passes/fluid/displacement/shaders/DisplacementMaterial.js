@@ -9,7 +9,7 @@ export class DisplacementMaterial extends ShaderMaterial {
 		baseTiling: { value: new Vector2(1, 1) },
 		displacementMap: { value: new Texture() },
 		displacementTiling: { value: new Vector2(1, 1) },
-		strength: { value: 0.1 },
+		strength: { value: -0.1 },
 	};
 
 	constructor() {
