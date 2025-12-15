@@ -418,10 +418,10 @@ export const AnBehavior = behavior(
 							if (!$clip) break clip;
 							clipEnabled = true;
 
-							const { clip } = it;
-							if (!some(clip)) break clip;
+							const { clip: c } = it;
+							if (!some(c)) break clip;
 
-							const { tl, tr, bl, br } = clip;
+							const { tl, tr, bl, br } = c;
 							clip.tl = tl;
 							clip.tr = tr;
 							clip.bl = bl;
@@ -746,7 +746,7 @@ export const AnBehavior = behavior(
 						}
 
 						applyClip: {
-							if (!clipEnabled || !clipInsetEnabled)
+							if (!clipEnabled && !clipInsetEnabled)
 								break applyClip;
 
 							setStyles(element, {
