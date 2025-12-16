@@ -1,91 +1,145 @@
+import { clamp } from '/+std/math/clamp.js';
+import { clamp01 } from '/+std/math/clamp01.js';
+import { map } from '/+std/math/map.js';
+import { map01 } from '/+std/math/map01.js';
 import { bin, Signal } from '/+std/signal/Signal.js';
 /** @import { Point } from "/+std/unit/Point.js" */
 
-export const pointers = new Signal(/** @type {Point[]} */ ([]), ({ set }) => {
-	const _ = bin();
+/** @extends {Signal<ReadonlySet<Point>>} */
+export class PointersSignal extends Signal {
+	constructor(/** @type {HTMLElement | undefined} */ element) {
+		super(new Set(), ({ set }) => {
+			const _ = bin();
 
-	const controller = new AbortController();
-	_._ = () => { controller.abort(); };
-	const { signal } = controller;
+			const controller = new AbortController();
+			_._ = () => { controller.abort(); };
+			const { signal } = controller;
 
-	const pointers = new /** @type {typeof Map<number, Point>} */ (Map)();
-	const propagate = () => { set([...pointers.values()]); };
+			const pointers = new /** @type {typeof Map<number, Point>} */ (
+				Map
+			)();
+			const propagate = () => { set(new Set(pointers.values())); };
+			const write = (
+				/** @type {Point} */ pointer,
+				/** @type {number} */ clientX,
+				/** @type {number} */ clientY,
+			) => {
+				if (!element) {
+					pointer.x = clientX;
+					pointer.y = clientY;
+					return;
+				}
 
-	const isInside = (/** @type {PointerEvent} */ e) =>
-		e.clientX >= 0 &&
-		e.clientY >= 0 &&
-		e.clientX < innerWidth &&
-		e.clientY < innerHeight;
+				const { x, y, width, height } = element.getBoundingClientRect();
+				const u = clamp01(map01(clientX, x, x + width)) * width;
+				const v = clamp01(map01(clientY, y, y + height)) * height;
 
-	const onDown = (/** @type {PointerEvent} */ e) => {
-		switch (e.pointerType) {
-			case 'touch': {
-				pointers.set(e.pointerId, {
-					x: e.clientX,
-					y: e.clientY,
-				});
+				pointer.x = u;
+				pointer.y = v;
+			};
+
+			const on =
+				element?.addEventListener.bind(element) ??
+				window.addEventListener.bind(window);
+
+			const onDown = (/** @type {PointerEvent} */ e) => {
+				switch (e.pointerType) {
+					case 'touch': {
+						let pointer = pointers.get(e.pointerId);
+						if (!pointer) {
+							pointer = { x: 0, y: 0 };
+							pointers.set(e.pointerId, pointer);
+						}
+						write(pointer, e.clientX, e.clientY);
+						propagate();
+						break;
+					}
+					default:
+				}
+			};
+			on('pointerenter', onDown, {
+				passive: true,
+				signal,
+			});
+			on('pointerdown', onDown, {
+				passive: true,
+				signal,
+			});
+
+			const onMove = (/** @type {PointerEvent} */ e) => {
+				switch (e.pointerType) {
+					case 'touch': {
+						const pointer = pointers.get(e.pointerId);
+						if (!pointer) break;
+						write(pointer, e.clientX, e.clientY);
+						propagate();
+						break;
+					}
+					case 'mouse': {
+						let pointer = pointers.get(e.pointerId);
+						if (!pointer) {
+							pointer = { x: 0, y: 0 };
+							pointers.set(e.pointerId, pointer);
+						}
+						write(pointer, e.clientX, e.clientY);
+						propagate();
+						break;
+					}
+					default:
+				}
+			};
+			on('pointermove', onMove, {
+				passive: true,
+				signal,
+			});
+
+			const onUp = (/** @type {PointerEvent} */ e) => {
+				switch (e.pointerType) {
+					case 'touch': {
+						pointers.delete(e.pointerId);
+						propagate();
+						break;
+					}
+					default:
+				}
+			};
+			on('pointerup', onUp, {
+				passive: true,
+				signal,
+			});
+			on('pointercancel', onUp, {
+				passive: true,
+				signal,
+			});
+
+			const onLeave = (/** @type {PointerEvent} */ e) => {
+				switch (e.pointerType) {
+					case 'mouse': {
+						pointers.delete(e.pointerId);
+						propagate();
+						break;
+					}
+					default:
+				}
+			};
+			on('pointerleave', onLeave, {
+				passive: true,
+				signal,
+			});
+			on('pointercancel', onLeave, {
+				passive: true,
+				signal,
+			});
+
+			const onBlur = () => {
+				pointers.clear();
 				propagate();
-				break;
-			}
-			default:
-		}
-	};
+			};
+			on('blur', onBlur, { signal });
 
-	const onMove = (/** @type {PointerEvent} */ e) => {
-		switch (e.pointerType) {
-			case 'touch': {
-				if (!pointers.has(e.pointerId)) break;
+			return _;
+		});
+	}
+}
 
-				pointers.set(e.pointerId, {
-					x: e.clientX,
-					y: e.clientY,
-				});
-				propagate();
-				break;
-			}
-			case 'mouse': {
-				if (isInside(e))
-					pointers.set(e.pointerId, {
-						x: e.clientX,
-						y: e.clientY,
-					});
-				else pointers.delete(e.pointerId);
-				propagate();
-				break;
-			}
-			default:
-		}
-	};
-
-	const onUpOrCancel = (/** @type {PointerEvent} */ e) => {
-		pointers.delete(e.pointerId);
-		propagate();
-	};
-
-	const onLeave = (/** @type {PointerEvent} */ e) => {
-		switch (e.pointerType) {
-			case 'mouse': {
-				pointers.delete(e.pointerId);
-				propagate();
-				break;
-			}
-			default:
-		}
-	};
-
-	addEventListener('pointerdown', onDown, { passive: true, signal });
-	addEventListener('pointermove', onMove, { passive: true, signal });
-	addEventListener('pointerup', onUpOrCancel, { passive: true, signal });
-	addEventListener('pointercancel', onUpOrCancel, { passive: true, signal });
-	addEventListener('pointerleave', onLeave, { passive: true, signal });
-	addEventListener(
-		'blur',
-		() => {
-			pointers.clear();
-			propagate();
-		},
-		{ signal },
-	);
-
-	return _;
-}).readonly;
+export const pointers = new PointersSignal(undefined).readonly;

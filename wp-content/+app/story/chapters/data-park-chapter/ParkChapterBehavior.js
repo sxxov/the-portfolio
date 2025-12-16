@@ -1,79 +1,147 @@
+import { MeshTransmissionMaterial } from '@pmndrs/vanilla/materials/MeshTransmissionMaterial.js';
 import { SparkRenderer, SplatFileType, SplatMesh } from '@sparkjsdev/spark';
 import {
 	BlendFunction,
 	BloomEffect,
-	ClearPass,
 	CopyPass,
 	EffectComposer,
 	EffectPass,
 	LUT3DEffect,
-	Pass,
-	ShaderPass,
-	TextureEffect,
+	RenderPass,
 	ToneMappingEffect,
 } from 'postprocessing';
 import {
+	BoxGeometry,
 	Color,
+	EquirectangularReflectionMapping,
+	Group,
 	HalfFloatType,
 	Material,
 	Mesh,
-	RenderTarget,
+	MeshBasicMaterial,
+	MeshPhysicalMaterial,
+	PerspectiveCamera,
+	PMREMGenerator,
+	RectAreaLight,
+	Scene,
+	Vector3,
 	WebGLRenderTarget,
 } from 'three';
-import { LinearGradientSkybox } from '/+app/environment/linear-gradient/LinearGradientSkybox.js';
-import { FluidDisplacementPass } from '/+app/postprocessing/passes/fluid/FluidDisplacementPass.js';
-import { PeelingRenderPass } from '/+app/postprocessing/passes/peeling/PeelingRenderPass.js';
+import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
+import photoStudio011kExr from './environments/photo-studio-01-1k.exr.js';
+import studioSmall091kExr from './environments/studio-small-09-1k.exr.js';
+import dataJson from './lottie/data.json.js';
+import brainGlb from './models/auxiliaries/brain.glb.js';
+import computerGlb from './models/auxiliaries/computer.glb.js';
+import headGlb from './models/auxiliaries/head.glb.js';
+import phoneGlb from './models/auxiliaries/phone.glb.js';
+import thinkingGlb from './models/auxiliaries/thinking.glb.js';
 import cameraGlb from './models/camera.glb.js';
-import lutDjangoCube from './models/lut-django.cube.js';
+import gem0Glb from './models/gems/gem-0.glb.js';
+import gem1Glb from './models/gems/gem-1.glb.js';
+import gem2Glb from './models/gems/gem-2.glb.js';
+import gem3Glb from './models/gems/gem-3.glb.js';
+import gem4Glb from './models/gems/gem-4.glb.js';
+import djangoCube from './luts/django.cube.js';
 import sceneSog from './models/scene.sog.js';
-import soul0Glb from './models/soul-0.glb.js';
-import soul1Glb from './models/soul-1.glb.js';
-import soul2Glb from './models/soul-2.glb.js';
-import soul3Glb from './models/soul-3.glb.js';
-import soul4Glb from './models/soul-4.glb.js';
+import soul0Glb from './models/souls/soul-0.glb.js';
+import soul1Glb from './models/souls/soul-1.glb.js';
+import soul2Glb from './models/souls/soul-2.glb.js';
+import soul3Glb from './models/souls/soul-3.glb.js';
+import soul4Glb from './models/souls/soul-4.glb.js';
 import { ParkChapterContainer } from './ParkChapterContainer.js';
 import { SoulMaterial } from './shaders/SoulMaterial.js';
-import { HoverOrbitControls } from '/+app/animation/hover-orbit/HoverOrbitControls.js';
-import { HoverOrbitTheatreSchema } from '/+app/animation/hover-orbit/HoverOrbitTheatreSchema.js';
+import { HoverOrbitControls } from '/+app/controls/hover-orbit/HoverOrbitControls.js';
+import { HoverOrbitTheatreSchema } from '/+app/controls/hover-orbit/HoverOrbitTheatreSchema.js';
+import { InteractivityControls } from '/+app/controls/interactivity/InteractivityControls.js';
 import { requestAsset } from '/+app/delivery/asset/asset.js';
+import { pipeChunksIntoJson } from '/+app/delivery/pipes/pipeChunksIntoJson.js';
 import { pipeChunksIntoUint8Array } from '/+app/delivery/pipes/pipeChunksIntoUint8Array.js';
 import { trackProgressPromise } from '/+app/delivery/progress/progress.js';
+import { LinearGradientSkybox } from '/+app/environment/linear-gradient/LinearGradientSkybox.js';
+import { PointersSignal } from '/+app/human/pointers.js';
 import { CameraAnimation } from '/+app/model/CameraAnimation.js';
+import { requestExr } from '/+app/model/exr.js';
 import { requestGltf } from '/+app/model/gltf.js';
 import { requestLutCube } from '/+app/model/lutCube.js';
+import { AsciiEffect } from '/+app/postprocessing/effects/ascii/AsciiEffect.js';
 import { DitheringEffect } from '/+app/postprocessing/effects/dithering/DitheringEffect.js';
+import { LayerEffect } from '/+app/postprocessing/effects/layer/LayerEffect.js';
+import { NoiseEffect } from '/+app/postprocessing/effects/noise/NoiseEffect.js';
+import { FluidDisplacementDelegatePass } from '/+app/postprocessing/passes/fluid/FluidDisplacementDelegatePass.js';
+import { FluidDisplacementPass } from '/+app/postprocessing/passes/fluid/FluidDisplacementPass.js';
+import { PeelingRenderPass } from '/+app/postprocessing/passes/peeling/PeelingRenderPass.js';
 import { OrchestratorChapterBehavior } from '/+app/story/orchestrator/data-orchestrator-chapter/OrchestratorChapterBehavior.js';
 import { OrchestratorBehavior } from '/+app/story/orchestrator/data-orchestrator/OrchestratorBehavior.js';
+import { DotLottieTexture } from '/+app/texture/lottie/DotLottieTexture.js';
 import { TheatreSheetBehavior } from '/+app/theatre/data-theatre-sheet/TheatreSheetBehavior.js';
-import { ThreeTransformTheatreSchema } from '../../../theatre/schemas/three/ThreeTransformTheatreSchema.js';
+import { ThreeTransformTheatreSchema } from '/+app/theatre/schemas/three/ThreeTransformTheatreSchema.js';
 import { behavior } from '/+std/behavioral/behavior.js';
+import { degToRad } from '/+std/math/degToRad.js';
 import { PromiseSignal } from '/+std/signal/PromiseSignal.js';
 import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
-import { AsciiEffect } from '/+app/postprocessing/effects/ascii/AsciiEffect.js';
-import { unwrap } from '/+std/type/utilities/unwrap.js';
-import { DotLottieTexture } from '/+app/texture/lottie/DotLottieTexture.js';
-import dataJson from './lottie/data.json.js';
-import { pipeChunksIntoJson } from '/+app/delivery/pipes/pipeChunksIntoJson.js';
 import { cast } from '/+std/type/utilities/cast.js';
+import easelGlb from './models/auxiliaries/easel.glb.js';
+import retroRedCube from './luts/retro-red.cube.js';
+import { PeekControls } from '/+app/controls/peek/PeekControls.js';
+import { InteractionKind } from '/+app/controls/interactivity/InteractionKind.js';
+import { isParentInteracted } from '../../../controls/interactivity/isParentInteracted.js';
+import { FollowPointerControls } from '/+app/controls/follow-pointer/FollowPointerControls.js';
+import { SmoothingSignal } from '/+app/animation/smooth/SmoothingSignal.js';
+import { TaskSignal } from '/+std/signal/TaskSignal.js';
+import { InteractionsSignal } from '/+app/controls/interactivity/InteractionsSignal.js';
+import { VisibilityControls } from '/+app/controls/interactivity/VisibilityControls.js';
 import { some } from '/+std/functional/some.js';
-import { subscribeFrame } from '/+std/animation/subscribeFrame.js';
-import { degToRad } from '/+std/math/degToRad.js';
-import { FluidDisplacementDelegatePass } from '/+app/postprocessing/passes/fluid/FluidDisplacementDelegatePass.js';
-import { NoiseEffect } from '/+app/postprocessing/effects/noise/NoiseEffect.js';
-/** @import { Object3D, WebGLRenderer } from "three" */
-/** @import { EffectMaterial } from "postprocessing" */
-/** @import { Size } from "/+std/unit/Size.js" */
+import { ParkMapBehavior } from '../data-park-map/ParkMapBehavior.js';
+import { ParkWaypointBehavior } from '../data-park-waypoint/ParkWaypointBehavior.js';
+import { Tween } from '/+std/animation/Tween.js';
+import {
+	bezierQuintInOut,
+	bezierQuintOut,
+} from '/+std/animation/bezier/beziers.js';
+/** @import { Object3D } from "three" */
+/** @import { EffectMaterial, Pass } from "postprocessing" */
 /** @import { ArrayOfLength } from "/+std/type/array/ArrayOfLength.js" */
+/** @import { Point } from "/+std/unit/Point.js" */
+/** @import { ReadableSignal } from "/+std/signal/Signal.js" */
+
+RectAreaLightUniformsLib.init();
+
+const { asset: cameraAsset } = requestGltf(cameraGlb);
+void cameraAsset.then();
 
 const { asset: sceneAsset } = requestAsset(sceneSog, pipeChunksIntoUint8Array);
-const { asset: cameraAsset } = requestGltf(cameraGlb);
+void sceneAsset.then();
+
+const { asset: djangoAsset } = requestLutCube(djangoCube);
+const { asset: retroRedAsset } = requestLutCube(retroRedCube);
+
+// const { asset: studioSmall091kAsset } = requestExr(studioSmall091kExr);
+const { asset: photoStudio011kAsset } = requestExr(photoStudio011kExr);
+void photoStudio011kAsset.then();
+
+const { asset: lottieDataAsset } = requestAsset(dataJson, pipeChunksIntoJson);
+
+// const { asset: gem0Asset } = requestGltf(gem0Glb);
+// const { asset: gem1Asset } = requestGltf(gem1Glb);
+// const { asset: gem2Asset } = requestGltf(gem2Glb);
+// const { asset: gem3Asset } = requestGltf(gem3Glb);
+// const { asset: gem4Asset } = requestGltf(gem4Glb);
+
+const { asset: headAsset } = requestGltf(headGlb);
+// const { asset: brainAsset } = requestGltf(brainGlb);
+const { asset: computerAsset } = requestGltf(computerGlb);
+const { asset: phoneAsset } = requestGltf(phoneGlb);
+const { asset: thinkingAsset } = requestGltf(thinkingGlb);
+const { asset: easelAsset } = requestGltf(easelGlb);
+
 const { asset: soul0Asset } = requestGltf(soul0Glb);
 const { asset: soul1Asset } = requestGltf(soul1Glb);
 const { asset: soul2Asset } = requestGltf(soul2Glb);
 const { asset: soul3Asset } = requestGltf(soul3Glb);
 const { asset: soul4Asset } = requestGltf(soul4Glb);
-const { asset: lutDjangoAsset } = requestLutCube(lutDjangoCube);
-const { asset: lottieDataAsset } = requestAsset(dataJson, pipeChunksIntoJson);
 
 const asciiCharSet = AsciiEffect.defaultCharSet;
 const spaceMonoFont = new PromiseSignal(
@@ -85,11 +153,23 @@ const spaceMonoFont = new PromiseSignal(
 	},
 );
 
+/**
+ * @typedef {{
+ * 	name: string;
+ * 	model: string;
+ * 	hovering: ReadableSignal<boolean>;
+ * }} ParkWaypointContext
+ */
 export const ParkChapterBehavior = behavior(
 	'park-chapter',
-	class {},
-	(element, {}, { getContext }) => {
-		void cameraAsset.then();
+	class {
+		waypointContexts = new Signal(
+			new /** @type {typeof Set<ParkWaypointContext>} */ (Set)(),
+		);
+	},
+	(element, { waypointContexts }, { getContext, registerLocalBehaviors }) => {
+		registerLocalBehaviors(ParkMapBehavior);
+
 		const chapter = derive({ cameraAsset }, ({ $cameraAsset }) => {
 			if (!$cameraAsset) return;
 
@@ -125,6 +205,7 @@ export const ParkChapterBehavior = behavior(
 				const { attach, seek } = $theatreSheet;
 				const {
 					canvas,
+					eventsContainer,
 					render,
 					renderer,
 					scene,
@@ -132,6 +213,29 @@ export const ParkChapterBehavior = behavior(
 					viewportSize,
 				} = $orchestrator;
 				const { progress } = $orchestratorChapter;
+
+				const [parkRenderTarget, overlayRenderTarget, auxRenderTarget] =
+					/** @type {ArrayOfLength<3, WebGLRenderTarget[]>} */ (
+						Array.from({ length: 3 }, () =>
+							(() => {
+								const it = new WebGLRenderTarget(1, 1, {
+									depthBuffer: false,
+									stencilBuffer: false,
+								});
+								_._ = () => { it.dispose(); };
+								_._ = subscribe(
+									{ viewportSize },
+									({ $viewportSize: { width, height } }) => {
+										if (!some(width) || !some(height))
+											return;
+
+										it.setSize(width, height);
+									},
+								);
+								return it;
+							})(),
+						)
+					);
 
 				chapter: {
 					$orchestratorChapter.chapterContainer.in(chapter);
@@ -146,11 +250,14 @@ export const ParkChapterBehavior = behavior(
 						...new HoverOrbitTheatreSchema(),
 					});
 					const controls = derive(
-						{ camera, canvas },
-						({ $camera, $canvas }) => {
-							if (!$camera || !$canvas) return;
+						{ camera, eventsContainer },
+						({ $camera, $eventsContainer }) => {
+							if (!$camera || !$eventsContainer) return;
 
-							return new HoverOrbitControls($camera, $canvas);
+							return new HoverOrbitControls(
+								$camera,
+								$eventsContainer,
+							);
 						},
 					);
 					_._ = controls.subscribe((it) => () => { it?.dispose(); });
@@ -220,9 +327,7 @@ export const ParkChapterBehavior = behavior(
 					const _ = bin();
 
 					const controller = new AbortController();
-					_._ = () => {
-						controller.abort();
-					};
+					_._ = () => { controller.abort(); };
 					const { signal } = controller;
 
 					for (const [index, soulAsset] of [
@@ -287,73 +392,572 @@ export const ParkChapterBehavior = behavior(
 					remove: _._ = () => { scene.remove(skybox); };
 				}
 
-				const fluidDisplacementPass = new FluidDisplacementPass();
-				const fluidDisplacementDelegatePass =
-					new FluidDisplacementDelegatePass(fluidDisplacementPass);
+				// const waypointGroup = (() => {
+				// 	const it = new Group();
+				// 	it.name = 'waypoints';
+				// 	return it;
+				// })();
+				// _._ = subscribeGroup(waypointGroup);
+				// waypoints: {
+				// 	for (const [name, object] of /** @type {const} */ ([
+				// 		['work', new Mesh(new BoxGeometry())],
+				// 		['laze', new Mesh(new BoxGeometry())],
+				// 		['learn', new Mesh(new BoxGeometry())],
+				// 		['beaut', new Mesh(new BoxGeometry())],
+				// 		['experiment', new Mesh(new BoxGeometry())],
+				// 	])) {
+				// 		object.name = `waypoint/${name}`;
+				// 		waypointGroup.add(object);
 
-				const [parkRenderTarget, overlayRenderTarget] =
-					/** @type {ArrayOfLength<2, WebGLRenderTarget[]>} */ (
-						Array.from({ length: 2 }, () =>
-							(() => {
-								const it = new WebGLRenderTarget(1, 1, {
-									depthBuffer: false,
-									stencilBuffer: false,
-								});
-								_._ = () => { it.dispose(); };
-								_._ = subscribe(
-									{ viewportSize },
-									({ $viewportSize: { width, height } }) => {
-										it.setSize(width, height);
-									},
-								);
-								return it;
-							})(),
-						)
+				// 		const context = { object };
+				// 		waypoints.update((it) => {
+				// 			it.set(name, context);
+				// 			waypoints.trigger();
+				// 			return it;
+				// 		});
+
+				// 		const value = attach(`waypoint/${name}`, {
+				// 			...new ThreeTransformTheatreSchema(),
+				// 		});
+				// 		_._ = value.subscribe((it) => {
+				// 			if (!it) return;
+
+				// 			const { writeMesh } = ThreeTransformTheatreSchema;
+				// 			writeMesh(it, object);
+				// 		});
+				// 	}
+				// }
+
+				// const hitboxGroup = (() => {
+				// 	const it = new Group();
+				// 	it.name = 'hitboxes';
+				// 	return it;
+				// })();
+				// _._ = subscribeGroup(hitboxGroup);
+				// const hitboxInteractivityControls = derive(
+				// 	{ camera, eventsContainer },
+				// 	({ $camera, $eventsContainer }) => {
+				// 		if (!$camera || !$eventsContainer) return;
+
+				// 		return new InteractivityControls(
+				// 			hitboxGroup,
+				// 			$camera,
+				// 			$eventsContainer,
+				// 		);
+				// 	},
+				// );
+				// _._ = hitboxInteractivityControls.subscribe((it) => () => {
+				// 	it?.dispose();
+				// });
+				// const hitboxVisibilityControls = derive(
+				// 	{ camera, eventsContainer },
+				// 	({ $camera, $eventsContainer }) => {
+				// 		if (!$camera || !$eventsContainer) return;
+
+				// 		return new VisibilityControls(
+				// 			hitboxGroup,
+				// 			$camera,
+				// 			$eventsContainer,
+				// 		);
+				// 	},
+				// );
+				// _._ = hitboxVisibilityControls.subscribe((it) => () => {
+				// 	it?.dispose();
+				// });
+				// const hitboxInteractions = derive(
+				// 	{ hitboxInteractivityControls },
+				// 	({ $hitboxInteractivityControls }) => {
+				// 		if (!$hitboxInteractivityControls) return;
+
+				// 		return $hitboxInteractivityControls.interactions;
+				// 	},
+				// );
+				// hitboxModels: {
+				// 	for (const [index, child] of Array.from(
+				// 		{ length: 5 },
+				// 		(_, i) => {
+				// 			const it = new Mesh(new BoxGeometry());
+				// 			it.name = `hitbox/${i}`;
+				// 			it.visible = false;
+				// 			return it;
+				// 		},
+				// 	).entries()) {
+				// 		hitboxGroup.add(child);
+
+				// 		const value = attach(`hitbox/${index}`, {
+				// 			...new ThreeTransformTheatreSchema({
+				// 				scaleNonUniform: true,
+				// 			}),
+				// 		});
+				// 		_._ = value.subscribe((it) => {
+				// 			if (!it) return;
+
+				// 			const { writeMesh } = ThreeTransformTheatreSchema;
+				// 			writeMesh(it, child);
+				// 		});
+				// 	}
+				// }
+
+				const auxScene = new Scene();
+				const auxCameraRig = (() => {
+					const it = new Group();
+					const value = attach('aux/camera', {
+						...new ThreeTransformTheatreSchema(),
+					});
+					_._ = value.subscribe(($value) => {
+						if (!$value) return;
+
+						const { writeMesh } = ThreeTransformTheatreSchema;
+						writeMesh($value, it);
+					});
+					auxScene.add(it);
+
+					return it;
+				})();
+				const auxCamera = (() => {
+					const it = new PerspectiveCamera(30, 1, 0.01, 1_000);
+					_._ = subscribe(
+						{ viewportSize },
+						({ $viewportSize: { width: vw, height: vh } }) => {
+							if (!some(vw) || !some(vh)) return;
+
+							it.aspect = vw / vh;
+							it.updateProjectionMatrix();
+						},
 					);
+					it.position.set(0, 0, 10);
+					it.lookAt(0, 0, 0);
+					auxCameraRig.add(it);
+
+					return it;
+				})();
+
+				// const auxControls = derive({ eventsContainer }, ({ $eventsContainer }) => {
+				// 	if (!$eventsContainer) return;
+
+				// 	const it = new TrackballControls(auxCamera, $eventsContainer);
+				// 	it.noPan = true;
+				// 	it.noZoom = true;
+				// 	it.rotateSpeed = 5;
+
+				// 	return it;
+				// });
+				// _._ = auxControls.subscribe((it) => () => { it?.dispose(); });
+				// _._ = subscribe(
+				// 	{ auxControls, render },
+				// 	({ $auxControls, $render }) => {
+				// 		if (!$auxControls || !$render) return;
+
+				// 		$auxControls.update();
+				// 	},
+				// );
+
+				// const auxInteractions = (() => {
+				// 	const controls = derive(
+				// 		{ eventsContainer },
+				// 		({ $eventsContainer }) => {
+				// 			if (!$eventsContainer) return;
+
+				// 			return new InteractivityControls(
+				// 				auxScene,
+				// 				auxCamera,
+				// 				$eventsContainer,
+				// 			);
+				// 		},
+				// 	);
+				// 	_._ = controls.subscribe((it) => () => { it?.dispose(); });
+
+				// 	const interactions = new Signal(
+				// 		controls.get()?.interactions.get(),
+				// 		({ set, trigger }) =>
+				// 			controls.subscribe(($controls) =>
+				// 				$controls?.interactions.subscribe((it) => {
+				// 					set(it);
+				// 					trigger();
+				// 				}),
+				// 			),
+				// 	);
+				// 	return interactions;
+				// })();
+
+				auxEnvironment: void (async () => {
+					const asset = await photoStudio011kAsset;
+					if (!asset) return;
+					asset.mapping = EquirectangularReflectionMapping;
+
+					_._ = subscribe({ renderer }, ({ $renderer }) => {
+						const pmremGenerator = new PMREMGenerator($renderer);
+						pmremGenerator.compileEquirectangularShader();
+
+						const hdriRenderTarget =
+							pmremGenerator.fromEquirectangular(asset);
+
+						return render.subscribe(() => {
+							const { texture: hdriTexture } = hdriRenderTarget;
+							auxScene.environment = hdriTexture;
+						});
+					});
+				})();
+
+				auxModels: _._ = (() => {
+					const _ = bin();
+
+					const controller = new AbortController();
+					_._ = () => { controller.abort(); };
+					const { signal } = controller;
+
+					const followRig = new Group();
+					auxScene.add(followRig);
+					follow: {
+						const pointer = new Signal(
+							/** @type {Point | undefined} */ (undefined),
+							({ set, trigger }) =>
+								subscribe(
+									{ eventsContainer },
+									({ $eventsContainer }) => {
+										if (!$eventsContainer) return;
+
+										const pointers = new PointersSignal(
+											$eventsContainer,
+										);
+										return pointers.subscribe(
+											([pointer]) => {
+												set(pointer);
+												trigger();
+											},
+										);
+									},
+								),
+						);
+						const smoothedPointer = new TaskSignal(
+							/** @type {Point | undefined} */ (undefined),
+							({ set }) => {
+								const x = new SmoothingSignal(
+									0,
+									{
+										smoothingFactor: 0.02,
+										speedPerSecond: 60000,
+									},
+									({ set }) =>
+										pointer.subscribe(($pointer) => {
+											if (!$pointer) return;
+											set($pointer.x);
+										}),
+								);
+								const y = new SmoothingSignal(
+									0,
+									{
+										smoothingFactor: 0.02,
+										speedPerSecond: 60000,
+									},
+									({ set }) =>
+										pointer.subscribe(($pointer) => {
+											if (!$pointer) return;
+											set($pointer.y);
+										}),
+								);
+								return render.subscribe(() => {
+									set({ x: x.get(), y: y.get() });
+								});
+							},
+						);
+
+						const followControls = derive(
+							{ eventsContainer },
+							({ $eventsContainer }) => {
+								if (!$eventsContainer) return;
+
+								return new FollowPointerControls(
+									followRig,
+									auxCamera,
+									$eventsContainer,
+									smoothedPointer,
+								);
+							},
+						);
+						_._ = followControls.subscribe((it) => () => {
+							it?.dispose();
+						});
+					}
+
+					const group = new Group();
+					group.name = 'aux';
+					followRig.add(group);
+
+					for (const light of [
+						.../** @type {const} */ ([
+							[1, 1, 1],
+							[-1, 1, 1],
+							[1, -1, 1],
+							[1, 1, -1],
+							[-1, -1, 1],
+							[-1, 1, -1],
+							[1, -1, -1],
+							[-1, -1, -1],
+						]).map(([x, y, z]) => {
+							const it = new RectAreaLight(0xffffff, 0.2, 10, 10);
+							it.position.set(x * 5, y * 5, z * 5);
+							return it;
+						}),
+
+						(() => {
+							const it = new RectAreaLight(0xffffff, 0.2, 20, 20);
+							it.position.set(0, 0, -5);
+							return it;
+						})(),
+					]) {
+						light.lookAt(0, 0, 0);
+						group.add(light);
+					}
+
+					for (const [name, modelAsset] of /** @type {const} */ ([
+						['phone', phoneAsset],
+						['thinking', thinkingAsset],
+						['easel', easelAsset],
+						['computer', computerAsset],
+						['head', headAsset],
+					]))
+						void (async () => {
+							const gltf = await modelAsset;
+							if (!gltf) return;
+
+							if (signal.aborted) return;
+
+							const root = new Group();
+							root.name = `aux/${name}`;
+							group.add(root);
+
+							const peekRig = new Group();
+							root.add(peekRig);
+							// peek: {
+							// 	const peekControls = derive(
+							// 		{ eventsContainer },
+							// 		({ $eventsContainer }) => {
+							// 			if (!$eventsContainer) return;
+							// 			return new PeekControls(
+							// 				peekRig,
+							// 				$eventsContainer,
+							// 				auxInteractions.derive(
+							// 					(it) =>
+							// 						it?.values().flatMap((it) =>
+							// 							it
+							// 								.values()
+							// 								.filter(
+							// 									({
+							// 										kind,
+							// 										object,
+							// 									}) =>
+							// 										kind ===
+							// 											InteractionKind.Active &&
+							// 										isParentInteracted(
+							// 											peekRig,
+							// 											object,
+							// 										),
+							// 								)
+							// 								.map(
+							// 									({ pointer }) =>
+							// 										pointer,
+							// 								),
+							// 						) ?? [],
+							// 				),
+							// 			);
+							// 		},
+							// 	);
+							// 	_._ = peekControls.subscribe((it) => () => {
+							// 		it?.dispose();
+							// 	});
+							// }
+
+							const spinRig = new Group();
+							peekRig.add(spinRig);
+							spin: {
+								_._ = render.subscribe((it) => {
+									if (!it) return;
+									const { deltaTime } = it;
+									spinRig.rotation.y +=
+										degToRad(360) * (deltaTime / 6 / 1_000);
+								});
+							}
+
+							const spawnRig = new Group();
+							spinRig.add(spawnRig);
+							spawn: {
+								const visible = new Signal(false, ({ set }) =>
+									subscribe(
+										{ waypointContexts },
+										({ $waypointContexts }) => {
+											const context = $waypointContexts
+												.values()
+												.find(
+													({ model }) =>
+														model === name,
+												);
+											if (!context) return;
+
+											const { hovering } = context;
+											return hovering.subscribe(set);
+										},
+									),
+								);
+								_._ = subscribe({ visible }, ({ $visible }) => {
+									const _ = bin();
+									if ($visible) {
+										const tween = new Tween(
+											spawnRig.scale.x,
+											1,
+											500,
+											bezierQuintOut,
+										);
+										void tween.play();
+										add: {
+											tween.subscribe((it) => {
+												spawnRig.scale.setScalar(it);
+											});
+										}
+										remove: _._ = () => { tween.pause(); };
+									} else {
+										const tween = new Tween(
+											spawnRig.scale.x,
+											0,
+											500,
+											bezierQuintInOut,
+										);
+										void tween.play();
+										add: {
+											tween.subscribe((it) => {
+												spawnRig.scale.setScalar(it);
+											});
+										}
+										remove: _._ = () => { tween.pause(); };
+									}
+									return _;
+								});
+							}
+
+							const { scene: model } = gltf;
+							spawnRig.add(model);
+
+							const modelOriginalMaterials = new Map();
+							override: model.traverse((it) => {
+								if (
+									!(it instanceof Mesh) ||
+									!(it.material instanceof Material)
+								)
+									return;
+								/** @type {typeof cast<MeshPhysicalMaterial>} */ (
+									cast
+								)(it.material);
+
+								// if (
+								// 	it.material.transmission > 0 ||
+								// 	it.material.transmissionMap
+								// ) {
+								modelOriginalMaterials.set(it, it.material);
+								const material = new MeshTransmissionMaterial({
+									_transmission: 1,
+									thickness: 0.6,
+									chromaticAberration: 0.1,
+									anisotropicBlur: 0.5,
+									distortion: 1,
+									temporalDistortion: 0.3,
+									// the type for `buffer` is wrong with this release of @pmndrs/vanilla
+									buffer: /** @type {any} */ (
+										parkRenderTarget.texture
+									),
+								});
+								// material.emissive = it.material.color;
+								// material.map = it.material.map;
+								material.emissiveIntensity = 1;
+
+								material.transparent = false;
+								material.reflectivity = 0.2;
+								material.roughness = 0.1;
+
+								material.transmissionMap =
+									it.material.transmissionMap;
+								material.normalMap = it.material.normalMap;
+								material.bumpMap = it.material.bumpMap;
+
+								it.material = material;
+								// }
+							});
+							revert: _._ = () => {
+								for (const [
+									model,
+									material,
+								] of modelOriginalMaterials)
+									model.material = material;
+								modelOriginalMaterials.clear();
+							};
+
+							const value = attach(`aux/${name}`, {
+								...new ThreeTransformTheatreSchema(),
+							});
+							_._ = value.subscribe((it) => {
+								if (!it) return;
+
+								const { writeMesh } =
+									ThreeTransformTheatreSchema;
+								writeMesh(it, model);
+							});
+						})();
+
+					return _;
+				})();
+
+				const fluidDisplacementPass = derive(
+					{ eventsContainer },
+					({ $eventsContainer }) => {
+						if (!$eventsContainer) return;
+
+						return new FluidDisplacementPass(
+							new PointersSignal($eventsContainer),
+						);
+					},
+				);
 
 				const parkComposer = (() => {
 					const quality = 0.5;
 					const passes = derive(
-						{ camera, lutDjangoAsset },
-						({ $camera, $lutDjangoAsset }) => {
+						{ camera, djangoAsset, fluidDisplacementPass },
+						({ $camera, $djangoAsset, $fluidDisplacementPass }) => {
 							if (!$camera) return;
 
-							return [
+							return /** @type {const} @satisfies {Pass[]} */ ([
 								new PeelingRenderPass(scene, $camera),
-								fluidDisplacementPass,
+								...($fluidDisplacementPass ?
+									[$fluidDisplacementPass]
+								:	[]),
 								(() => {
 									const it = new EffectPass(
 										$camera,
-										...[
-											new BloomEffect({
+										new BloomEffect({
+											blendFunction: BlendFunction.SCREEN,
+											mipmapBlur: true,
+											luminanceThreshold: 0.4,
+											luminanceSmoothing: 0.8,
+											intensity: 4.0,
+											resolutionScale: 0.25,
+										}),
+										...($djangoAsset ?
+											[
+												new LUT3DEffect(
+													$djangoAsset.texture3D,
+												),
+											]
+										:	[]),
+										(() => {
+											const it = new NoiseEffect({
 												blendFunction:
 													BlendFunction.SCREEN,
-												mipmapBlur: true,
-												luminanceThreshold: 0.4,
-												luminanceSmoothing: 0.8,
-												intensity: 4.0,
-												resolutionScale: 0.25,
-											}),
-											...($lutDjangoAsset ?
-												[
-													new LUT3DEffect(
-														$lutDjangoAsset.texture3D,
-													),
-												]
-											:	[]),
-											new ToneMappingEffect(),
-											(() => {
-												const it = new NoiseEffect({
-													blendFunction:
-														BlendFunction.SCREEN,
-													premultiply: true,
-												});
-												it.blendMode.opacity.value = 0.5;
+												premultiply: true,
+											});
+											it.blendMode.opacity.value = 0.5;
 
-												return it;
-											})(),
-											new DitheringEffect(),
-										],
+											return it;
+										})(),
+										new ToneMappingEffect(),
+										new DitheringEffect(),
 									);
 									// this is needed due to `SplatRenderer` emitting non-linear colors.
 									// even if we were to force it to use linear, its render starts to
@@ -365,7 +969,7 @@ export const ParkChapterBehavior = behavior(
 									return it;
 								})(),
 								new CopyPass(parkRenderTarget),
-							];
+							]);
 						},
 					);
 					const composer = derive(
@@ -386,12 +990,15 @@ export const ParkChapterBehavior = behavior(
 					_._ = composer.subscribe((it) => () => { it?.dispose(); });
 					_._ = subscribe(
 						{ viewportSize, composer },
-						({ $viewportSize: { width, height }, $composer }) => {
-							if (!$composer) return;
+						({
+							$viewportSize: { width: vw, height: vh },
+							$composer,
+						}) => {
+							if (!$composer || !some(vw) || !some(vh)) return;
 
 							$composer.setSize(
-								width * quality,
-								height * quality,
+								vw * quality,
+								vh * quality,
 								false,
 							);
 						},
@@ -401,13 +1008,14 @@ export const ParkChapterBehavior = behavior(
 
 				const overlayComposer = (() => {
 					const quality = 0.5;
-					const texture = derive(
+					const lottieTexture = derive(
 						{ viewportSize, lottieDataAsset },
 						({
-							$viewportSize: { width, height },
+							$viewportSize: { width: vw, height: vh },
 							$lottieDataAsset,
 						}) => {
-							if (!$lottieDataAsset) return;
+							if (!$lottieDataAsset || !some(vw) || !some(vh))
+								return;
 
 							/** @type {typeof cast<Record<string, unknown>>} */ (
 								cast
@@ -417,31 +1025,42 @@ export const ParkChapterBehavior = behavior(
 								data: $lottieDataAsset,
 								layout: { fit: 'cover' },
 							});
-							it.resize(width * quality, height * quality);
+							it.resize(vw * quality, vh * quality);
 
 							return it;
 						},
 					);
-					_._ = texture.subscribe((it) => () => { it?.dispose(); });
+					_._ = lottieTexture.subscribe((it) => () => {
+						it?.dispose();
+					});
 					_._ = subscribe(
-						{ progress, texture },
-						({ $progress, $texture }) => {
-							if (!$texture) return;
+						{ progress, lottieTexture },
+						({ $progress, $lottieTexture }) => {
+							if (!$lottieTexture) return;
 
-							$texture.seek($progress);
+							$lottieTexture.seek($progress);
 						},
 					);
 					const passes = derive(
-						{ camera, viewportSize, texture, spaceMonoFont },
-						({ $camera, $texture, $spaceMonoFont }) => {
-							if (!$camera || !$texture) return;
+						{
+							camera,
+							fluidDisplacementPass,
+							viewportSize,
+							lottieTexture,
+							spaceMonoFont,
+						},
+						({
+							$camera,
+							$fluidDisplacementPass,
+							$lottieTexture,
+							$spaceMonoFont,
+						}) => {
+							if (!$camera || !$lottieTexture) return;
 
 							return [
 								new EffectPass(
 									$camera,
-									new TextureEffect({
-										texture: $texture,
-									}),
+									new LayerEffect({ map: $lottieTexture }),
 									(() => {
 										const it = new NoiseEffect({
 											blendFunction:
@@ -453,7 +1072,13 @@ export const ParkChapterBehavior = behavior(
 										return it;
 									})(),
 								),
-								fluidDisplacementDelegatePass,
+								...($fluidDisplacementPass ?
+									[
+										new FluidDisplacementDelegatePass(
+											$fluidDisplacementPass,
+										),
+									]
+								:	[]),
 								new EffectPass(
 									$camera,
 									...($spaceMonoFont ?
@@ -461,7 +1086,7 @@ export const ParkChapterBehavior = behavior(
 											new AsciiEffect({
 												fontFamily:
 													$spaceMonoFont.family,
-												fontSize: 32,
+												fontSize: 16 * devicePixelRatio,
 											}),
 										]
 									:	[]),
@@ -487,10 +1112,119 @@ export const ParkChapterBehavior = behavior(
 					_._ = composer.subscribe((it) => () => { it?.dispose(); });
 					_._ = subscribe(
 						{ viewportSize, composer },
-						({ $viewportSize: { width, height }, $composer }) => {
-							if (!$composer) return;
+						({
+							$viewportSize: { width: vw, height: vh },
+							$composer,
+						}) => {
+							if (!$composer || !some(vw) || !some(vh)) return;
 
-							$composer.setSize(width, height, false);
+							$composer.setSize(vw, vh, false);
+						},
+					);
+					return composer;
+				})();
+
+				const auxComposer = (() => {
+					const quality = 0.5;
+					const passes = derive(
+						{
+							camera,
+							viewportSize,
+							djangoAsset,
+							fluidDisplacementPass,
+						},
+						({ $camera, $djangoAsset, $fluidDisplacementPass }) => {
+							if (!$camera) return;
+
+							return [
+								(() => {
+									const it = new RenderPass(
+										auxScene,
+										auxCamera,
+									);
+									it.clearPass.overrideClearAlpha = 0;
+
+									return it;
+								})(),
+								...($fluidDisplacementPass ?
+									[
+										new FluidDisplacementDelegatePass(
+											$fluidDisplacementPass,
+										),
+									]
+								:	[]),
+								new EffectPass(
+									$camera,
+									new BloomEffect({
+										blendFunction:
+											BlendFunction.COLOR_DODGE,
+										mipmapBlur: true,
+										radius: 0.9,
+										levels: 8,
+										luminanceThreshold: 0.1,
+										luminanceSmoothing: 0.6,
+										intensity: 3,
+									}),
+									// new BloomEffect({
+									// 	blendFunction: BlendFunction.ADD,
+									// 	mipmapBlur: true,
+									// 	radius: 0.3,
+									// 	levels: 16,
+									// 	luminanceThreshold: 0.4,
+									// 	luminanceSmoothing: 0,
+									// 	intensity: 2,
+									// }),
+									// ...($djangoAsset ?
+									// 	[
+									// 		new LUT3DEffect(
+									// 			$djangoAsset.texture3D,
+									// 		),
+									// 	]
+									// :	[]),
+									(() => {
+										const it = new NoiseEffect({
+											blendFunction: BlendFunction.SCREEN,
+											premultiply: true,
+										});
+										it.blendMode.opacity.value = 0.5;
+
+										return it;
+									})(),
+									// new ToneMappingEffect(),
+									new DitheringEffect({ luminanceCount: 4 }),
+								),
+								new CopyPass(auxRenderTarget),
+							];
+						},
+					);
+					const composer = derive(
+						{ renderer, passes },
+						({ $renderer, $passes }) => {
+							if (!$passes) return;
+
+							const it = new EffectComposer($renderer, {
+								frameBufferType: HalfFloatType,
+							});
+							it.autoRenderToScreen = false;
+							for (const pass of $passes) it.addPass(pass);
+
+							return it;
+						},
+					);
+					_._ = composer.subscribe((it) => () => { it?.dispose(); });
+					_._ = subscribe(
+						{ viewportSize, composer },
+						({
+							$viewportSize: { width: vw, height: vh },
+							$composer,
+						}) => {
+							if (!$composer || !some(vw) || !some(vh)) return;
+
+							$composer.setSize(
+								vw * quality,
+								vh * quality,
+								false,
+							);
 						},
 					);
 					return composer;
@@ -505,17 +1239,20 @@ export const ParkChapterBehavior = behavior(
 							(() => {
 								const it = new EffectPass(
 									$camera,
-									new TextureEffect({
-										texture: parkRenderTarget.texture,
+									new LayerEffect({
+										map: parkRenderTarget.texture,
 									}),
-									new TextureEffect({
-										texture: overlayRenderTarget.texture,
-										blendFunction: BlendFunction.SCREEN,
+									new LayerEffect({
+										map: overlayRenderTarget.texture,
+									}),
+									new LayerEffect({
+										map: auxRenderTarget.texture,
 									}),
 								);
-								/** @type {EffectMaterial} */ (
-									it.fullscreenMaterial
-								).encodeOutput = false;
+								/** @type {typeof cast<EffectMaterial>} */ (
+									cast
+								)(it.fullscreenMaterial);
+								it.fullscreenMaterial.encodeOutput = false;
 								return it;
 							})(),
 						];
@@ -534,12 +1271,15 @@ export const ParkChapterBehavior = behavior(
 					_._ = composer.subscribe((it) => () => { it?.dispose(); });
 					_._ = subscribe(
 						{ viewportSize, composer },
-						({ $viewportSize: { width, height }, $composer }) => {
-							if (!$composer) return;
+						({
+							$viewportSize: { width: vw, height: vh },
+							$composer,
+						}) => {
+							if (!$composer || !some(vw) || !some(vh)) return;
 
 							$composer.setSize(
-								width * quality,
-								height * quality,
+								vw * quality,
+								vh * quality,
 								false,
 							);
 						},
@@ -553,12 +1293,14 @@ export const ParkChapterBehavior = behavior(
 							render,
 							parkComposer,
 							overlayComposer,
+							auxComposer,
 							compositeComposer,
 						},
 						({
 							$render,
 							$parkComposer,
 							$overlayComposer,
+							$auxComposer,
 							$compositeComposer,
 						}) => {
 							if (!$render) return;
@@ -566,6 +1308,7 @@ export const ParkChapterBehavior = behavior(
 							const { deltaTime } = $render;
 							$parkComposer?.render(deltaTime);
 							$overlayComposer?.render(deltaTime);
+							$auxComposer?.render(deltaTime);
 							$compositeComposer?.render(deltaTime);
 						},
 					);

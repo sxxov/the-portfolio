@@ -12,6 +12,7 @@ import { viewportSize } from '/+std/viewport/viewportSize.js';
 import { OrchestratorCanvasBehavior } from '../data-orchestrator-canvas/OrchestratorCanvasBehavior.js';
 import { OrchestratorChapterBehavior } from '../data-orchestrator-chapter/OrchestratorChapterBehavior.js';
 import { OrchestratorStanzaBehavior } from '../data-orchestrator-stanza/OrchestratorStanzaBehavior.js';
+import { OrchestratorEventsBehavior } from '../data-orchestrator-events/OrchestratorEventsBehavior.js';
 /** @import { ChapterContainer } from "../../chapter/ChapterContainer.js" */
 /** @import { Size } from "/+std/unit/Size.js" */
 /** @import { OrchestratorRenderContext } from "./OrchestratorRenderContext.js" */
@@ -25,7 +26,6 @@ export const OrchestratorBehavior = behavior(
 		container = new Signal(
 			/** @type {HTMLElement | undefined} */ (undefined),
 		);
-		viewportSize = viewportSize;
 		containerSize = new Signal(
 			/** @type {Size<number | undefined>} */ ({
 				width: undefined,
@@ -51,6 +51,27 @@ export const OrchestratorBehavior = behavior(
 		);
 		canvas = new Signal(
 			/** @type {HTMLCanvasElement | undefined} */ (undefined),
+		);
+		viewportSize = new Signal(
+			/** @type {Size<number> | Size<undefined>} */ ({
+				width: undefined,
+				height: undefined,
+			}),
+			({ set }) =>
+				subscribe({ canvas: this.canvas }, ({ $canvas }) => {
+					if (!$canvas) return;
+
+					return watchElementSize($canvas).subscribe(set);
+				}),
+		);
+		eventsContainer = new Signal(
+			/** @type {HTMLElement | undefined} */ (undefined),
+			({ set, subscribe: sub }) =>
+				sub((it) => {
+					if (it) return;
+
+					return this.canvas.subscribe(set);
+				}),
 		);
 		renderer = this.canvas.derive(
 			(it) =>
@@ -156,6 +177,7 @@ export const OrchestratorBehavior = behavior(
 	) => {
 		registerLocalBehaviors(
 			OrchestratorCanvasBehavior,
+			OrchestratorEventsBehavior,
 			OrchestratorChapterBehavior,
 			OrchestratorStanzaBehavior,
 		);

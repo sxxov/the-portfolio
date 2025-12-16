@@ -9,21 +9,21 @@ import { Pass } from 'postprocessing';
 import { AdvectionMaterial } from './simulation/passes/advection/shaders/AdvectionMaterial.js';
 import { TouchForceMaterial } from './simulation/passes/touch-force/shaders/TouchForceMaterial.js';
 import { TouchValueMaterial } from './simulation/passes/touch-value/shaders/TouchValueMaterial.js';
-import { pointers } from '/+app/human/pointers.js';
 import { unwrap } from '/+std/type/utilities/unwrap.js';
 import { BoundaryMaterial } from './simulation/passes/boundary/shaders/BoundaryMaterial.js';
 import { DivergenceMaterial } from './simulation/passes/divergence/shaders/DivergenceMaterial.js';
 import { JacobiIterationsMaterial } from './simulation/passes/jacobi-iterations/shaders/JacobiIterationsMaterial.js';
 import { GradientSubtractionMaterial } from './simulation/passes/gradient-subtraction/shaders/GradientSubtractionMaterial.js';
 import { DisplacementMaterial } from './displacement/shaders/DisplacementMaterial.js';
-import { viewportSize } from '/+std/viewport/viewportSize.js';
 import { resizeRenderTarget } from '/+app/texture/resize/resizeRenderTarget.js';
 import {
 	scrollVelocityX,
 	scrollVelocityY,
 } from '/+app/human/scrollVelocity.js';
 /** @import { WebGLRenderer } from "three" */
-/** @import { ArrayOfLength } from "/+std/type/array/ArrayOfLength.js" */
+/** @import { ReadableSignal } from "/+std/signal/Signal.js" */
+/** @import { InteractionContainer } from "../../../controls/interactivity/InteractionContainer.js" */
+/** @import { Point } from "/+std/unit/Point.js" */
 
 export class FluidDisplacementPass extends Pass {
 	// shared geometry & camera
@@ -123,7 +123,11 @@ export class FluidDisplacementPass extends Pass {
 		this.displacementMaterial,
 	);
 
-	constructor() { super(FluidDisplacementPass.name); }
+	constructor(/** @type {ReadableSignal<ReadonlySet<Point>>} */ pointers) {
+		super(FluidDisplacementPass.name);
+
+		this.pointers = pointers;
+	}
 
 	/** @override */
 	initialize(
@@ -176,6 +180,10 @@ export class FluidDisplacementPass extends Pass {
 			passCamera,
 
 			aspect,
+			width,
+			height,
+
+			pointers,
 
 			velocityRenderTargets,
 			velocityAdvectionMaterial,
@@ -217,34 +225,47 @@ export class FluidDisplacementPass extends Pass {
 		renderer.render(velocityAdvectionScene, passCamera);
 
 		const $pointers = pointers.get();
-		const $viewportSize = viewportSize.get();
+		const pointersList = [...$pointers];
 		const $scrollVelocityX = scrollVelocityX.get();
 		const $scrollVelocityY = scrollVelocityY.get();
 		const scrollVelocityAmplitude = 0.1;
+		const scrollVelocityNoise = 0.5;
 		for (let i = 0; i < 10; i++) {
-			const pointer = $pointers[i];
+			const pointer = pointersList[i];
 			const forceTouch = unwrap(touchForceAdditionMaterial.touches[i]);
 			const valueTouch = unwrap(touchValueAdditionMaterial.touches[i]);
 
+			const randomClip = Math.random() * 2 - 1;
+			const scrollVelocityMax = Math.max(
+				Math.abs($scrollVelocityX),
+				Math.abs($scrollVelocityY),
+			);
+			const scrollVelocityNoiseAmplitude =
+				randomClip * scrollVelocityNoise;
+			const scrollAdditionX =
+				($scrollVelocityX * (1 + scrollVelocityNoiseAmplitude) * 0.75 +
+					scrollVelocityMax * scrollVelocityNoiseAmplitude * 0.25) *
+				scrollVelocityAmplitude;
+			const scrollAdditionY =
+				($scrollVelocityY * (1 + scrollVelocityNoiseAmplitude) * 0.75 +
+					scrollVelocityMax * scrollVelocityNoiseAmplitude * 0.25) *
+				scrollVelocityAmplitude;
+
 			if (pointer) {
-				const x = (pointer.x / $viewportSize.width) * aspect;
-				const y = 1 - pointer.y / $viewportSize.height;
+				const x = (pointer.x / width) * aspect;
+				const y = 1 - pointer.y / height;
 
 				forceTouch.set(
 					x,
 					y,
-					(forceTouch.x > 0 ? x - forceTouch.x : 0) +
-						$scrollVelocityX * scrollVelocityAmplitude,
-					(forceTouch.y > 0 ? y - forceTouch.y : 0) +
-						$scrollVelocityY * scrollVelocityAmplitude,
+					(forceTouch.x > 0 ? x - forceTouch.x : 0) + scrollAdditionX,
+					(forceTouch.y > 0 ? y - forceTouch.y : 0) + scrollAdditionY,
 				);
 				valueTouch.set(
 					x,
 					y,
-					(valueTouch.x > 0 ? x - valueTouch.x : 0) +
-						$scrollVelocityX * scrollVelocityAmplitude,
-					(valueTouch.y > 0 ? y - valueTouch.y : 0) +
-						$scrollVelocityY * scrollVelocityAmplitude,
+					(valueTouch.x > 0 ? x - valueTouch.x : 0) + scrollAdditionX,
+					(valueTouch.y > 0 ? y - valueTouch.y : 0) + scrollAdditionY,
 				);
 			} else {
 				forceTouch.set(0, 0, 0, 0);

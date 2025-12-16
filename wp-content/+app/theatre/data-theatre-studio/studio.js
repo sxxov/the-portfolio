@@ -20,7 +20,12 @@ export const TheatreStudioBehavior = behavior(
 
 		element.addEventListener(
 			'keydown',
-			(event) => { event.stopPropagation(); },
+			(event) => {
+				if (event.ctrlKey || event.metaKey || event.altKey) return;
+				if (event.key === 'Enter') return;
+
+				event.stopPropagation();
+			},
 			{ signal, capture: true },
 		);
 

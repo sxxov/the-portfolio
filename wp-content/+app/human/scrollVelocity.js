@@ -3,11 +3,15 @@ import { scrollX, scrollY } from '/+std/human/scroll.js';
 import { bin, Signal } from '/+std/signal/Signal.js';
 /** @import { ReadableSignal } from "/+std/signal/Signal.js" */
 
-const x = new Signal(0, ({ update }) => start(update, scrollX));
-const y = new Signal(0, ({ update }) => start(update, scrollY));
+/** @extends {Signal<number>} */
+export class ScrollVelocityAxisSignal extends Signal {
+	constructor(/** @type {ReadableSignal<number>} */ scroll) {
+		super(0, ({ update }) => start(update, scroll));
+	}
+}
 
-export const scrollVelocityX = x.readonly;
-export const scrollVelocityY = y.readonly;
+export const scrollVelocityX = new ScrollVelocityAxisSignal(scrollX).readonly;
+export const scrollVelocityY = new ScrollVelocityAxisSignal(scrollY).readonly;
 
 function start(
 	/** @type {(v: (v: number) => number) => void} */ update,

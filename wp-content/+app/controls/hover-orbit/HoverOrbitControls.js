@@ -1,40 +1,15 @@
 import { Controls, Object3D, Vector3 } from 'three';
-import { mouse } from '../../human/mouse.js';
-import { SmoothingSignal } from '../smooth/SmoothingSignal.js';
+import { SmoothingSignal } from '../../animation/smooth/SmoothingSignal.js';
+import { PointersSignal } from '/+app/human/pointers.js';
+import { watchElementRect } from '/+std/dom/watchElementRect.js';
+import { some } from '/+std/functional/some.js';
 import { degToRad } from '/+std/math/degToRad.js';
 import { bin, derive } from '/+std/signal/Signal.js';
-import { viewportSize } from '/+std/viewport/viewportSize.js';
 /** @import { Camera } from "three" */
 /** @import { ReadableSignal } from "/+std/signal/Signal.js" */
 /** @import { Point } from "/+std/unit/Point.js" */
 /** @import { ISheetObject, UnknownShorthandCompoundProps } from "@theatre/core" */
 /** @import { TheatreValue } from "../../theatre/types/TheatreValue.js" */
-
-const vmax = viewportSize.derive(({ width: vw, height: vh }) =>
-	Math.max(vw, vh),
-);
-const ndc = derive({
-	x: new SmoothingSignal(0, {
-		smoothingFactor: 0.03,
-		speedPerSecond: 3000,
-	}).in(
-		derive(
-			{ mouse, viewportSize, vmax },
-			({ $mouse: { x }, $viewportSize: { width: vw }, $vmax }) =>
-				(x - vw / 2) / ($vmax / 2),
-		),
-	),
-	y: new SmoothingSignal(0, {
-		smoothingFactor: 0.03,
-		speedPerSecond: 3000,
-	}).in(
-		derive(
-			{ mouse, viewportSize, vmax },
-			({ $mouse: { y }, $viewportSize: { height: vh }, $vmax }) =>
-				(y - vh / 2) / ($vmax / 2),
-		),
-	),
-});
 
 /** @extends {Controls<{}>} */
 export class HoverOrbitControls extends Controls {
@@ -58,10 +33,45 @@ export class HoverOrbitControls extends Controls {
 	})();
 
 	constructor(
-		/** @type {Camera} */ object,
-		/** @type {HTMLElement | null | undefined} */ domElement = undefined,
+		/** @type {Camera} */ camera,
+		/** @type {HTMLElement} */ domElement,
 	) {
-		super(object, domElement);
+		super(camera, domElement);
+
+		const { _ } = this;
+
+		const pointers = new PointersSignal(domElement);
+		const rect = watchElementRect(domElement);
+		const sizeMax = rect.derive(({ width, height }) =>
+			some(width) && some(height) ? Math.max(width, height) : undefined,
+		);
+		this.ndc = derive({
+			x: new SmoothingSignal(0, {
+				smoothingFactor: 0.03,
+				speedPerSecond: 3000,
+			}).in(
+				derive(
+					{ pointers, rect, sizeMax },
+					({ $pointers: [$pointer], $rect: { width }, $sizeMax }) =>
+						some($pointer) && some($sizeMax) && some(width) ?
+							($pointer.x - width / 2) / ($sizeMax / 2)
+						:	0,
+				),
+			),
+			y: new SmoothingSignal(0, {
+				smoothingFactor: 0.03,
+				speedPerSecond: 3000,
+			}).in(
+				derive(
+					{ pointers, rect, sizeMax },
+					({ $pointers: [$pointer], $rect: { height }, $sizeMax }) =>
+						some($pointer) && some($sizeMax) && some(height) ?
+							($pointer.y - height / 2) / ($sizeMax / 2)
+						:	0,
+				),
+			),
+		});
+		_._ = () => { this.ndc.destroy(); };
 	}
 
 	/** @override */
@@ -73,6 +83,8 @@ export class HoverOrbitControls extends Controls {
 	/** @override */
 	update(/** @type {number} */ delta) {
 		super.update(delta);
+
+		const { ndc } = this;
 		const { x, y } = ndc.get();
 
 		const { radius } = this;

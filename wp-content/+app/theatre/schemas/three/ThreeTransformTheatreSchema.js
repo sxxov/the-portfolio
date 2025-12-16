@@ -19,8 +19,24 @@ export class ThreeTransformTheatreSchema extends TheatreSchema {
 	});
 	rotation = ThreeTransformTheatreSchema.rotation;
 
-	static scale = types.number(1, { nudgeMultiplier: 0.01 });
-	scale = ThreeTransformTheatreSchema.scale;
+	static scaleUniform = types.number(1, { nudgeMultiplier: 0.01 });
+	static scaleNonUniform = types.compound({
+		x: types.number(1, { nudgeMultiplier: 0.01 }),
+		y: types.number(1, { nudgeMultiplier: 0.01 }),
+		z: types.number(1, { nudgeMultiplier: 0.01 }),
+	});
+
+	constructor(
+		/** @type {{ scaleNonUniform?: boolean }} */ {
+			scaleNonUniform = false,
+		} = {},
+	) {
+		super();
+
+		if (scaleNonUniform)
+			this.scale = ThreeTransformTheatreSchema.scaleNonUniform;
+		else this.scale = ThreeTransformTheatreSchema.scaleUniform;
+	}
 
 	static writeMesh = (
 		/** @type {TheatreValue<ThreeTransformTheatreSchema>} */ {
@@ -33,11 +49,19 @@ export class ThreeTransformTheatreSchema extends TheatreSchema {
 		o.position.x = position.x;
 		o.position.y = position.y;
 		o.position.z = position.z;
+
 		o.rotation.x = degToRad(rotation.x);
 		o.rotation.y = degToRad(rotation.y);
 		o.rotation.z = degToRad(rotation.z);
-		o.scale.x = scale;
-		o.scale.y = scale;
-		o.scale.z = scale;
+
+		if (typeof scale === 'number') {
+			o.scale.x = scale;
+			o.scale.y = scale;
+			o.scale.z = scale;
+		} else {
+			o.scale.x = scale.x;
+			o.scale.y = scale.y;
+			o.scale.z = scale.z;
+		}
 	};
 }

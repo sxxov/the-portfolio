@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"@lottiefiles/dotlottie-web": "^0.57.0",
+		"@pmndrs/vanilla": "^1.21.1",
 		"@sparkjsdev/spark": "^0.1.10",
 		"@theatre/core": "^0.7.2",
 		"@theatre/studio": "^0.7.2",

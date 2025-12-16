@@ -25,7 +25,7 @@
 	.h4,
 	.h5,
 	.h6,
-	.hb {
+	.hm {
 		font-size: calc(
 			clamp(
 				var(--size-pt) * var(--pt-px),
@@ -133,7 +133,7 @@
 	font-style: normal;
 }
 
-@utility h5 {
+@utility h6 {
 	--weight-pt: 600;
 	--size-pt: 16;
 	--leading-pt: 12;
@@ -141,4 +141,15 @@
 
 	font-family: var(--font-display);
 	font-style: normal;
+}
+
+@utility hm {
+	--weight-pt: 600;
+	--size-pt: 14;
+	--leading-pt: 16;
+	--tracking-pt: 0;
+
+	font-family: var(--font-mono);
+	font-style: normal;
+	text-transform: uppercase;
 }

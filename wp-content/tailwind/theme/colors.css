@@ -1,11 +1,11 @@
 @theme static {
-	--color-bg-1: #fff;
-	--color-bg-2: #ddd;
+	--color-bg-1: #000;
+	--color-bg-2: #333;
 
-	--color-fg-1: #000;
-	--color-fg-2: #333;
+	--color-fg-1: #fff;
+	--color-fg-2: #ddd;
 
-	--color-border: #ddd;
+	--color-border: #333;
 
 	--color-accent-1: #000;
 	--color-on-accent-1: #fff;
@@ -16,4 +16,9 @@
 		background: var(--color-bg-1);
 		color: var(--color-fg-1);
 	}
+}
+
+.editor-styles-wrapper {
+	background: var(--color-bg-1);
+	color: var(--color-fg-1);
 }

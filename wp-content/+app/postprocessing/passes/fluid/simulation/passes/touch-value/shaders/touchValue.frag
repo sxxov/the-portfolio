@@ -1,5 +1,5 @@
-varying vec2 vUv;
-varying vec2 vUvScaled;
+in vec2 vUv;
+in vec2 vUvScaled;
 
 const int touchesLength = 10;
 uniform vec4[touchesLength] touches;
@@ -24,6 +24,6 @@ void main() {
 	for (int i = 0; i < touchesLength; i++)
 		nextValue.xy += touchValue(touches[i], uvScaled);
 
-	vec4 currentValue = texture2D(valueMap, uv);
+	vec4 currentValue = texture(valueMap, uv);
 	fragColor = currentValue + nextValue;
 }

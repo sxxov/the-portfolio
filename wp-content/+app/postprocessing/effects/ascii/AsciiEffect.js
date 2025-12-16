@@ -12,6 +12,7 @@ export class AsciiEffect extends Effect {
 		 * 	charSet?: Record<number, string> & { length: number };
 		 * 	fontFamily?: string;
 		 * 	fontSize?: number;
+		 * 	fontColor?: string;
 		 * 	gap?: number;
 		 * 	quality?: number;
 		 * }}
@@ -19,6 +20,7 @@ export class AsciiEffect extends Effect {
 			charSet = AsciiEffect.defaultCharSet,
 			fontFamily = 'monospace',
 			fontSize = 16,
+			fontColor = 'white',
 			gap = 0.5,
 			quality = 32,
 		} = {},
@@ -26,7 +28,10 @@ export class AsciiEffect extends Effect {
 		super(AsciiEffect.name, asciiFrag);
 
 		const canvas = document.createElement('canvas');
-		const ctx = canvas.getContext('2d', { willReadFrequently: true });
+		const ctx = canvas.getContext('2d', {
+			alpha: true,
+			willReadFrequently: true,
+		});
 		if (!ctx)
 			throw new Error(
 				`Failed to create 2D canvas context for ${AsciiEffect.name}.`,
@@ -81,7 +86,7 @@ export class AsciiEffect extends Effect {
 			const char = unwrap(charSet[i]);
 
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			ctx.fillStyle = 'white';
+			ctx.fillStyle = fontColor;
 			ctx.textBaseline = 'top';
 			ctx.font = font;
 			ctx.fillText(char, gapSize.width, gapSize.height);
