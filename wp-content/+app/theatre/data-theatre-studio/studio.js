@@ -22,9 +22,13 @@ export const TheatreStudioBehavior = behavior(
 			'keydown',
 			(event) => {
 				if (event.ctrlKey || event.metaKey || event.altKey) return;
-				if (event.key === 'Enter') return;
-
-				event.stopPropagation();
+				switch (event.key) {
+					// disable studio hotkey
+					case 'Space':
+						event.stopPropagation();
+						break;
+					default:
+				}
 			},
 			{ signal, capture: true },
 		);
