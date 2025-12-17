@@ -4,7 +4,7 @@
 /** @returns {ReturnType<typeof twPlugin>} */
 export function plugin(
 	/** @type {Parameters<typeof twPlugin>[0]} */ plugin,
-	/** @type {Parameters<typeof twPlugin>[1]} */ config,
+	/** @type {Parameters<typeof twPlugin>[1]} */ config = undefined,
 ) {
 	return {
 		handler: plugin,
