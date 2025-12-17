@@ -1,5 +1,7 @@
 <?php
 
+namespace app\fonts\google;
+
 add_action('wp_print_styles', function () {
 ?>
 	<link rel="preconnect" href="https://fonts.googleapis.com">

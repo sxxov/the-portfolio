@@ -1,5 +1,7 @@
 <?php
 
+namespace app\fonts\marlide;
+
 use function bare\utilities\url\get_uri;
 
 add_action('wp_print_styles', function () {
