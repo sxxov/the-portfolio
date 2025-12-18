@@ -2,7 +2,7 @@ import { Group } from 'three';
 import { behavior } from '/+std/behavioral/behavior.js';
 import { watchElementRect } from '/+std/dom/watchElementRect.js';
 import { bin, Signal, subscribe } from '/+std/signal/Signal.js';
-import { OrchestratorBehavior } from '../../orchestrator/data-orchestrator/OrchestratorBehavior.js';
+import { OrchestratorBehavior } from '../../../orchestrator/data-orchestrator/OrchestratorBehavior.js';
 import { ParkWaypointBehavior } from '../data-park-waypoint/ParkWaypointBehavior.js';
 /** @import { Rect } from "/+std/unit/Rect.js" */
 

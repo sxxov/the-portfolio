@@ -87,7 +87,7 @@ import easelGlb from './models/auxiliaries/easel.glb.js';
 import retroRedCube from './luts/retro-red.cube.js';
 import { PeekControls } from '/+app/controls/peek/PeekControls.js';
 import { InteractionKind } from '/+app/controls/interactivity/InteractionKind.js';
-import { isParentInteracted } from '../../../controls/interactivity/isParentInteracted.js';
+import { isParentInteracted } from '../../../../controls/interactivity/isParentInteracted.js';
 import { FollowPointerControls } from '/+app/controls/follow-pointer/FollowPointerControls.js';
 import { SmoothingSignal } from '/+app/animation/smooth/SmoothingSignal.js';
 import { TaskSignal } from '/+std/signal/TaskSignal.js';

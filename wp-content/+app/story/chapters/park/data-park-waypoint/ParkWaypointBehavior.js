@@ -1,5 +1,5 @@
 import { Object3D, Vector2, Vector3 } from 'three';
-import { OrchestratorBehavior } from '../../orchestrator/data-orchestrator/OrchestratorBehavior.js';
+import { OrchestratorBehavior } from '../../../orchestrator/data-orchestrator/OrchestratorBehavior.js';
 import { ParkMapBehavior } from '../data-park-map/ParkMapBehavior.js';
 import { TheatreSheetBehavior } from '/+app/theatre/data-theatre-sheet/TheatreSheetBehavior.js';
 import { ThreeTransformTheatreSchema } from '/+app/theatre/schemas/three/ThreeTransformTheatreSchema.js';

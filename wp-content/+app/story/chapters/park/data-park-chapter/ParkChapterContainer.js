@@ -1,6 +1,6 @@
 import { Group } from 'three';
 import { SmoothingSignal } from '/+app/animation/smooth/SmoothingSignal.js';
-/** @import { ChapterContainer } from "../../chapter/ChapterContainer.js" */
+/** @import { ChapterContainer } from "../../../chapter/ChapterContainer.js" */
 /** @import { CameraAnimation } from "/+app/model/CameraAnimation.js" */
 /** @import { Ranged } from "/+std/unit/Ranged.js" */
 
