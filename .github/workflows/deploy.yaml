@@ -59,6 +59,12 @@ jobs:
                   dump_json_to_env "${VARS:-}"
                   dump_json_to_env "${SECRETS:-}"
 
+            - uses: Boostport/setup-cloudflare-warp@v1
+              with:
+                  organization: ${{ vars.CLOUDFLARE_ORGANIZATION }}
+                  auth_client_id: ${{ secrets.CLOUDFLARE_AUTH_CLIENT_ID }}
+                  auth_client_secret: ${{ secrets.CLOUDFLARE_AUTH_CLIENT_SECRET }}
+
             - # https://github.com/marketplace/actions/ssh-deploy
               name: Deploy to server using SSH
               uses: easingthemes/ssh-deploy@main

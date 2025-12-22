@@ -1,7 +1,23 @@
 services:
+    cloudflared:
+        image: cloudflare/cloudflared:latest
+        container_name: cloudflared
+        restart: unless-stopped
+        command: tunnel --no-autoupdate run
+        environment:
+            # Copy from:
+            # https://one.dash.cloudflare.com/
+            # Networks -> Connectors -> Cloudflare Tunnels -> <tunnel name> -> Edit
+            - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+        network_mode: 'host'
     db:
         image: mariadb:12.0.2
         restart: unless-stopped
+        cap_add:
+            - SYS_ADMIN
+        ulimits:
+            memlock: 262144
+            nproc: 262144
         environment:
             MARIADB_DATABASE: ${DB_NAME}
             MARIADB_USER: ${DB_USER}
