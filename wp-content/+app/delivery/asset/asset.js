@@ -54,7 +54,7 @@ subscribe({ assetQueue }, ({ $assetQueue }) => {
 		})
 		.sort(([, a], [, b]) => b.score - a.score);
 
-	const maxDepartingCount = 3;
+	const maxDepartingCount = 16;
 	const departingCount = Math.min(ticketContexts.length, maxDepartingCount);
 
 	// depart tickets' flights
