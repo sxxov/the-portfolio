@@ -76,22 +76,6 @@ jobs:
                   REMOTE_HOST: ${{ vars.DEPLOY_HOST }}
                   REMOTE_USER: ${{ vars.DEPLOY_USER }}
                   EXCLUDE: /.git/
-                  SCRIPT_BEFORE: |
-                      cd ~/
-
-                      # stop the app
-                      if [ -d "${{ github.event.repository.name }}" ]; then
-                          pushd "${{ github.event.repository.name }}"
-                          docker compose down
-                          popd
-                      fi
-
-                      # stop yxorp
-                      if [ -d "yxorp" ]; then
-                          pushd yxorp
-                          docker compose down
-                          popd
-                      fi
                   SCRIPT_AFTER: |
                       cd ~/
 
@@ -101,16 +85,19 @@ jobs:
                           git fetch
                           git pull
                           cp "../${{ github.event.repository.name }}/.env" .env
+                          docker compose pull
                           docker compose up -d --build
                           popd
                       else
                           git clone https://github.com/sxxov/yxorp
                           pushd yxorp
                           cp "../${{ github.event.repository.name }}/.env" .env
+                          docker compose pull
                           docker compose up -d --build
                           popd
                       fi
 
                       pushd ${{ github.event.repository.name }}
+                      docker compose pull
                       docker compose up -d --build
                       popd
