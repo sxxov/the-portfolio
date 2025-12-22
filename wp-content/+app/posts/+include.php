@@ -415,7 +415,7 @@ function is_excluded_post(
 
 	$post_type_object = get_post_type_object($post_type);
 	$private = $post_type_object
-		? $post_type_object->private
+		? !$post_type_object->public
 		: false;
 	if ($private) return false;
 
