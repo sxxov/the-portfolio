@@ -1,0 +1,273 @@
+@layer base {
+	[data-voxel-hamburger-chunk] {
+		aspect-ratio: 1 / 1;
+
+		outline-width: 1px;
+		outline-offset: -0.5px;
+		outline-style: solid;
+
+		animation-duration: 0.75s, 0.75s;
+		animation-timing-function: var(--ease-in-out), step-end;
+		animation-fill-mode: both, both;
+
+		&[data-voxel-hamburger-chunk='0'] {
+			grid-area: e;
+			animation-name: voxel-hamburger-shuffle-0, voxel-hamburger-fill-0;
+		}
+
+		&[data-voxel-hamburger-chunk='1'] {
+			grid-area: f;
+			animation-name: voxel-hamburger-shuffle-1, voxel-hamburger-fill-1;
+		}
+
+		&[data-voxel-hamburger-chunk='2'] {
+			grid-area: c;
+			animation-name: voxel-hamburger-shuffle-2, voxel-hamburger-fill-2;
+		}
+
+		&[data-voxel-hamburger-chunk='3'] {
+			grid-area: d;
+			animation-name: voxel-hamburger-shuffle-3, voxel-hamburger-fill-3;
+		}
+
+		&[data-voxel-hamburger-chunk='4'] {
+			grid-area: a;
+			animation-name: voxel-hamburger-shuffle-4, voxel-hamburger-fill-4;
+		}
+
+		&[data-voxel-hamburger-chunk='5'] {
+			grid-area: b;
+			animation-name: voxel-hamburger-shuffle-5, voxel-hamburger-fill-5;
+		}
+
+		[data-voxel-hamburger][data-voxel-hamburger-open] & {
+			animation-direction: normal;
+		}
+
+		[data-voxel-hamburger]:not([data-voxel-hamburger-open]) & {
+			animation-direction: reverse;
+		}
+	}
+
+	@keyframes voxel-hamburger-shuffle-0 {
+		0% {
+			translate: /* 100, 400 */ 0 0;
+		}
+
+		/* 20 / 90 */
+		22.2222% {
+			translate: /* 200, 400 */ 100% 0;
+		}
+
+		/* 40 / 90 */
+		44.4444% {
+			translate: /* 200, 300 */ 100% -100%;
+		}
+
+		/* 60 / 90 */
+		66.6667% {
+			translate: /* 100, 300 */ 0 -100%;
+		}
+
+		/* 80 / 90 */
+		88.8889%,
+		100% {
+			translate:  /* 100, 400 */ 0 0;
+		}
+	}
+
+	@keyframes voxel-hamburger-fill-0 {
+		/* 0 / 90 */
+		0% {
+			outline-color: currentColor;
+			background-color: transparent;
+		}
+
+		/* 2 / 90 */
+		2.2222%,
+		100% {
+			outline-color: transparent;
+			background-color: currentColor;
+		}
+	}
+
+	@keyframes voxel-hamburger-shuffle-1 {
+		/* 2 / 90 */
+		0%,
+		2.2222% {
+			translate: /* 300, 400 */ 0 0;
+		}
+
+		/* 22 / 90 */
+		24.4444% {
+			translate: /* 300, 400 */ 0 0;
+		}
+
+		/* 42 / 90 */
+		46.6667%,
+		100% {
+			translate: /* 400, 400 */ 100% 0;
+		}
+	}
+
+	@keyframes voxel-hamburger-fill-1 {
+		/* 0 / 90 */
+		0% {
+			outline-color: currentColor;
+			background-color: transparent;
+		}
+
+		/* 10 / 90 */
+		11.1111%,
+		100% {
+			outline-color: transparent;
+			background-color: currentColor;
+		}
+	}
+
+	@keyframes voxel-hamburger-shuffle-2 {
+		/* 4 / 90 */
+		0%,
+		4.4444% {
+			translate: /* 200, 300 */ 0 0;
+		}
+
+		/* 24 / 90 */
+		26.6667% {
+			translate: /* 100, 300 */ -100% 0;
+		}
+
+		/* 44 / 90 */
+		48.8889%,
+		100% {
+			translate: /* 100, 200 */ -100% -100%;
+		}
+	}
+
+	@keyframes voxel-hamburger-fill-2 {
+		/* 0 / 90 */
+		0% {
+			outline-color: currentColor;
+			background-color: transparent;
+		}
+
+		/* 18 / 90 */
+		20%,
+		100% {
+			outline-color: transparent;
+			background-color: currentColor;
+		}
+	}
+
+	@keyframes voxel-hamburger-shuffle-3 {
+		/* 26 / 90 */
+		0%,
+		28.8889% {
+			translate: /* 400, 300 */ 0 0;
+		}
+
+		/* 46 / 90 */
+		51.1111%,
+		100% {
+			translate: /* 400, 200 */ 0 -100%;
+		}
+	}
+
+	@keyframes voxel-hamburger-fill-3 {
+		/* 0 / 90 */
+		0% {
+			outline-color: currentColor;
+			background-color: transparent;
+		}
+
+		/* 26 / 90 */
+		28.8889%,
+		100% {
+			outline-color: transparent;
+			background-color: currentColor;
+		}
+	}
+
+	@keyframes voxel-hamburger-shuffle-4 {
+		/* 8 / 90 */
+		0%,
+		8.8889% {
+			translate: /* 100, 200 */ 0 0;
+		}
+
+		/* 28 / 90 */
+		31.1111% {
+			translate: /* 200, 200 */ 100% 0;
+		}
+
+		/* 48 / 90 */
+		53.3333% {
+			translate: /* 300, 200 */ 200% 0;
+		}
+
+		/* 68 / 90 */
+		75.5556% {
+			translate: /* 300, 200 */ 200% 0;
+		}
+
+		/* 88 / 90 */
+		97.7778%,
+		100% {
+			translate: /* 300, 300 */ 200% 100%;
+		}
+	}
+
+	@keyframes voxel-hamburger-fill-4 {
+		/* 0 / 90 */
+		0% {
+			outline-color: currentColor;
+			background-color: transparent;
+		}
+
+		/* 34 / 90 */
+		37.7778%,
+		100% {
+			outline-color: transparent;
+			background-color: currentColor;
+		}
+	}
+
+	@keyframes voxel-hamburger-shuffle-5 {
+		/* 10 / 90 */
+		0%,
+		11.1111% {
+			translate: /* 300, 200 */ 0 0;
+		}
+
+		/* 30 / 90 */
+		33.3333% {
+			translate: /* 300, 300 */ 0 100%;
+		}
+
+		/* 50 / 90 */
+		55.5556% {
+			translate: /* 300, 300 */ 0 100%;
+		}
+
+		/* 70 / 90 */
+		77.7778%,
+		100% {
+			translate: /* 200, 300 */ -100% 100%;
+		}
+	}
+
+	@keyframes voxel-hamburger-fill-5 {
+		/* 0 / 90 */
+		0% {
+			outline-color: currentColor;
+			background-color: transparent;
+		}
+
+		/* 42 / 90 */
+		46.6667%,
+		100% {
+			outline-color: transparent;
+			background-color: currentColor;
+		}
+	}
+}

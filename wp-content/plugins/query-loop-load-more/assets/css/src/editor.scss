@@ -1,0 +1,43 @@
+@import "infinite";
+
+.wp-block-query-pagination.load-more {
+	min-height: 66px;
+
+	* {
+		display: none;
+	}
+
+	+.load-more-button-wrap {
+		margin-top: -66px;
+		pointer-events: none;
+	}
+}
+
+.wp-load-more__button {
+	display: flex;
+	align-items: center;
+
+	gap: var(--wp--preset--spacing--30);
+
+	+.wp-load-more__button {
+		display: none;
+	}
+}
+
+.wp-load-more__infinite-scroll {
+	margin-top: -66px;
+	display: flex;
+
+	.animation-wrapper.animation-wrapper {
+		visibility: visible;
+
+		div {
+			animation-duration: 2.5s;
+
+
+			@media (prefers-reduced-motion: reduce) {
+				animation-play-state: paused;
+			}
+		}
+	}
+}

@@ -1,0 +1,10 @@
+@layer base {
+	[data-voxel-hamburger] {
+		aspect-ratio: 412 / 312;
+		display: grid;
+		grid-template-areas:
+			'a . b .'
+			'. c . d'
+			'e . f .';
+	}
+}

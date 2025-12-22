@@ -21,6 +21,8 @@ export const TheatreSheetBehavior = behavior(
 	'theatre-sheet',
 	class {
 		'' = t.string;
+		discriminator = t.string;
+
 		sheet = new Signal(/** @type {ISheet | undefined} */ (undefined));
 		props = new Signal(
 			/** @type {Map<string, TheatreSchema>} */ (new Map()),
@@ -148,7 +150,7 @@ export const TheatreSheetBehavior = behavior(
 	},
 	(
 		element,
-		{ '': name, objects, values, sheet },
+		{ '': name, objects, values, sheet, discriminator },
 		{ getContext, registerLocalBehaviors },
 	) =>
 		subscribe(
@@ -162,8 +164,12 @@ export const TheatreSheetBehavior = behavior(
 				const _ = bin();
 
 				sheet.in(
-					derive({ project, name }, ({ $project, $name }) =>
-						$name && $project ? $project.sheet($name) : undefined,
+					derive(
+						{ project, name, discriminator },
+						({ $project, $name, $discriminator }) =>
+							$name && $project ?
+								$project.sheet($name, $discriminator)
+							:	undefined,
 					),
 				);
 

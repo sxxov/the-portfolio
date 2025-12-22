@@ -1,0 +1,15 @@
+@layer base {
+	[data-text-shift-alternate] {
+		& [data-per] {
+			display: inline-block;
+			transition: translate 0.5s var(--ease-out)
+				calc(var(--per-index) * 0.05s);
+		}
+
+		&:hover {
+			& [data-per] {
+				translate: 0 calc(var(--per-alternate-direction) * 50%);
+			}
+		}
+	}
+}

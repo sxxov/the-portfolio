@@ -1,0 +1,25 @@
+@import "infinite";
+
+.wp-load-more__button {
+
+	.qllm-load-more {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--wp--preset--spacing--30);
+	}
+
+	.qllm-loading {
+		display: none;
+	}
+
+	&.loading {
+
+		.qllm-loading {
+			display: inline-flex;
+		}
+
+		.qllm-load-more {
+			display: none;
+		}
+	}
+}

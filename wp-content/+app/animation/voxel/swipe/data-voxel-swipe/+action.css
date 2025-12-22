@@ -1,0 +1,33 @@
+@layer base {
+	[data-voxel-swipe-side] {
+		position: absolute;
+
+		--this-column-count: var(--voxel-swipe-column-count, 32);
+		--this-row-count: var(--voxel-swipe-row-count, 32);
+		--this-direction: var(--voxel-swipe-side-direction, 1);
+		--this-direction-uv: calc(var(--this-direction) * 0.5 + 0.5);
+		--this-left: calc((1 - var(--this-direction-uv)) * 50%);
+		--this-right: calc(var(--this-direction-uv) * 50%);
+
+		inset-block: 0;
+		inset-inline: var(--this-left) var(--this-right);
+		scale: var(--this-direction) 1;
+
+		display: grid;
+		grid-template-columns: repeat(var(--this-column-count), 1fr);
+		grid-template-rows: repeat(var(--this-row-count), 1fr);
+	}
+
+	[data-voxel-swipe-cell] {
+		--this-x: var(--voxel-swipe-cell-x);
+		--this-y: var(--voxel-swipe-cell-y);
+		--this-width: var(--voxel-swipe-cell-width);
+		--this-height: var(--voxel-swipe-cell-height);
+		--this-area: var(--this-y) / var(--this-x) /
+			calc(var(--this-y) + var(--this-height)) /
+			calc(var(--this-x) + var(--this-width));
+
+		grid-area: var(--this-area);
+		background: currentColor;
+	}
+}

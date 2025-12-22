@@ -21,6 +21,7 @@
 		"@sparkjsdev/spark": "^0.1.10",
 		"@theatre/core": "^0.7.2",
 		"@theatre/studio": "^0.7.2",
+		"@types/wordpress__blocks": "^12.5.18",
 		"iterator-helpers-polyfill": "^3.0.1",
 		"pawe": "^0.1.4",
 		"postprocessing": "^6.38.0",
