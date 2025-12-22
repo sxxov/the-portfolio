@@ -13,6 +13,7 @@ import { OrchestratorCanvasBehavior } from '../data-orchestrator-canvas/Orchestr
 import { OrchestratorChapterBehavior } from '../data-orchestrator-chapter/OrchestratorChapterBehavior.js';
 import { OrchestratorStanzaBehavior } from '../data-orchestrator-stanza/OrchestratorStanzaBehavior.js';
 import { OrchestratorEventsBehavior } from '../data-orchestrator-events/OrchestratorEventsBehavior.js';
+import { clamp } from '/+std/math/clamp.js';
 /** @import { ChapterContainer } from "../../chapter/ChapterContainer.js" */
 /** @import { Size } from "/+std/unit/Size.js" */
 /** @import { OrchestratorRenderContext } from "./OrchestratorRenderContext.js" */
@@ -88,7 +89,7 @@ export const OrchestratorBehavior = behavior(
 						{ viewportSize: this.viewportSize },
 						({ $viewportSize: { width, height } }) => {
 							it.setSize(width || 1, height || 1);
-							it.setPixelRatio(window.devicePixelRatio);
+							it.setPixelRatio(clamp(0, devicePixelRatio, 2));
 						},
 					),
 				),
