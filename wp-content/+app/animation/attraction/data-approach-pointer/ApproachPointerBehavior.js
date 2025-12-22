@@ -1,5 +1,6 @@
 import { SmoothingSignal } from '../../smooth/SmoothingSignal.js';
 import { watchElementHovering } from '/+app/dom/watchElementHovering.js';
+import { hasMouse } from '/+app/human/hasMouse.js';
 import { pointers } from '/+app/human/pointers.js';
 import { subscribeFrame } from '/+std/animation/subscribeFrame.js';
 import { behavior, t } from '/+std/behavioral/behavior.js';
@@ -31,10 +32,9 @@ export const ApproachPointerBehavior = behavior(
 			}),
 		);
 		const movement = derive(
-			{ pointers, radiusPx, amplitude, hovering, time },
-			({ $pointers, $radiusPx, $amplitude, $hovering }) => {
-				if ($pointers.size <= 0) return;
-				if ($hovering) return;
+			{ pointers, radiusPx, amplitude, hovering, hasMouse, time },
+			({ $pointers, $radiusPx, $amplitude, $hasMouse, $hovering }) => {
+				if ($pointers.size <= 0 || $hovering || !$hasMouse) return;
 
 				const { translate } = element.style;
 				setStyles(element, { translate: '' });
