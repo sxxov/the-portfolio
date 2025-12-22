@@ -21,17 +21,20 @@ add_action('admin_init', function () {
 		is_excluded_post(
 			$post->post_type,
 			$post->post_name,
-			$post_id
+			$post_id,
 		)
 	) return;
 
-	$disk_post = find_disk_post($post->post_type, $post_id);
+	$disk_post = find_disk_post(
+		$post->post_type,
+		$post_id,
+	);
 	if (!$disk_post) {
 		// read from database, write to disk (new canonical)
 		$path = get_disk_post_path(
 			$post->post_type,
 			$post->post_name,
-			$post_id
+			$post_id,
 		);
 		$content = $post->post_content;
 		write_disk_post($path, $content);
@@ -51,42 +54,58 @@ add_action('admin_init', function () {
 });
 
 // saving edited post to database
-add_action('save_post', function (int $post_id) {
-	$post = get_post($post_id);
-	if (!$post || is_excluded_post($post->post_type, $post->post_name, $post_id)) return;
+add_action('save_post', function (
+	int $post_id,
+	\WP_Post $post,
+	bool $update,
+) {
+	if (
+		is_excluded_post(
+			$post->post_type,
+			$post->post_name,
+			$post_id,
+		)
+	)
+		return;
 
 	$disk_post = find_disk_post($post->post_type, $post_id);
-	if (!$disk_post) return;
-	['path' => $path, 'post_name' => $post_name] = $disk_post;
+	['path' => $path, 'post_name' => $post_name] = $disk_post ?? [
+		'path' => get_disk_post_path(
+			$post->post_type,
+			$post->post_name,
+			$post_id,
+		),
+		'post_name' => $post->post_name,
+	];
 
 	if ($post_name !== $post->post_name) {
 		rename_disk_post(
 			$post->post_type,
 			$post_name,
 			$post->post_name,
-			$post_id
+			$post_id,
 		);
 		$path = get_disk_post_path(
 			$post->post_type,
 			$post->post_name,
-			$post_id
+			$post_id,
 		);
 	}
 
 	write_disk_post($path, $post->post_content);
-});
+}, 10, 3);
 
 // permanently deleting post after trashing
-add_action('delete_post', function (int $post_id) {
-	$post = get_post($post_id);
-	if (!$post) return;
-
+add_action('delete_post', function (
+	int $post_id,
+	\WP_Post $post,
+) {
 	$disk_post = find_disk_post($post->post_type, $post_id);
 	if (!$disk_post) return;
 	['path' => $path] = $disk_post;
 
 	unlink($path);
-});
+}, 10, 2);
 
 // loading post from database
 add_filter('the_content', function (string $content) {
@@ -123,7 +142,10 @@ add_filter('the_content', function (string $content) {
 		);
 		if ($is_dependency_excluded) continue;
 
-		$disk_post = find_disk_post($post->post_type, $dependency_id);
+		$disk_post = find_disk_post(
+			$post->post_type,
+			$dependency_id,
+		);
 		if (!$disk_post) continue;
 		['path' => $path] = $disk_post;
 
@@ -164,7 +186,7 @@ function perform_migrations() {
 			migrate_post_url(
 				$path,
 				$live_site_url,
-				$disk_site_url
+				$disk_site_url,
 			);
 		};
 	}
@@ -196,7 +218,11 @@ function perform_migrations() {
 			$step();
 }
 
-function migrate_post_url(string $path, string $live_site_url, string $disk_site_url) {
+function migrate_post_url(
+	string $path,
+	string $live_site_url,
+	string $disk_site_url,
+) {
 	$disk_post = parse_disk_post($path);
 	if (!$disk_post) return;
 	['post_id' => $post_id] = $disk_post;
@@ -233,6 +259,8 @@ function rename_database_post(int $post_id, string $post_name) {
 function write_database_post(int $post_id, string $content) {
 	$post = get_post($post_id);
 	if (!$post) return;
+
+	if (!$content) throw new \Exception('Assertion: Cannot write empty post content.');
 
 	$post->post_content = $content;
 	wp_update_post($post);
@@ -300,7 +328,11 @@ function find_disk_post(string $post_type, int $post_id) {
 	}
 }
 
-function get_disk_post_path(string $post_type, string $post_name, int $post_id) {
+function get_disk_post_path(
+	string $post_type,
+	string $post_name,
+	int $post_id,
+) {
 	return POSTS_DIRECTORY . "/$post_type/$post_name.$post_id.html";
 }
 
@@ -371,17 +403,21 @@ function set_posts_metadata(array $metadata) {
 	);
 }
 
-function is_excluded_post(string $post_type, string $post_name, int $post_id) {
+function is_excluded_post(
+	string $post_type,
+	string $post_name,
+	int $post_id,
+) {
 	$is_component_block = $post_type === 'wp_block' ||
 		$post_type === 'wp_template_part' ||
 		$post_type === 'wp_template';
 	if ($is_component_block) return false;
 
 	$post_type_object = get_post_type_object($post_type);
-	$is_excluded_from_search = $post_type_object
-		? $post_type_object->exclude_from_search
+	$private = $post_type_object
+		? $post_type_object->private
 		: false;
-	if ($is_excluded_from_search) return true;
+	if ($private) return false;
 
 	$has_empty_post_name = $post_name === '';
 	if ($has_empty_post_name) return true;
