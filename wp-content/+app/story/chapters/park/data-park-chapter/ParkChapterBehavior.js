@@ -11,40 +11,29 @@ import {
 	ToneMappingEffect,
 } from 'postprocessing';
 import {
-	BoxGeometry,
 	Color,
 	EquirectangularReflectionMapping,
 	Group,
 	HalfFloatType,
 	Material,
 	Mesh,
-	MeshBasicMaterial,
-	MeshPhysicalMaterial,
 	PerspectiveCamera,
 	PMREMGenerator,
 	RectAreaLight,
 	Scene,
-	Vector3,
 	WebGLRenderTarget,
 } from 'three';
-import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
-import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
+import { ParkMapBehavior } from '../data-park-map/ParkMapBehavior.js';
 import photoStudio011kExr from './environments/photo-studio-01-1k.exr.js';
-import studioSmall091kExr from './environments/studio-small-09-1k.exr.js';
 import dataJson from './lottie/data.json.js';
-import brainGlb from './models/auxiliaries/brain.glb.js';
+import djangoCube from './luts/django.cube.js';
 import computerGlb from './models/auxiliaries/computer.glb.js';
+import easelGlb from './models/auxiliaries/easel.glb.js';
 import headGlb from './models/auxiliaries/head.glb.js';
 import phoneGlb from './models/auxiliaries/phone.glb.js';
 import thinkingGlb from './models/auxiliaries/thinking.glb.js';
 import cameraGlb from './models/camera.glb.js';
-import gem0Glb from './models/gems/gem-0.glb.js';
-import gem1Glb from './models/gems/gem-1.glb.js';
-import gem2Glb from './models/gems/gem-2.glb.js';
-import gem3Glb from './models/gems/gem-3.glb.js';
-import gem4Glb from './models/gems/gem-4.glb.js';
-import djangoCube from './luts/django.cube.js';
 import sceneSog from './models/scene.sog.js';
 import soul0Glb from './models/souls/soul-0.glb.js';
 import soul1Glb from './models/souls/soul-1.glb.js';
@@ -53,9 +42,10 @@ import soul3Glb from './models/souls/soul-3.glb.js';
 import soul4Glb from './models/souls/soul-4.glb.js';
 import { ParkChapterContainer } from './ParkChapterContainer.js';
 import { SoulMaterial } from './shaders/SoulMaterial.js';
+import { SmoothingSignal } from '/+app/animation/smooth/SmoothingSignal.js';
+import { FollowPointerControls } from '/+app/controls/follow-pointer/FollowPointerControls.js';
 import { HoverOrbitControls } from '/+app/controls/hover-orbit/HoverOrbitControls.js';
 import { HoverOrbitTheatreSchema } from '/+app/controls/hover-orbit/HoverOrbitTheatreSchema.js';
-import { InteractivityControls } from '/+app/controls/interactivity/InteractivityControls.js';
 import { requestAsset } from '/+app/delivery/asset/asset.js';
 import { pipeChunksIntoJson } from '/+app/delivery/pipes/pipeChunksIntoJson.js';
 import { pipeChunksIntoUint8Array } from '/+app/delivery/pipes/pipeChunksIntoUint8Array.js';
@@ -78,29 +68,19 @@ import { OrchestratorBehavior } from '/+app/story/orchestrator/data-orchestrator
 import { DotLottieTexture } from '/+app/texture/lottie/DotLottieTexture.js';
 import { TheatreSheetBehavior } from '/+app/theatre/data-theatre-sheet/TheatreSheetBehavior.js';
 import { ThreeTransformTheatreSchema } from '/+app/theatre/schemas/three/ThreeTransformTheatreSchema.js';
-import { behavior } from '/+std/behavioral/behavior.js';
-import { degToRad } from '/+std/math/degToRad.js';
-import { PromiseSignal } from '/+std/signal/PromiseSignal.js';
-import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
-import { cast } from '/+std/type/utilities/cast.js';
-import easelGlb from './models/auxiliaries/easel.glb.js';
-import retroRedCube from './luts/retro-red.cube.js';
-import { PeekControls } from '/+app/controls/peek/PeekControls.js';
-import { InteractionKind } from '/+app/controls/interactivity/InteractionKind.js';
-import { isParentInteracted } from '../../../../controls/interactivity/isParentInteracted.js';
-import { FollowPointerControls } from '/+app/controls/follow-pointer/FollowPointerControls.js';
-import { SmoothingSignal } from '/+app/animation/smooth/SmoothingSignal.js';
-import { TaskSignal } from '/+std/signal/TaskSignal.js';
-import { InteractionsSignal } from '/+app/controls/interactivity/InteractionsSignal.js';
-import { VisibilityControls } from '/+app/controls/interactivity/VisibilityControls.js';
-import { some } from '/+std/functional/some.js';
-import { ParkMapBehavior } from '../data-park-map/ParkMapBehavior.js';
-import { ParkWaypointBehavior } from '../data-park-waypoint/ParkWaypointBehavior.js';
-import { Tween } from '/+std/animation/Tween.js';
 import {
 	bezierQuintInOut,
 	bezierQuintOut,
 } from '/+std/animation/bezier/beziers.js';
+import { Tween } from '/+std/animation/Tween.js';
+import { behavior } from '/+std/behavioral/behavior.js';
+import { some } from '/+std/functional/some.js';
+import { degToRad } from '/+std/math/degToRad.js';
+import { PromiseSignal } from '/+std/signal/PromiseSignal.js';
+import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
+import { TaskSignal } from '/+std/signal/TaskSignal.js';
+import { cast } from '/+std/type/utilities/cast.js';
+import { hasMouse } from '/+app/human/hasMouse.js';
 /** @import { Object3D } from "three" */
 /** @import { EffectMaterial, Pass } from "postprocessing" */
 /** @import { ArrayOfLength } from "/+std/type/array/ArrayOfLength.js" */
@@ -116,22 +96,13 @@ const { asset: sceneAsset } = requestAsset(sceneSog, pipeChunksIntoUint8Array);
 void sceneAsset.then();
 
 const { asset: djangoAsset } = requestLutCube(djangoCube);
-const { asset: retroRedAsset } = requestLutCube(retroRedCube);
 
-// const { asset: studioSmall091kAsset } = requestExr(studioSmall091kExr);
 const { asset: photoStudio011kAsset } = requestExr(photoStudio011kExr);
 void photoStudio011kAsset.then();
 
 const { asset: lottieDataAsset } = requestAsset(dataJson, pipeChunksIntoJson);
 
-// const { asset: gem0Asset } = requestGltf(gem0Glb);
-// const { asset: gem1Asset } = requestGltf(gem1Glb);
-// const { asset: gem2Asset } = requestGltf(gem2Glb);
-// const { asset: gem3Asset } = requestGltf(gem3Glb);
-// const { asset: gem4Asset } = requestGltf(gem4Glb);
-
 const { asset: headAsset } = requestGltf(headGlb);
-// const { asset: brainAsset } = requestGltf(brainGlb);
 const { asset: computerAsset } = requestGltf(computerGlb);
 const { asset: phoneAsset } = requestGltf(phoneGlb);
 const { asset: thinkingAsset } = requestGltf(thinkingGlb);
@@ -204,7 +175,6 @@ export const ParkChapterBehavior = behavior(
 				const _ = bin();
 				const { attach, seek } = $theatreSheet;
 				const {
-					canvas,
 					eventsContainer,
 					render,
 					renderer,
@@ -392,112 +362,6 @@ export const ParkChapterBehavior = behavior(
 					remove: _._ = () => { scene.remove(skybox); };
 				}
 
-				// const waypointGroup = (() => {
-				// 	const it = new Group();
-				// 	it.name = 'waypoints';
-				// 	return it;
-				// })();
-				// _._ = subscribeGroup(waypointGroup);
-				// waypoints: {
-				// 	for (const [name, object] of /** @type {const} */ ([
-				// 		['work', new Mesh(new BoxGeometry())],
-				// 		['laze', new Mesh(new BoxGeometry())],
-				// 		['learn', new Mesh(new BoxGeometry())],
-				// 		['beaut', new Mesh(new BoxGeometry())],
-				// 		['experiment', new Mesh(new BoxGeometry())],
-				// 	])) {
-				// 		object.name = `waypoint/${name}`;
-				// 		waypointGroup.add(object);
-
-				// 		const context = { object };
-				// 		waypoints.update((it) => {
-				// 			it.set(name, context);
-				// 			waypoints.trigger();
-				// 			return it;
-				// 		});
-
-				// 		const value = attach(`waypoint/${name}`, {
-				// 			...new ThreeTransformTheatreSchema(),
-				// 		});
-				// 		_._ = value.subscribe((it) => {
-				// 			if (!it) return;
-
-				// 			const { writeMesh } = ThreeTransformTheatreSchema;
-				// 			writeMesh(it, object);
-				// 		});
-				// 	}
-				// }
-
-				// const hitboxGroup = (() => {
-				// 	const it = new Group();
-				// 	it.name = 'hitboxes';
-				// 	return it;
-				// })();
-				// _._ = subscribeGroup(hitboxGroup);
-				// const hitboxInteractivityControls = derive(
-				// 	{ camera, eventsContainer },
-				// 	({ $camera, $eventsContainer }) => {
-				// 		if (!$camera || !$eventsContainer) return;
-
-				// 		return new InteractivityControls(
-				// 			hitboxGroup,
-				// 			$camera,
-				// 			$eventsContainer,
-				// 		);
-				// 	},
-				// );
-				// _._ = hitboxInteractivityControls.subscribe((it) => () => {
-				// 	it?.dispose();
-				// });
-				// const hitboxVisibilityControls = derive(
-				// 	{ camera, eventsContainer },
-				// 	({ $camera, $eventsContainer }) => {
-				// 		if (!$camera || !$eventsContainer) return;
-
-				// 		return new VisibilityControls(
-				// 			hitboxGroup,
-				// 			$camera,
-				// 			$eventsContainer,
-				// 		);
-				// 	},
-				// );
-				// _._ = hitboxVisibilityControls.subscribe((it) => () => {
-				// 	it?.dispose();
-				// });
-				// const hitboxInteractions = derive(
-				// 	{ hitboxInteractivityControls },
-				// 	({ $hitboxInteractivityControls }) => {
-				// 		if (!$hitboxInteractivityControls) return;
-
-				// 		return $hitboxInteractivityControls.interactions;
-				// 	},
-				// );
-				// hitboxModels: {
-				// 	for (const [index, child] of Array.from(
-				// 		{ length: 5 },
-				// 		(_, i) => {
-				// 			const it = new Mesh(new BoxGeometry());
-				// 			it.name = `hitbox/${i}`;
-				// 			it.visible = false;
-				// 			return it;
-				// 		},
-				// 	).entries()) {
-				// 		hitboxGroup.add(child);
-
-				// 		const value = attach(`hitbox/${index}`, {
-				// 			...new ThreeTransformTheatreSchema({
-				// 				scaleNonUniform: true,
-				// 			}),
-				// 		});
-				// 		_._ = value.subscribe((it) => {
-				// 			if (!it) return;
-
-				// 			const { writeMesh } = ThreeTransformTheatreSchema;
-				// 			writeMesh(it, child);
-				// 		});
-				// 	}
-				// }
-
 				const auxScene = new Scene();
 				const auxCameraRig = (() => {
 					const it = new Group();
@@ -531,54 +395,6 @@ export const ParkChapterBehavior = behavior(
 
 					return it;
 				})();
-
-				// const auxControls = derive({ eventsContainer }, ({ $eventsContainer }) => {
-				// 	if (!$eventsContainer) return;
-
-				// 	const it = new TrackballControls(auxCamera, $eventsContainer);
-				// 	it.noPan = true;
-				// 	it.noZoom = true;
-				// 	it.rotateSpeed = 5;
-
-				// 	return it;
-				// });
-				// _._ = auxControls.subscribe((it) => () => { it?.dispose(); });
-				// _._ = subscribe(
-				// 	{ auxControls, render },
-				// 	({ $auxControls, $render }) => {
-				// 		if (!$auxControls || !$render) return;
-
-				// 		$auxControls.update();
-				// 	},
-				// );
-
-				// const auxInteractions = (() => {
-				// 	const controls = derive(
-				// 		{ eventsContainer },
-				// 		({ $eventsContainer }) => {
-				// 			if (!$eventsContainer) return;
-
-				// 			return new InteractivityControls(
-				// 				auxScene,
-				// 				auxCamera,
-				// 				$eventsContainer,
-				// 			);
-				// 		},
-				// 	);
-				// 	_._ = controls.subscribe((it) => () => { it?.dispose(); });
-
-				// 	const interactions = new Signal(
-				// 		controls.get()?.interactions.get(),
-				// 		({ set, trigger }) =>
-				// 			controls.subscribe(($controls) =>
-				// 				$controls?.interactions.subscribe((it) => {
-				// 					set(it);
-				// 					trigger();
-				// 				}),
-				// 			),
-				// 	);
-				// 	return interactions;
-				// })();
 
 				auxEnvironment: void (async () => {
 					const asset = await photoStudio011kAsset;
@@ -729,44 +545,6 @@ export const ParkChapterBehavior = behavior(
 
 							const peekRig = new Group();
 							root.add(peekRig);
-							// peek: {
-							// 	const peekControls = derive(
-							// 		{ eventsContainer },
-							// 		({ $eventsContainer }) => {
-							// 			if (!$eventsContainer) return;
-							// 			return new PeekControls(
-							// 				peekRig,
-							// 				$eventsContainer,
-							// 				auxInteractions.derive(
-							// 					(it) =>
-							// 						it?.values().flatMap((it) =>
-							// 							it
-							// 								.values()
-							// 								.filter(
-							// 									({
-							// 										kind,
-							// 										object,
-							// 									}) =>
-							// 										kind ===
-							// 											InteractionKind.Active &&
-							// 										isParentInteracted(
-							// 											peekRig,
-							// 											object,
-							// 										),
-							// 								)
-							// 								.map(
-							// 									({ pointer }) =>
-							// 										pointer,
-							// 								),
-							// 						) ?? [],
-							// 				),
-							// 			);
-							// 		},
-							// 	);
-							// 	_._ = peekControls.subscribe((it) => () => {
-							// 		it?.dispose();
-							// 	});
-							// }
 
 							const spinRig = new Group();
 							peekRig.add(spinRig);
@@ -906,9 +684,9 @@ export const ParkChapterBehavior = behavior(
 				})();
 
 				const fluidDisplacementPass = derive(
-					{ eventsContainer },
-					({ $eventsContainer }) => {
-						if (!$eventsContainer) return;
+					{ hasMouse, eventsContainer },
+					({ $hasMouse, $eventsContainer }) => {
+						if (!$hasMouse || !$eventsContainer) return;
 
 						return new FluidDisplacementPass(
 							new PointersSignal($eventsContainer),
@@ -1128,13 +906,13 @@ export const ParkChapterBehavior = behavior(
 					const quality = 0.5;
 					const passes = derive(
 						{
+							hasMouse,
 							camera,
 							viewportSize,
-							djangoAsset,
 							fluidDisplacementPass,
 						},
-						({ $camera, $djangoAsset, $fluidDisplacementPass }) => {
-							if (!$camera) return;
+						({ $hasMouse, $camera, $fluidDisplacementPass }) => {
+							if (!$hasMouse || !$camera) return;
 
 							return [
 								(() => {
@@ -1165,22 +943,6 @@ export const ParkChapterBehavior = behavior(
 										luminanceSmoothing: 0.6,
 										intensity: 3,
 									}),
-									// new BloomEffect({
-									// 	blendFunction: BlendFunction.ADD,
-									// 	mipmapBlur: true,
-									// 	radius: 0.3,
-									// 	levels: 16,
-									// 	luminanceThreshold: 0.4,
-									// 	luminanceSmoothing: 0,
-									// 	intensity: 2,
-									// }),
-									// ...($djangoAsset ?
-									// 	[
-									// 		new LUT3DEffect(
-									// 			$djangoAsset.texture3D,
-									// 		),
-									// 	]
-									// :	[]),
 									(() => {
 										const it = new NoiseEffect({
 											blendFunction: BlendFunction.SCREEN,
@@ -1190,7 +952,6 @@ export const ParkChapterBehavior = behavior(
 
 										return it;
 									})(),
-									// new ToneMappingEffect(),
 									new DitheringEffect({ luminanceCount: 4 }),
 								),
 								new CopyPass(auxRenderTarget),
