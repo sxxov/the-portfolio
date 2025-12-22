@@ -5,9 +5,6 @@ services:
         restart: unless-stopped
         command: tunnel --no-autoupdate run
         environment:
-            # Copy from:
-            # https://one.dash.cloudflare.com/
-            # Networks -> Connectors -> Cloudflare Tunnels -> <tunnel name> -> Edit
             - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
         network_mode: 'host'
     db:
