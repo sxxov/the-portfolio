@@ -3,9 +3,7 @@ import { watchElementView } from '/+app/dom/watchElementView.js';
 import { behavior, t } from '/+std/behavioral/behavior.js';
 import { watchElementRect } from '/+std/dom/watchElementRect.js';
 import { some } from '/+std/functional/some.js';
-import { clamp01 } from '/+std/math/clamp01.js';
-import { map } from '/+std/math/map.js';
-import { map01 } from '/+std/math/map01.js';
+import { scrollY } from '/+std/human/scroll.js';
 import { bin, Signal, subscribe } from '/+std/signal/Signal.js';
 /** @import { ChapterContainer } from "../../chapter/ChapterContainer.js" */
 /** @import { View } from "/+app/dom/watchElementView.js" */
@@ -64,18 +62,21 @@ export const OrchestratorChapterBehavior = behavior(
 						{ timeline, duration },
 						({ $timeline, $duration }) => {
 							if ($timeline.length <= 0)
-								return view.subscribe(($view) => {
-									if (!$view) return;
+								return subscribe(
+									{ view, scrollY },
+									({ $view }) => {
+										if (!$view) return;
 
-									const {
-										y: {
-											progress: { middle },
-										},
-									} = $view;
-									if (!some(middle)) return;
+										const {
+											y: {
+												progress: { middle },
+											},
+										} = $view;
+										if (!some(middle)) return;
 
-									progress.set(middle);
-								});
+										progress.set(middle);
+									},
+								);
 
 							const _ = bin();
 

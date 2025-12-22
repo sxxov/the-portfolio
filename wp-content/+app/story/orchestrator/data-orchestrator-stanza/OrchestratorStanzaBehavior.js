@@ -3,6 +3,7 @@ import { behavior, t } from '/+std/behavioral/behavior.js';
 import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
 import { watchElementView } from '/+app/dom/watchElementView.js';
 import { lerp } from '/+std/math/lerp.js';
+import { scrollY } from '/+std/human/scroll.js';
 /** @import { View } from "/+app/dom/watchElementView.js" */
 
 export const OrchestratorStanzaBehavior = behavior(
@@ -11,9 +12,7 @@ export const OrchestratorStanzaBehavior = behavior(
 		start = t.number;
 		end = t.number;
 		view = new Signal(/** @type {View | undefined} */ (undefined));
-		progress = t.number.transient.styling
-			.default(0)
-			.in(this.view.derive((it) => it?.y.progress.rightAligned ?? 0));
+		progress = t.number.transient.styling.default(0);
 		time = derive(
 			{
 				progress: this.progress,
@@ -26,7 +25,7 @@ export const OrchestratorStanzaBehavior = behavior(
 				:	undefined,
 		);
 	},
-	(element, { time, view }, { getContext }) =>
+	(element, { time, progress, view }, { getContext }) =>
 		subscribe(
 			{ orchestratorChapter: getContext(OrchestratorChapterBehavior) },
 			({ $orchestratorChapter }) => {
@@ -39,6 +38,16 @@ export const OrchestratorStanzaBehavior = behavior(
 				view: {
 					_._ = view.subscribeStart(({ set }) =>
 						watchElementView(element).subscribe(set),
+					);
+				}
+
+				progress: {
+					_._ = progress.subscribeStart(({ set }) =>
+						subscribe({ view, scrollY }, ({ $view }) => {
+							if (!$view) return;
+
+							set($view.y.progress.rightAligned ?? 0);
+						}),
 					);
 				}
 
