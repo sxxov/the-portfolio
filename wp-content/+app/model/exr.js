@@ -4,6 +4,7 @@ import { requestAsset } from '../delivery/asset/asset.js';
 import { pipeChunksIntoUint8Array } from '../delivery/pipes/pipeChunksIntoUint8Array.js';
 import { ClampToEdgeWrapping, DataTexture, LinearFilter } from 'three';
 /** @import { EXR } from "three/addons/loaders/EXRLoader.js" */
+/** @import { RequestAssetOptions } from "../delivery/asset/asset.js" */
 
 const loader = new EXRLoader();
 
@@ -29,15 +30,22 @@ export async function loadExr(/** @type {string} */ url) {
 	return texture;
 }
 
-export function requestExr(/** @type {string} */ url) {
-	return requestAsset(url, (chunks) => {
-		const buffer = pipeChunksIntoUint8Array(chunks);
+export function requestExr(
+	/** @type {string} */ url,
+	/** @type {RequestAssetOptions} */ options = {},
+) {
+	return requestAsset(
+		url,
+		(chunks) => {
+			const buffer = pipeChunksIntoUint8Array(chunks);
 
-		const exr = loader.parse(buffer.buffer);
-		const texture = createExrTexture(exr);
+			const exr = loader.parse(buffer.buffer);
+			const texture = createExrTexture(exr);
 
-		return texture;
-	});
+			return texture;
+		},
+		options,
+	);
 }
 
 function createExrTexture(/** @type {EXR} */ exr) {

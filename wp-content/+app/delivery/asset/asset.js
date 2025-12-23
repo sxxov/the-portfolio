@@ -45,13 +45,14 @@ subscribe({ assetQueue }, ({ $assetQueue }) => {
 				case AssetPriority.Normal:
 					score += 1;
 					break;
-				case AssetPriority.Ambient:
+				case AssetPriority.Deferred:
 					score += 0;
 					break;
 			}
 
 			return /** @type {const} */ ([it, { flight, score }]);
 		})
+		.filter(([, { score }]) => score > 0)
 		.sort(([, a], [, b]) => b.score - a.score);
 
 	const maxDepartingCount = 16;
@@ -152,10 +153,13 @@ export const assetProgress = new TaskSignal(
 );
 trackProgress01(assetProgress);
 
+/** @typedef {{ priority?: AssetPriority }} RequestAssetOptions */
+
 /** @template T */
 export function requestAsset(
 	/** @type {string} */ url,
 	/** @type {(chunks: Uint8Array[]) => T | Promise<T>} */ pipe,
+	/** @type {RequestAssetOptions} */ { priority = AssetPriority.Normal } = {},
 ) {
 	const normalizedUrl = new URL(url, location.href).href;
 
@@ -189,7 +193,7 @@ export function requestAsset(
 		/** @type {AssetTicket<T>} */
 		const ticket = {
 			url: normalizedUrl,
-			priority: AssetPriority.Normal,
+			priority,
 			pipe,
 			asset,
 		};

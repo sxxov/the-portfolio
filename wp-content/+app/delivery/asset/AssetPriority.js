@@ -1,8 +1,8 @@
 /** @import { Values } from "/+std/type/object/Values.js" */
 
 export const AssetPriority = /** @type {const} */ ({
-	Ambient: -1,
-	Normal: 0,
-	High: 1,
+	Deferred: 0,
+	Normal: 1,
+	High: 10,
 });
 /** @typedef {Values<typeof AssetPriority>} AssetPriority */

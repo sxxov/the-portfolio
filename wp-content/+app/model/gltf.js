@@ -3,6 +3,7 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { coerceError } from '/+std/error/coerceError.js';
 import { requestAsset } from '../delivery/asset/asset.js';
 import { pipeChunksIntoUint8Array } from '../delivery/pipes/pipeChunksIntoUint8Array.js';
+/** @import { RequestAssetOptions } from "../delivery/asset/asset.js" */
 
 const loader = new GLTFLoader();
 const dracoLoader = new DRACOLoader();
@@ -32,11 +33,18 @@ export async function loadGltf(/** @type {string} */ url) {
 	return gltf;
 }
 
-export function requestGltf(/** @type {string} */ url) {
-	return requestAsset(url, async (chunks) => {
-		const buffer = pipeChunksIntoUint8Array(chunks);
+export function requestGltf(
+	/** @type {string} */ url,
+	/** @type {RequestAssetOptions} */ options = {},
+) {
+	return requestAsset(
+		url,
+		async (chunks) => {
+			const buffer = pipeChunksIntoUint8Array(chunks);
 
-		const gltf = await loader.parseAsync(buffer.buffer, url);
-		return gltf;
-	});
+			const gltf = await loader.parseAsync(buffer.buffer, url);
+			return gltf;
+		},
+		options,
+	);
 }
