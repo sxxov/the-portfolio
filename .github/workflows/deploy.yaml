@@ -70,7 +70,7 @@ jobs:
               uses: easingthemes/ssh-deploy@main
               with:
                   SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
-                  ARGS: -rlgoDzc --stats -i --delete --exclude-from=.gitignore --chmod=ug+rwX
+                  ARGS: -rlgoDzc --stats -i --delete --exclude-from=.gitignore --chmod=a+rwX
                   SOURCE: /
                   TARGET: ~/${{ github.event.repository.name }}
                   REMOTE_HOST: ${{ vars.DEPLOY_HOST }}
