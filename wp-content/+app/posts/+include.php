@@ -417,7 +417,12 @@ function is_excluded_post(
 	$private = $post_type_object
 		? !$post_type_object->public
 		: false;
-	if ($private) return false;
+	if ($private) return true;
+
+	$excluded_from_search = $post_type_object
+		? $post_type_object->exclude_from_search
+		: false;
+	if ($excluded_from_search) return true;
 
 	$has_empty_post_name = $post_name === '';
 	if ($has_empty_post_name) return true;
