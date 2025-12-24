@@ -1,10 +1,12 @@
 <!-- wp:bare/weaver -->
-<div id="contact" class="p-4"><!-- wp:shortcode -->
+<div id="contact" class="group/contact p-4"><!-- wp:bare/weaver -->
+<slot class="not-group-has-[.wpcf7]/contact:hidden"><!-- wp:shortcode -->
 [contact-form-7 id="eb40b41" title="Contact"]
-<!-- /wp:shortcode -->
+<!-- /wp:shortcode --></slot>
+<!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<slot class="hidden"><!-- wp:bare/composite-provider {"name":"app/structure/footer/contact/form"} -->
+<slot class="group-has-[.wpcf7]/contact:hidden"><!-- wp:bare/composite-provider {"name":"app/structure/footer/contact/form"} -->
 <!-- wp:block {"ref":873,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill {"slot":"button/submit","lock":{"move":true,"remove":false}} /-->
@@ -16,6 +18,8 @@
 <!-- wp:bare/composite-fill {"slot":"input/email","lock":{"move":true,"remove":false}} /-->
 
 <!-- wp:bare/composite-fill {"slot":"input/name","lock":{"move":true,"remove":false}} /-->
+
+<!-- wp:bare/composite-fill {"slot":"captcha","lock":{"move":true,"remove":false}} /-->
 <!-- /wp:bare/composite-provider --></slot>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver -->
