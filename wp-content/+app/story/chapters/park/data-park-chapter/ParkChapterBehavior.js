@@ -95,7 +95,7 @@ const auxQuality = 0.5;
 const compositeQuality = 1;
 
 const parkEnabled = new Signal(true);
-const orbitEnabled = hasMouse;
+const orbitEnabled = new Signal(true);
 const splatEnabled = new Signal(true);
 const soulsEnabled = hasMouse;
 const skyboxEnabled = new Signal(true);
