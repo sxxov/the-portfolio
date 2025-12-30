@@ -6,6 +6,7 @@ error_log
 .env
 *.env
 Adobe After Effects Auto-Save/
+scripts/db.backups/
 
 # wp-content
 /wp-content/debug.log

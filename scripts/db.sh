@@ -33,7 +33,54 @@ if [ -z "$NAME" ]; then
 	error "Unable to read 'name' from package.json"
 fi
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP_DIR="${SCRIPT_DIR}/db.backups"
+
+function make_backup_path() {
+	local host="$1"
+	local timestamp
+	local safe_host
+	timestamp="$(date +"%Y%m%d-%H%M%S")"
+	safe_host="$(printf '%s' "$host" | tr -c 'A-Za-z0-9._-' '_')"
+	echo "$BACKUP_DIR/${safe_host}-${timestamp}.sql"
+}
+
+function backup_remote_db() {
+	local backup_path
+	backup_path="$(make_backup_path "$DEPLOY_HOST")"
+	mkdir -p "$BACKUP_DIR"
+	local remote_script="$(cat <<-EOS
+		cd ~/$NAME || (echo 'App not found on server'; exit 1)
+		set -a; [ -f ".env" ] && source ".env"; set +a
+		docker compose exec -T db \
+			mariadb-dump \
+				-u \$DB_USER \
+				-p\$DB_PASSWORD \
+				\$DB_NAME \
+				--single-transaction \
+				--routines \
+				--triggers
+		EOS
+	)"
+	ssh "$DEPLOY_USER@$DEPLOY_HOST" "$remote_script" > "$backup_path"
+}
+
+function backup_local_db() {
+	local backup_path
+	backup_path="$(make_backup_path "$SITE_HOST")"
+	mkdir -p "$BACKUP_DIR"
+	docker compose exec -T db \
+		mariadb-dump \
+			-u $DB_USER \
+			-p$DB_PASSWORD \
+			$DB_NAME \
+			--single-transaction \
+			--routines \
+			--triggers > "$backup_path"
+}
+
 function pull() {
+	backup_local_db
 	local remote_script="$(cat <<-EOS
 		cd ~/$NAME || (echo 'App not found on server'; exit 1)
 		set -a; [ -f ".env" ] && source ".env"; set +a
@@ -61,6 +108,7 @@ function pull() {
 }
 
 function push() {
+	backup_remote_db
 	local local_script="$(cat <<-EOS
 		docker compose exec -T db \
 			mariadb-dump \
