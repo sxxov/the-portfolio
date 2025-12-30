@@ -37,7 +37,7 @@
 
 <!-- wp:bare/weaver -->
 <div data-follow-scroll-relative="" class="group/thumbnail pointer-events-none absolute inset-0 cursor-pointer [--progress:calc((var(--heading-y)+var(--follow-scroll-relative-y,0px))/var(--image-height))]"><!-- wp:bare/weaver -->
-<div data-imaged="cover" class="pointer-events-auto absolute inset-x-0 bottom-0 h-[calc(var(--image-height)*(1-var(--progress)))] text-border **:size-full group-has-[.img]/thumbnail:hidden"><!-- wp:bare/weaver -->
+<div data-imaged="cover" class="pointer-events-auto absolute inset-x-0 bottom-0 h-[calc(var(--image-height)*(1-var(--progress)))] text-border **:size-full group-has-[img]/thumbnail:hidden"><!-- wp:bare/weaver -->
 <div class="rounded"><!-- wp:bare/composite-provider {"name":"app/placeholder/diagonal"} -->
 <!-- wp:block {"ref":444,"lock":{"move":true,"remove":true}} /-->
 <!-- /wp:bare/composite-provider --></div>
@@ -45,8 +45,18 @@
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="absolute inset-x-0 bottom-0 flex h-[var(--image-height,100%)] min-h-0 flex-col [clip-path:inset(0_round_var(--radius))] not-has-[.img]:hidden"><!-- wp:bare/weaver -->
-<div data-imaged="cover" class="pointer-events-auto fixed top-(--image-y) left-(--image-x) h-(--image-height) w-(--image-width)"><!-- wp:post-featured-image {"isLink":true} /--></div>
+<div class="absolute inset-x-0 bottom-0 flex h-[var(--image-height,100%)] min-h-0 flex-col [clip-path:inset(0_round_var(--radius))] not-has-[img]:hidden"><!-- wp:bare/weaver -->
+<div data-imaged="cover" class="pointer-events-auto sticky top-(--image-y) left-(--image-x) -mb-(--image-height) h-(--image-height) w-(--image-width) overflow-clip rounded"><!-- wp:post-featured-image {"isLink":true} /--></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div class="pointer-events-none sticky top-(--image-y) -mb-(--image-height) h-(--image-height)"><!-- wp:bare/weaver -->
+<div class="absolute inset-0 rounded border border-b-0 border-border"></div>
+<!-- /wp:bare/weaver --></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div class="pointer-events-none sticky top-[calc(var(--image-y)-var(--image-height))+1px)] -mb-(--image-height) h-(--image-height) rounded border-b border-border"></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver --></div>
