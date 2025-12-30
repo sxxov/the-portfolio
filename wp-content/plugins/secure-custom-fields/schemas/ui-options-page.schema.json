@@ -27,60 +27,31 @@
 					"minLength": 1,
 					"description": "Unique identifier for the options page with ui_options_page_ prefix (e.g. 'ui_options_page_site_settings')"
 				},
-				"title": {
-					"type": "string",
-					"minLength": 1,
-					"maxLength": 255,
-					"description": "The title/name of the options page"
-				},
+				"title": { "$ref": "common.schema.json#/definitions/title" },
 				"menu_slug": {
 					"type": "string",
 					"pattern": "^[a-z0-9_-]+$",
 					"minLength": 1,
 					"description": "The menu slug used in the admin URL (e.g. 'site-settings'). Lowercase letters, numbers, underscores, and dashes only."
 				},
+				"menu_order": { "$ref": "common.schema.json#/definitions/menu_order" },
+				"active": { "$ref": "common.schema.json#/definitions/active" },
+				"advanced_configuration": { "$ref": "common.schema.json#/definitions/advanced_configuration" },
+				"modified": { "$ref": "common.schema.json#/definitions/modified" },
+				"import_source": { "$ref": "common.schema.json#/definitions/import_source" },
+				"import_date": { "$ref": "common.schema.json#/definitions/import_date" },
 
 				"page_title": {
 					"type": "string",
-					"description": "The page title displayed in the browser tab and page heading"
+					"description": "The page title displayed in the browser tab and page heading. If omitted, falls back to 'title'."
 				},
 				"parent_slug": {
 					"type": "string",
-					"description": "The parent menu slug. Use 'none' for top-level menu, or a WordPress admin menu slug (e.g. 'options-general.php') for submenu."
+					"description": "The parent menu slug. Use 'none' for top-level menu, or a WordPress admin menu slug (e.g. 'options-general.php') for submenu. If omitted, defaults to top-level menu."
 				},
 				"menu_title": {
 					"type": "string",
-					"description": "The title displayed in the admin menu"
-				},
-
-				"active": {
-					"type": "boolean",
-					"default": true,
-					"description": "[SCF] Whether this options page is active"
-				},
-				"advanced_configuration": {
-					"type": [ "boolean", "integer" ],
-					"default": false,
-					"description": "[SCF Export Only] Whether advanced configuration options are enabled. Accepts boolean or integer (0/1)."
-				},
-				"import_source": {
-					"type": "string",
-					"description": "[SCF Export Only] Source of import if this options page was imported"
-				},
-				"import_date": {
-					"type": "string",
-					"description": "[SCF Export Only] Date when this options page was imported"
-				},
-				"modified": {
-					"type": "integer",
-					"minimum": 0,
-					"description": "[SCF Export Only] Unix timestamp of last modification"
-				},
-				"menu_order": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 0,
-					"description": "[SCF Export Only] The order of this options page in the admin menu"
+					"description": "The title displayed in the admin menu. If omitted, falls back to 'title'."
 				},
 
 				"icon_url": {
@@ -90,32 +61,33 @@
 				"menu_icon": {
 					"oneOf": [
 						{
-							"type": "string",
-							"description": "Icon as string: Dashicon name (e.g. 'dashicons-admin-generic') or full URL to image file"
-						},
-						{
 							"type": "object",
 							"properties": {
 								"type": {
 									"type": "string",
 									"enum": [ "dashicons", "url", "media_library" ],
-									"description": "Icon source type: 'dashicons' for WordPress dashicons, 'url' for custom image URL, 'media_library' for media library attachment"
+									"description": "Icon source type: 'dashicons' for WordPress dashicons, 'url' for custom image URL, 'media_library' for media library attachment ID"
 								},
 								"value": {
 									"type": [ "string", "integer" ],
-									"description": "The icon value: dashicon class name, image URL, or media library attachment ID"
+									"description": "The icon value: dashicon class name (e.g. 'dashicons-admin-generic'), image URL, or media library attachment ID"
 								}
 							},
 							"required": [ "type", "value" ],
 							"additionalProperties": false,
-							"description": "[SCF] SCF icon object format: {\"type\": \"dashicons\", \"value\": \"dashicons-admin-generic\"}"
+							"description": "[SCF] Object with type and value properties specifying the icon source and identifier."
+						},
+						{
+							"type": "array",
+							"maxItems": 0,
+							"description": "Empty array representing unset/default state (no icon configured)."
 						}
 					],
-					"description": "The menu icon. Can be a string (URL or dashicon name) or SCF object format with type and value properties."
+					"description": "The menu icon displayed in the admin menu. Accepts object format with type/value properties, or empty array when no icon is configured. If omitted, uses default gear icon (dashicons-admin-generic)."
 				},
 				"position": {
 					"type": [ "integer", "string", "null" ],
-					"description": "The position in the menu where this page should appear. SCF exports as empty string or null when not set, integer when set."
+					"description": "The position in the menu where this page should appear. SCF exports as empty string or null when not set, integer when set. If omitted, appears at bottom of admin menu."
 				},
 				"redirect": {
 					"type": "boolean",

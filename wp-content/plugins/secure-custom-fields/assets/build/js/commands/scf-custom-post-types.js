@@ -310,61 +310,72 @@ const registerPostTypeCommands = () => {
   const commandStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.dispatch)('core/commands');
   const adminUrl = window.acf.data.admin_url || '';
   const postTypes = window.acf.data.customPostTypes;
+
+  // WordPress 6.9+ adds Command Palette commands for all admin menu items.
+  const wpVersion = window.acf.data.wp_version;
+  const isWp69Plus = wpVersion.localeCompare('6.9', undefined, {
+    numeric: true
+  }) >= 0;
   postTypes.forEach(postType => {
     // Skip invalid post types or those missing required labels
     if (!postType?.name || !postType?.all_items || !postType?.add_new_item) {
       return;
     }
 
-    // Register "View All" command for this post type
-    commandStore.registerCommand({
-      name: `scf/cpt-${postType.name}`,
-      label: postType.all_items,
-      icon: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
-        icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_6__["default"]
-      }),
-      context: 'admin',
-      description: postType.all_items,
-      keywords: ['post type', 'content', 'cpt', postType.name, postType.label].filter(Boolean),
-      callback: ({
-        close
-      }) => {
-        document.location = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_4__.addQueryArgs)(adminUrl + 'edit.php', {
-          post_type: postType.name
-        });
-        close();
-      }
-    });
+    // Navigation commands are already included in WP 6.9+.
+    if (!isWp69Plus) {
+      // Register "View All" command for this post type
+      commandStore.registerCommand({
+        name: `scf/cpt-${postType.name}`,
+        label: postType.all_items,
+        icon: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
+          icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_6__["default"]
+        }),
+        context: 'admin',
+        description: postType.all_items,
+        keywords: ['post type', 'content', 'cpt', postType.name, postType.label].filter(Boolean),
+        callback: ({
+          close
+        }) => {
+          document.location = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_4__.addQueryArgs)(adminUrl + 'edit.php', {
+            post_type: postType.name
+          });
+          close();
+        }
+      });
 
-    // Register "Add New" command for this post type
-    commandStore.registerCommand({
-      name: `scf/new-${postType.name}`,
-      label: postType.add_new_item,
-      icon: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
-        icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__["default"]
-      }),
-      context: 'admin',
-      description: postType.add_new_item,
-      keywords: ['add', 'new', 'create', 'content', postType.name, postType.label],
-      callback: ({
-        close
-      }) => {
-        document.location = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_4__.addQueryArgs)(adminUrl + 'post-new.php', {
-          post_type: postType.name
-        });
-        close();
-      }
-    });
+      // Register "Add New" command for this post type
+      commandStore.registerCommand({
+        name: `scf/new-${postType.name}`,
+        label: postType.add_new_item,
+        icon: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
+          icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__["default"]
+        }),
+        context: 'admin',
+        description: postType.add_new_item,
+        keywords: ['add', 'new', 'create', 'content', postType.name, postType.label],
+        callback: ({
+          close
+        }) => {
+          document.location = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_4__.addQueryArgs)(adminUrl + 'post-new.php', {
+            post_type: postType.name
+          });
+          close();
+        }
+      });
+    }
 
-    // Register "Edit Post Type" command for registered CPTs
+    // Register "Edit Post Type" command
     commandStore.registerCommand({
       name: `scf/edit-${postType.name}`,
-      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.sprintf)((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Edit post type: %s', 'secure-custom-fields'), postType.label),
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.sprintf)(/* translators: %s: post type label */
+      (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Edit post type: %s', 'secure-custom-fields'), postType.label),
       icon: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
         icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_5__["default"]
       }),
       context: 'admin',
-      description: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.sprintf)((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Edit the %s post type settings', 'secure-custom-fields'), postType.label),
+      description: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.sprintf)(/* translators: %s: post type label */
+      (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Edit the %s post type settings', 'secure-custom-fields'), postType.label),
       keywords: ['edit', 'modify', 'post type', 'cpt', 'settings', postType.name, postType.label],
       callback: ({
         close

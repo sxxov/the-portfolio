@@ -2454,6 +2454,14 @@
       $label.prepend(accordionManager.iconHtml({
         open: this.get('open')
       }));
+      $label.attr({
+        tabindex: 0,
+        role: 'button',
+        'aria-expanded': this.get('open') ? 'true' : 'false'
+      });
+      $input.attr({
+        role: 'region'
+      });
 
       // classes
       // - remove 'inside' which is a #poststuff WP class
@@ -2488,6 +2496,7 @@
     },
     events: {
       'click .acf-accordion-title': 'onClick',
+      'keydown .acf-accordion-title': 'onKeydown',
       'invalidField .acf-accordion': 'onInvalidField'
     },
     isOpen: function ($el) {
@@ -2525,6 +2534,7 @@
         open: true
       }));
       $el.addClass('-open');
+      $el.find('.acf-accordion-title:first').attr('aria-expanded', 'true');
 
       // action
       acf.doAction('show', $el);
@@ -2545,6 +2555,7 @@
         open: false
       }));
       $el.removeClass('-open');
+      $el.find('.acf-accordion-title:first').attr('aria-expanded', 'false');
 
       // action
       acf.doAction('hide', $el);
@@ -2555,6 +2566,15 @@
 
       // open close
       this.toggle($el.parent());
+    },
+    onKeydown: function (e, $el) {
+      // check for enter or space
+      if (13 === e.which) {
+        // prevent Default
+        e.preventDefault();
+        // open close
+        this.toggle($el.parent());
+      }
     },
     onInvalidField: function (e, $el) {
       // bail early if already focused
@@ -2745,15 +2765,9 @@ __webpack_require__.r(__webpack_exports__);
       $el.parent('li').parent().find('input[type="text"]').last().trigger('focus');
     },
     onClickToggle: function (e, $el) {
-      // Vars.
-      const inputs = this.$inputs();
-      const hasUnchecked = $inputs.not(':checked').length > 0;
-      inputs.each(function () {
-        $inputs.each(function () {
-          jQuery(this).prop('checked', hasUnchecked).trigger('change');
-        });
-      });
-      $el.prop('checked', hasUnchecked);
+      var $inputs = this.$inputs();
+      var checked = $el.prop('checked');
+      $inputs.prop('checked', checked).trigger('change');
     },
     onClickCustom: function (e, $el) {
       var checked = $el.prop('checked');
@@ -3318,9 +3332,9 @@ __webpack_require__.r(__webpack_exports__);
     map: false,
     wait: 'load',
     events: {
-      'click a[data-name="clear"]': 'onClickClear',
-      'click a[data-name="locate"]': 'onClickLocate',
-      'click a[data-name="search"]': 'onClickSearch',
+      'click button[data-name="clear"]': 'onClickClear',
+      'click button[data-name="locate"]': 'onClickLocate',
+      'click button[data-name="search"]': 'onClickSearch',
       'keydown .search': 'onKeydownSearch',
       'keyup .search': 'onKeyupSearch',
       'focus .search': 'onFocusSearch',
@@ -3765,8 +3779,12 @@ __webpack_require__.r(__webpack_exports__);
     onClickSearch: function () {
       this.searchAddress(this.$search().val());
     },
-    onFocusSearch: function (e, $el) {
-      this.setState('searching');
+    onFocusSearch: function (event, searchInput) {
+      const currentValue = this.val();
+      const currentAddress = currentValue ? currentValue.address : '';
+      if (searchInput.val() !== currentAddress) {
+        this.setState('searching');
+      }
     },
     onBlurSearch: function (e, $el) {
       // Get saved address value.
@@ -3779,9 +3797,19 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     onKeyupSearch: function (e, $el) {
-      // Clear empty value.
-      if (!$el.val()) {
+      const val = this.val();
+      const address = val ? val.address : '';
+      if ($el.val()) {
+        // If search input has value
+        if ($el.val() !== address) {
+          this.setState('searching');
+        } else {
+          this.setState('default');
+        }
+      } else {
+        // If search input is empty
         this.val(false);
+        this.setState('default');
       }
     },
     // Prevent form from submitting.
@@ -10148,12 +10176,20 @@ __webpack_require__.r(__webpack_exports__);
       init.setup = function (ed) {
         ed.on('change', function (e) {
           ed.save(); // save to textarea
-          $textarea.trigger('change');
+          if (!$textarea.closest('.attachment-info').length) {
+            $textarea.trigger('change');
+          }
+        });
+        ed.on('blur', function (e) {
+          if ($textarea.closest('.attachment-info').length) {
+            ed.save();
+            $textarea.trigger('change');
+          }
         });
 
         // Fix bug where Gutenberg does not hear "mouseup" event and tries to select multiple blocks.
         ed.on('mouseup', function (e) {
-          var event = new MouseEvent('mouseup');
+          const event = new MouseEvent('mouseup');
           window.dispatchEvent(event);
         });
 
@@ -11561,7 +11597,9 @@ __webpack_require__.r(__webpack_exports__);
 
                   // Dispatch a custom event to notify about the block with validation error
                   document.dispatchEvent(new CustomEvent('acf/block/has-error', {
-                    acfBlocksWithValidationErrors: [block]
+                    detail: {
+                      acfBlocksWithValidationErrors: block.clientId
+                    }
                   }));
 
                   // Log debug message

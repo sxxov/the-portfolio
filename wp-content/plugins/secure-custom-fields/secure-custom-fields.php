@@ -6,7 +6,7 @@
  * Plugin Name:       Secure Custom Fields
  * Plugin URI:        https://developer.wordpress.org/secure-custom-fields/
  * Description:       Secure Custom Fields (SCF) offers an intuitive way for developers to enhance WordPress content management by adding extra fields and options without coding requirements.
- * Version:           6.7.1
+ * Version:           6.8.0
  * Author:            WordPress.org
  * Author URI:        https://wordpress.org/
  * Text Domain:       secure-custom-fields
@@ -33,7 +33,7 @@ if ( ! class_exists( 'ACF' ) ) {
 		 *
 		 * @var string
 		 */
-		public $version = '6.7.1';
+		public $version = '6.8.0';
 
 		/**
 		 * The plugin settings array.
@@ -190,6 +190,7 @@ if ( ! class_exists( 'ACF' ) ) {
 			acf_include( 'includes/class-acf-options-page.php' );
 			acf_include( 'includes/class-acf-site-health.php' );
 			acf_include( 'includes/class-scf-json-schema-validator.php' );
+			acf_include( 'includes/class-scf-schema-builder.php' );
 			acf_include( 'includes/abilities/class-scf-abilities-integration.php' );
 			acf_include( 'includes/fields/class-acf-field.php' );
 			acf_include( 'includes/locations/abstract-acf-legacy-location.php' );
@@ -247,8 +248,9 @@ if ( ! class_exists( 'ACF' ) ) {
 			acf_include( 'includes/blocks.php' );
 			acf_include( 'includes/class-acf-options-page.php' );
 
-			// Include field group class.
+			// Include field group and field manager classes.
 			acf_include( 'includes/post-types/class-acf-field-group.php' );
+			acf_include( 'includes/post-types/class-scf-field-manager.php' );
 
 			// Include ajax.
 			acf_include( 'includes/ajax/class-acf-ajax.php' );

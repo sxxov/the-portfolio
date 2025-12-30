@@ -1212,9 +1212,11 @@
 
       // update label
       $handle.find('.li-field-label strong a').html(label);
+      let shouldConvertToLowercase = name === name.toLowerCase();
+      shouldConvertToLowercase = acf.applyFilters('convert_field_name_to_lowercase', shouldConvertToLowercase, this);
 
       // update name
-      $handle.find('.li-field-name').html(this.makeCopyable(acf.strSanitize(name)));
+      $handle.find('.li-field-name').html(this.makeCopyable(acf.strSanitize(name, shouldConvertToLowercase)));
 
       // update type
       const iconName = acf.strSlugify(this.getType());

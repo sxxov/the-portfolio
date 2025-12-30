@@ -146,9 +146,16 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 				$validator = new SCF_JSON_Schema_Validator();
 				$schema    = $validator->load_schema( $this->schema_name() );
 
+				// Convert to array for processing.
+				$schema_array = json_decode( wp_json_encode( $schema ), true );
+
 				// Convert hook_name to camelCase for schema definition key (post_type → postType).
-				$def_key             = lcfirst( str_replace( ' ', '', ucwords( $this->entity_name() ) ) );
-				$this->entity_schema = json_decode( wp_json_encode( $schema->definitions->$def_key ), true );
+				$def_key = lcfirst( str_replace( ' ', '', ucwords( $this->entity_name() ) ) );
+				$entity  = $schema_array['definitions'][ $def_key ] ?? array();
+
+				// Resolve $ref references for WordPress Abilities API compatibility.
+				$builder             = acf_get_instance( 'SCF_Schema_Builder' );
+				$this->entity_schema = $builder->resolve_refs( $entity, $schema_array );
 			}
 			return $this->entity_schema;
 		}
@@ -169,12 +176,19 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 		/**
 		 * Gets the internal fields schema.
 		 *
+		 * Resolves $ref references since WordPress REST API doesn't understand them.
+		 *
 		 * @return array
 		 */
 		private function get_internal_fields_schema() {
-			$validator = new SCF_JSON_Schema_Validator();
-			$schema    = $validator->load_schema( 'internal-fields' );
-			return json_decode( wp_json_encode( $schema->definitions->internalFields ), true );
+			$validator      = new SCF_JSON_Schema_Validator();
+			$schema         = $validator->load_schema( 'internal-properties' );
+			$schema_array   = json_decode( wp_json_encode( $schema ), true );
+			$internal_props = $schema_array['definitions']['internalProperties'] ?? array();
+
+			// Resolve $refs for WordPress REST API compatibility.
+			$builder = acf_get_instance( 'SCF_Schema_Builder' );
+			return $builder->resolve_refs( $internal_props, $schema_array );
 		}
 
 		/**
@@ -228,6 +242,8 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 			$this->register_duplicate_ability();
 			$this->register_export_ability();
 			$this->register_import_ability();
+			$this->register_trash_ability();
+			$this->register_untrash_ability();
 		}
 
 		/**
@@ -246,7 +262,7 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 					),
 					'description'         => sprintf(
 						/* translators: %s: Entity type plural */
-						__( 'Retrieves a list of SCF %s with optional filtering.', 'secure-custom-fields' ),
+						__( 'Retrieves a list of SCF %s. Returns all if no filter provided.', 'secure-custom-fields' ),
 						$this->entity_name_plural()
 					),
 					'category'            => $this->ability_category(),
@@ -343,7 +359,7 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 					),
 					'description'         => sprintf(
 						/* translators: %s: Entity type */
-						__( 'Creates a new instance of SCF %s with provided configuration.', 'secure-custom-fields' ),
+						__( 'Creates a new instance of SCF %s with provided configuration. Omitted optional fields use schema defaults.', 'secure-custom-fields' ),
 						$this->entity_name()
 					),
 					'category'            => $this->ability_category(),
@@ -383,7 +399,7 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 					),
 					'description'         => sprintf(
 						/* translators: %s: Entity type */
-						__( 'Updates an existing instance of SCF %s with new configuration.', 'secure-custom-fields' ),
+						__( 'Updates an existing instance of SCF %s. Properties not provided are preserved (merge behavior).', 'secure-custom-fields' ),
 						$this->entity_name()
 					),
 					'category'            => $this->ability_category(),
@@ -470,7 +486,7 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 					),
 					'description'         => sprintf(
 						/* translators: %s: Entity type */
-						__( 'Creates a copy of SCF %s. Duplicate receives a new unique key.', 'secure-custom-fields' ),
+						__( 'Creates a copy of SCF %s with a new ID and unique key. Title gets (copy) appended. Active status is inherited from source.', 'secure-custom-fields' ),
 						$this->entity_name()
 					),
 					'category'            => $this->ability_category(),
@@ -491,7 +507,7 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 							'identifier'  => $this->get_scf_identifier_schema(),
 							'new_post_id' => array(
 								'type'        => 'integer',
-								'description' => __( 'Optional post ID for duplicate.', 'secure-custom-fields' ),
+								'description' => __( 'Optional ID of an existing post to overwrite. Used for import/sync operations.', 'secure-custom-fields' ),
 							),
 						),
 						'required'   => array( 'identifier' ),
@@ -517,7 +533,7 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 					),
 					'description'         => sprintf(
 						/* translators: %s: Entity type */
-						__( 'Exports an instance of SCF %s as JSON for backup or transfer.', 'secure-custom-fields' ),
+						__( 'Exports an instance of SCF %s as JSON for backup or transfer. Internal fields (ID, local, _valid) are stripped.', 'secure-custom-fields' ),
 						$this->entity_name()
 					),
 					'category'            => $this->ability_category(),
@@ -560,7 +576,7 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 					),
 					'description'         => sprintf(
 						/* translators: %s: Entity type */
-						__( 'Imports an instance of SCF %s from JSON data.', 'secure-custom-fields' ),
+						__( 'Imports an instance of SCF %s from JSON data. If ID is provided, updates existing; otherwise creates new with schema defaults for omitted fields.', 'secure-custom-fields' ),
 						$this->entity_name()
 					),
 					'category'            => $this->ability_category(),
@@ -702,7 +718,21 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 			}
 
 			$new_post_id = isset( $input['new_post_id'] ) ? $input['new_post_id'] : 0;
-			$duplicated  = $this->instance()->duplicate_post( $input['identifier'], $new_post_id );
+
+			// Validate that new_post_id references an existing WordPress post.
+			if ( $new_post_id && ! get_post( $new_post_id ) ) {
+				return new WP_Error(
+					'invalid_new_post_id',
+					sprintf(
+						/* translators: %d: Invalid post ID */
+						__( 'Invalid new_post_id: %d does not exist.', 'secure-custom-fields' ),
+						$new_post_id
+					),
+					array( 'status' => 400 )
+				);
+			}
+
+			$duplicated = $this->instance()->duplicate_post( $input['identifier'], $new_post_id );
 
 			if ( ! $duplicated ) {
 				return new WP_Error(
@@ -762,6 +792,130 @@ if ( ! class_exists( 'SCF_Internal_Post_Type_Abilities' ) ) :
 				);
 			}
 			return $imported;
+		}
+
+		/**
+		 * Registers the trash ability.
+		 *
+		 * @return void
+		 */
+		private function register_trash_ability() {
+			wp_register_ability(
+				$this->ability_name( 'trash' ),
+				array(
+					'label'               => __( 'Trash', 'secure-custom-fields' ),
+					'description'         => sprintf(
+						/* translators: %s: Entity type */
+						__( 'Moves SCF %s to trash. Can be restored using untrash.', 'secure-custom-fields' ),
+						$this->entity_name()
+					),
+					'category'            => $this->ability_category(),
+					'execute_callback'    => array( $this, 'trash_callback' ),
+					'meta'                => array(
+						'show_in_rest' => true,
+						'mcp'          => array( 'public' => true ),
+						'annotations'  => array(
+							'readonly'    => false,
+							'destructive' => false,
+							'idempotent'  => true,
+						),
+					),
+					'permission_callback' => 'scf_current_user_has_capability',
+					'input_schema'        => array(
+						'type'       => 'object',
+						'properties' => array(
+							'identifier' => $this->get_scf_identifier_schema(),
+						),
+						'required'   => array( 'identifier' ),
+					),
+					'output_schema'       => array(
+						'type'        => 'boolean',
+						'description' => __( 'True on success.', 'secure-custom-fields' ),
+					),
+				)
+			);
+		}
+
+		/**
+		 * Handles the trash ability callback.
+		 *
+		 * @param array $input The input parameters.
+		 * @return bool|WP_Error True on success or error on failure.
+		 */
+		public function trash_callback( $input ) {
+			if ( ! $this->instance()->get_post( $input['identifier'] ) ) {
+				return $this->not_found_error();
+			}
+
+			if ( ! $this->instance()->trash_post( $input['identifier'] ) ) {
+				return new WP_Error(
+					'trash_failed',
+					__( 'Trash operation failed.', 'secure-custom-fields' )
+				);
+			}
+			return true;
+		}
+
+		/**
+		 * Registers the untrash ability.
+		 *
+		 * @return void
+		 */
+		private function register_untrash_ability() {
+			wp_register_ability(
+				$this->ability_name( 'untrash' ),
+				array(
+					'label'               => __( 'Restore', 'secure-custom-fields' ),
+					'description'         => sprintf(
+						/* translators: %s: Entity type */
+						__( 'Restores SCF %s from trash to previous status.', 'secure-custom-fields' ),
+						$this->entity_name()
+					),
+					'category'            => $this->ability_category(),
+					'execute_callback'    => array( $this, 'untrash_callback' ),
+					'meta'                => array(
+						'show_in_rest' => true,
+						'mcp'          => array( 'public' => true ),
+						'annotations'  => array(
+							'readonly'    => false,
+							'destructive' => false,
+							'idempotent'  => true,
+						),
+					),
+					'permission_callback' => 'scf_current_user_has_capability',
+					'input_schema'        => array(
+						'type'       => 'object',
+						'properties' => array(
+							'identifier' => $this->get_scf_identifier_schema(),
+						),
+						'required'   => array( 'identifier' ),
+					),
+					'output_schema'       => array(
+						'type'        => 'boolean',
+						'description' => __( 'True on success.', 'secure-custom-fields' ),
+					),
+				)
+			);
+		}
+
+		/**
+		 * Handles the untrash ability callback.
+		 *
+		 * @param array $input The input parameters.
+		 * @return bool|WP_Error True on success or error on failure.
+		 */
+		public function untrash_callback( $input ) {
+			if ( ! $this->instance()->get_post( $input['identifier'] ) ) {
+				return $this->not_found_error();
+			}
+
+			if ( ! $this->instance()->untrash_post( $input['identifier'] ) ) {
+				return new WP_Error(
+					'untrash_failed',
+					__( 'Restore operation failed.', 'secure-custom-fields' )
+				);
+			}
+			return true;
 		}
 
 		/**
