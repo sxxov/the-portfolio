@@ -34,6 +34,7 @@ services:
         volumes:
             - ./wp-content:/var/www/html/wp-content
             - ./.htaccess:/var/www/html/.htaccess:rw
+            - ./php.ini:/usr/local/etc/php/conf.d/user.ini:ro
         environment:
             VIRTUAL_HOST: ${SITE_HOST}
             WORDPRESS_DEBUG: true
