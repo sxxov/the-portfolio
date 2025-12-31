@@ -19,25 +19,6 @@
 
 /* scaffolding */
 @layer base {
-	.h1,
-	.h2,
-	.h3,
-	.h4,
-	.h5,
-	.h6,
-	.hm {
-		font-size: calc(
-			clamp(
-				var(--size-pt) * var(--pt-px),
-				(var(--size-pt) / var(--vw-pt)) * 100lvw,
-				(var(--size-pt) / var(--vh-pt)) * 100lvh
-			)
-		);
-		line-height: calc(var(--leading-pt) / var(--size-pt));
-		font-weight: calc(var(--weight-pt));
-		letter-spacing: calc((var(--tracking-pt) / var(--size-pt)) * 1em);
-	}
-
 	body {
 		font-size: var(--text-base);
 		font-weight: var(--font-weight-normal);
@@ -54,7 +35,7 @@
 @theme static {
 	--weight-pt: 500;
 	--size-pt: 16;
-	--leading-pt: 21;
+	--leading-pt: 24;
 	--tracking-pt: 0;
 
 	--text-base: calc(var(--size-pt) * var(--pt-px));
@@ -70,8 +51,23 @@
 	}
 }
 
+@utility -h {
+	font-size: calc(
+		clamp(
+			var(--size-pt) * var(--pt-px),
+			(var(--size-pt) / var(--vw-pt)) * 100lvw,
+			(var(--size-pt) / var(--vh-pt)) * 100lvh
+		)
+	);
+	line-height: calc(var(--leading-pt) / var(--size-pt));
+	font-weight: calc(var(--weight-pt));
+	letter-spacing: calc((var(--tracking-pt) / var(--size-pt)) * 1em);
+}
+
 /* button */
 @utility hb {
+	@apply -h;
+
 	--weight-pt: 600;
 	--size-pt: 16;
 	--leading-pt: 18;
@@ -84,6 +80,8 @@
 
 /* headings */
 @utility h1 {
+	@apply -h;
+
 	--weight-pt: 700;
 	--size-pt: 120;
 	--leading-pt: 72;
@@ -94,6 +92,8 @@
 }
 
 @utility h2 {
+	@apply -h;
+
 	--weight-pt: 600;
 	--size-pt: 60;
 	--leading-pt: 40;
@@ -104,6 +104,8 @@
 }
 
 @utility h3 {
+	@apply -h;
+
 	--weight-pt: 600;
 	--size-pt: 35;
 	--leading-pt: 24;
@@ -114,6 +116,8 @@
 }
 
 @utility h4 {
+	@apply -h;
+
 	--weight-pt: 500;
 	--size-pt: 20;
 	--leading-pt: 14;
@@ -124,6 +128,8 @@
 }
 
 @utility h5 {
+	@apply -h;
+
 	--weight-pt: 600;
 	--size-pt: 16;
 	--leading-pt: 12;
@@ -134,6 +140,8 @@
 }
 
 @utility h6 {
+	@apply -h;
+
 	--weight-pt: 600;
 	--size-pt: 16;
 	--leading-pt: 12;
@@ -144,6 +152,8 @@
 }
 
 @utility hm {
+	@apply -h;
+
 	--weight-pt: 600;
 	--size-pt: 14;
 	--leading-pt: 16;
