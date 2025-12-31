@@ -10,10 +10,56 @@
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="flex flex-wrap gap-2 max-sm:flex-col"><!-- wp:terms-query -->
+<div class="flex flex-col flex-wrap gap-2 sm:flex-row"><!-- wp:terms-query -->
 <div class="wp-block-terms-query"><!-- wp:bare/weaver -->
 <div class="flex flex-wrap gap-2"><!-- wp:term-template {"className":"contents"} -->
-<!-- wp:bare/composite-provider {"name":"post/term-chip"} -->
+<!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
+<!-- wp:block {"ref":360,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:term-name {"isLink":true} /-->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider -->
+<!-- /wp:term-template --></div>
+<!-- /wp:bare/weaver --></div>
+<!-- /wp:terms-query -->
+
+<!-- wp:bare/composite-provider {"name":"post/term/separator"} -->
+<!-- wp:block {"ref":1074,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+
+<!-- wp:bare/weaver -->
+<div class="group/date"><!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
+<!-- wp:block {"ref":360,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:bare/weaver -->
+<div class="flex"><!-- wp:bare/weaver -->
+<div class=""><!-- wp:post-date {"format":"human-diff","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}}} /--></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div data-follow-child-rect="" class="w-(--follow-child-rect-width,0px) overflow-clip transition-[width] not-group-[:hover,:focus-within]/date:w-0"><!-- wp:bare/weaver -->
+<div data-follow-child-rect-target="" class="flex w-max items-center"><!-- wp:bare/weaver -->
+<hr class="mx-2 w-[2em] border-border"/>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:post-date {"format":"j/n/Y","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}}} /--></div>
+<!-- /wp:bare/weaver --></div>
+<!-- /wp:bare/weaver --></div>
+<!-- /wp:bare/weaver -->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider --></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/composite-provider {"name":"post/term/separator"} -->
+<!-- wp:block {"ref":1074,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+
+<!-- wp:terms-query {"termQuery":{"perPage":10,"taxonomy":"post_tag","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false}} -->
+<div class="wp-block-terms-query"><!-- wp:bare/weaver -->
+<div class="flex flex-wrap gap-2"><!-- wp:term-template {"className":"contents"} -->
+<!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
 <!-- wp:block {"ref":360,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill -->
@@ -25,41 +71,61 @@
 <!-- /wp:terms-query -->
 
 <!-- wp:bare/weaver -->
-<div class="group/date"><!-- wp:bare/composite-provider {"name":"post/term-chip"} -->
+<a href="${field:post.external_link.url}" target="${field:post.external_link.target}" class="contents [&amp;[href='']]:hidden"><!-- wp:bare/composite-provider {"name":"post/term/separator"} -->
+<!-- wp:block {"ref":1074,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+
+<!-- wp:bare/weaver -->
+<slot class="[--chip-color-bg-hover:var(--color-fg-2)] [--chip-color-bg:var(--color-fg-1)] [--chip-color-fg:var(--color-bg-1)]"><!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
 <!-- wp:block {"ref":360,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill -->
 <!-- wp:bare/weaver -->
-<div class="flex"><!-- wp:bare/weaver -->
-<div class=""><!-- wp:post-date {"format":"human-diff","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}}} /--></div>
+<div class="flex items-center gap-1"><!-- wp:bare/weaver -->
+<slot text="${field:post.external_link.title}" class="before:content-[attr(text)]"></slot>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div data-follow-child-rect="" class="w-(--follow-child-rect-width,0px) overflow-clip transition-[width] not-group-[:hover,:focus-within]/date:w-0"><!-- wp:bare/weaver -->
-<div data-follow-child-rect-target="" class="flex w-fit items-center"><!-- wp:bare/weaver -->
-<hr class="mx-2 w-[2em] border-border"/>
-<!-- /wp:bare/weaver -->
-
-<!-- wp:post-date {"format":"j/n/Y","metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}}} /--></div>
-<!-- /wp:bare/weaver --></div>
+<div class="h4"><!-- wp:paragraph -->
+<p>↣</p>
+<!-- /wp:paragraph --></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver -->
 <!-- /wp:bare/composite-fill -->
-<!-- /wp:bare/composite-provider --></div>
+<!-- /wp:bare/composite-provider --></slot>
+<!-- /wp:bare/weaver --></a>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver -->
 <!-- /wp:bare/composite-fill -->
 <!-- /wp:bare/composite-provider -->
 
+<!-- wp:bare/weaver -->
+<div class="relative overflow-clip"><!-- wp:bare/weaver -->
+<div data-parallax="" data-imaged="cover" class=""><!-- wp:post-featured-image /--></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div class="pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b from-bg-1"></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-bg-1"></div>
+<!-- /wp:bare/weaver --></div>
+<!-- /wp:bare/weaver -->
+
 <!-- wp:bare/composite-provider {"name":"app/section/frame"} -->
 <!-- wp:block {"ref":559,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill -->
 <!-- wp:bare/weaver -->
-<div class="mx-auto w-full max-w-[calc(var(--breakpoint-md)+4*var(--sp)*2)]"><!-- wp:bare/weaver -->
-<div class="px-4 py-[calc(16*var(--sp)-1em)] [&amp;_:is(h1,h2,h3,h4,h5,h6)]:my-[1em,.25em] [&amp;_h1]:h1 [&amp;_h2]:h2 [&amp;_h3]:h3 [&amp;_h4]:h4 [&amp;_h5]:h5 [&amp;_h6]:h6 [&amp;_p]:my-[1em]"><!-- wp:post-content /--></div>
-<!-- /wp:bare/weaver --></div>
+<div class="px-4 py-[calc(16*var(--sp)-1em)]"><!-- wp:bare/composite-provider {"name":"post/content/provider"} -->
+<!-- wp:block {"ref":1046,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:post-content /-->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider --></div>
 <!-- /wp:bare/weaver -->
 <!-- /wp:bare/composite-fill -->
 <!-- /wp:bare/composite-provider -->
