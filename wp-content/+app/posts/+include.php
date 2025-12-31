@@ -260,7 +260,9 @@ function write_database_post(int $post_id, string $content) {
 	$post = get_post($post_id);
 	if (!$post) return;
 
-	if (!$content) throw new \Exception('Assertion: Cannot write empty post content.');
+	// don't clear database on empty string
+	// sometimes race conditions can cause php to return ''
+	if (!$content) return;
 
 	$post->post_content = $content;
 	wp_update_post($post);
