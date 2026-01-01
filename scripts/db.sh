@@ -2,7 +2,7 @@
 set -euo pipefail
 
 function usage() {
-    echo "Usage: $0 pull|push" >&2
+    echo "Usage: $0 pull|push|load <backup.sql>" >&2
     exit 1
 }
 
@@ -18,9 +18,12 @@ function require_env() {
     fi
 }
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -lt 1 ]; then
     usage
 fi
+
+COMMAND="$1"
+shift
 
 set -a; [ -f ".env" ] && source ".env"; set +a
 
@@ -135,12 +138,39 @@ function push() {
 	$local_script | ssh "$DEPLOY_USER@$DEPLOY_HOST" "$remote_script"
 }
 
-case "$1" in
+function load() {
+	local backup_path="$1"
+	if [ ! -f "$backup_path" ] && [ -f "$BACKUP_DIR/$backup_path" ]; then
+		backup_path="$BACKUP_DIR/$backup_path"
+	fi
+	if [ ! -f "$backup_path" ]; then
+		error "Backup file not found: $1"
+	fi
+	docker compose exec -T db \
+		mariadb \
+			-u $DB_USER \
+			-p$DB_PASSWORD \
+			$DB_NAME < "$backup_path"
+}
+
+case "$COMMAND" in
     pull)
+		if [ "$#" -ne 0 ]; then
+			usage
+		fi
 		pull
 		;;
     push)
+		if [ "$#" -ne 0 ]; then
+			usage
+		fi
 		push
+		;;
+    load)
+		if [ "$#" -ne 1 ]; then
+			usage
+		fi
+		load "$1"
 		;;
 	*)
 		usage
