@@ -82,6 +82,7 @@ import { TaskSignal } from '/+std/signal/TaskSignal.js';
 import { cast } from '/+std/type/utilities/cast.js';
 import { hasMouse } from '/+app/human/hasMouse.js';
 import { AssetPriority } from '/+app/delivery/asset/AssetPriority.js';
+import { viewportSize } from '/+std/viewport/viewportSize.js';
 /** @import { MeshPhysicalMaterial, Object3D, Texture } from "three" */
 /** @import { Effect, EffectMaterial, Pass } from "postprocessing" */
 /** @import { ArrayOfLength } from "/+std/type/array/ArrayOfLength.js" */
@@ -89,20 +90,25 @@ import { AssetPriority } from '/+app/delivery/asset/AssetPriority.js';
 /** @import { ReadableSignal, Starter } from "/+std/signal/Signal.js" */
 /** @import { BehaviorInstance } from "/+std/behavioral/factory/BehaviorInstance.js" */
 
-const parkQuality = 0.5;
-const overlayQuality = 0.5;
-const auxQuality = 0.5;
-const compositeQuality = 1;
+// rendering park with 100% quality messes up the colour encoding for some reason
+const parkQuality = derive({ viewportSize }, () =>
+	devicePixelRatio <= 1 ? 0.999 : 0.5,
+).readonly;
+const overlayQuality = new Signal(0.5).readonly;
+const auxQuality = derive({ viewportSize }, () =>
+	devicePixelRatio <= 1 ? 1 : 0.5,
+).readonly;
+const compositeQuality = new Signal(1).readonly;
 
-const parkEnabled = new Signal(true);
-const orbitEnabled = new Signal(true);
-const splatEnabled = new Signal(true);
+const parkEnabled = new Signal(true).readonly;
+const orbitEnabled = new Signal(true).readonly;
+const splatEnabled = new Signal(true).readonly;
 const soulsEnabled = hasMouse;
-const skyboxEnabled = new Signal(true);
+const skyboxEnabled = new Signal(true).readonly;
 const overlayEnabled = hasMouse;
 const auxEnabled = hasMouse;
 const fluidDisplacementEnabled = hasMouse;
-const compositeEnabled = new Signal(true);
+const compositeEnabled = new Signal(true).readonly;
 
 RectAreaLightUniformsLib.init();
 
@@ -551,16 +557,17 @@ export const ParkChapterBehavior = behavior(
 				);
 				_._ = composer.subscribe((it) => () => { it?.dispose(); });
 				_._ = subscribe(
-					{ viewportSize, composer },
+					{ parkQuality, viewportSize, composer },
 					({
+						$parkQuality,
 						$viewportSize: { width: vw, height: vh },
 						$composer,
 					}) => {
 						if (!$composer || !some(vw) || !some(vh)) return;
 
 						$composer.setSize(
-							vw * parkQuality,
-							vh * parkQuality,
+							vw * $parkQuality,
+							vh * $parkQuality,
 							false,
 						);
 					},
@@ -596,9 +603,15 @@ export const ParkChapterBehavior = behavior(
 				const _ = bin();
 
 				const lottieTexture = derive(
-					{ overlayEnabled, viewportSize, lottieDataAsset },
+					{
+						overlayEnabled,
+						overlayQuality,
+						viewportSize,
+						lottieDataAsset,
+					},
 					({
 						$overlayEnabled,
+						$overlayQuality,
 						$viewportSize: { width: vw, height: vh },
 						$lottieDataAsset,
 					}) => {
@@ -618,7 +631,7 @@ export const ParkChapterBehavior = behavior(
 							data: $lottieDataAsset,
 							layout: { fit: 'cover' },
 						});
-						it.resize(vw * overlayQuality, vh * overlayQuality);
+						it.resize(vw * $overlayQuality, vh * $overlayQuality);
 
 						return it;
 					},
@@ -1136,16 +1149,17 @@ export const ParkChapterBehavior = behavior(
 				);
 				_._ = composer.subscribe((it) => () => { it?.dispose(); });
 				_._ = subscribe(
-					{ viewportSize, composer },
+					{ auxQuality, viewportSize, composer },
 					({
+						$auxQuality,
 						$viewportSize: { width: vw, height: vh },
 						$composer,
 					}) => {
 						if (!$composer || !some(vw) || !some(vh)) return;
 
 						$composer.setSize(
-							vw * auxQuality,
-							vh * auxQuality,
+							vw * $auxQuality,
+							vh * $auxQuality,
 							false,
 						);
 					},
@@ -1236,16 +1250,17 @@ export const ParkChapterBehavior = behavior(
 				);
 				_._ = composer.subscribe((it) => () => { it?.dispose(); });
 				_._ = subscribe(
-					{ viewportSize, composer },
+					{ compositeQuality, viewportSize, composer },
 					({
+						$compositeQuality,
 						$viewportSize: { width: vw, height: vh },
 						$composer,
 					}) => {
 						if (!$composer || !some(vw) || !some(vh)) return;
 
 						$composer.setSize(
-							vw * compositeQuality,
-							vh * compositeQuality,
+							vw * $compositeQuality,
+							vh * $compositeQuality,
 							false,
 						);
 					},
