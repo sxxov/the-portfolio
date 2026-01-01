@@ -76,29 +76,38 @@ jobs:
                   REMOTE_HOST: ${{ vars.DEPLOY_HOST }}
                   REMOTE_USER: ${{ vars.DEPLOY_USER }}
                   EXCLUDE: /.git/
+                  SCRIPT_BEFORE: |
+                      cd ~/
+
+                      # shut down app if running
+                      if [ -d "${{ github.event.repository.name }}" ]; then
+                          pushd ${{ github.event.repository.name }}
+                          docker compose down || true
+                          popd
+                      fi
+
+                      # shut down yxorp if running
+                      if [ -d "yxorp" ]; then
+                          pushd yxorp
+                          docker compose down || true
+                          popd
+                      fi
                   SCRIPT_AFTER: |
                       cd ~/
 
-                      # ensure yxorp is installed next to the app & up to date
-                      if [ -d "yxorp" ]; then
-                          pushd yxorp
-                          git fetch
-                          git pull
-                          cp "../${{ github.event.repository.name }}/.env" .env
-                          docker compose pull
-                          nohup docker compose up -d --build
-                          popd
-                      else
+                      # ensure yxorp is setup
+                      if [ ! -d "yxorp" ]; then
                           git clone https://github.com/sxxov/yxorp
-                          pushd yxorp
-                          cp "../${{ github.event.repository.name }}/.env" .env
-                          docker compose pull
-                          nohup docker compose up -d --build
-                          popd
                       fi
+                      pushd yxorp
+                      git fetch
+                      git pull
+                      docker compose pull
+                      docker compose up -d --build
+                      popd
 
                       pushd ${{ github.event.repository.name }}
                       chmod a+rwX -R ./wp-content
                       docker compose pull
-                      nohup docker compose up -d --build
+                      docker compose up -d --build
                       popd
