@@ -1,0 +1,400 @@
+<!-- wp:heading {"level":2} --><h2>todo:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Make it</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>Phase 0: Inspo</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>pmndrs</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I knew I wanted to make a 3D web experience, that merges with 2D &amp; motion graphics. This led me to many fancy pants websites, but all of them seem to derive in some way from something that the <a href="https://pmnd.rs">pmndrs</a> organisation has put out. I'm not talking just about how they use <a href="https://github.com/pmndrs/react-three-fiber"><code>@react-three/fiber</code></a>, or something like <a href="https://github.com/pmndrs/drei"><code>@react-three/drei</code></a>, it's a big deal because <code>drei</code> is inherently just <em>a side-effect</em> of all the experiments &amp; effects done by the team themselves.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701507873442-image-20231202170421827.webp","id":2394} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701507873442-image-20231202170421827.webp" alt="" /><figcaption>0xca0a&#039;s Geist Sans exploration, 28/10/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>basement.studio</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p><a href="basement.studio">Basement</a> has been at the top of the creative-web game for some time now. With high profile clients such as <a href="https://basement.studio/showcase/mrbeast">MrBeast</a> &amp; <a href="https://basement.studio/showcase/ranboo-fashion">Ranboo</a>, there really is no way you can look far &amp; not stumble across their work as a web enthusiast. Sometimes I find myself just nerding out over how their work, works. How'd they get their elements to stick? Turns out they don't even use <code>position: sticky</code>. How'd they get their canvas-rendered elements positioned so well inline with other DOM elements? Turns out they're doing some funky stuff that takes from <code>wheel*</code> events ahead of <code>scroll</code> events that usually lag behind. How'd they get their stuff to perform so well? Turns out they're very clever about their use of 3D &amp; models within their sites, usually going something like, "tada... okay that's enough", rather than having it as the emphasis of the site.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701509110425-image-20231202172507765.webp","id":2395} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701509110425-image-20231202172507765.webp" alt="" /><figcaption>Basement Chronicles, 2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Studio Freight</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p><a href="https://studiofreight.com/">SF</a> is another goliath in the creative web dev space. I've been following them for some time, &amp; was one of the early adopters of <a href="https://lenis.studiofreight.com/">Lenis</a> — SF's ex-internal smooth scroll library, with an amazingly <strong>pink</strong> intro website. With high profile clients such as <a href="https://valkyrae.studiofreight.com/">Valkyrae</a> &amp; <a href="https://clyde.studiofreight.com/">Clyde</a>, their pretty face gets remarkably serious &amp; practical when it matters.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701510388101-image-20231202174625294.webp","id":2396} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701510388101-image-20231202174625294.webp" alt="" /><figcaption>Scrolling through Valkyrae&#039;s shop, 2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":2} --><h2>Phase 1: MVP</h2><!-- /wp:heading -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>This post will <em>only</em> be documenting the process of creating the <strong>home page</strong>.<br>Levels are, excluded; have mercy, 5840 words is enough.</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>In the beginning, there was, <a href="about:blank">light</a>. Then, there was an empty <code>@sveltejs/kit</code> project paired with <a href="https://github.com/sxxov/sv"><code>@sxxov/sv</code></a>, <a href="https://github.com/sxxov/ut"><code>@sxxov/ut</code></a>, &amp; <a href="https://github.com/sxxov/maic"><code>maic</code></a>. I already knew that I was going to use a lot of 3D (via <a href="https://github.com/mrdoob/three.js"><code>THREE</code></a>), having some experience of it with <a href="https://github.com/threlte/threlte"><code>threlte</code></a> on another project. However, building upon that would surely be a new challenge for me, as I had a vision — mixed dimension content.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Vision?</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This project will practice design-in-code, mostly due to the time pressure, &amp; the fact that I'm working in unknown technology, being able to work directly with its constraints will help tremendously. Come along for both the design &amp; development journey.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>3D model search</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I hate modelling. Unfortunately, I had a vision to fulfil, &amp; you can't really create 3D visuals without 3D models. Thus, commences the search for usable (free/cheap) models online. Going according to the initial sketch/idea, I needed a grand gate &amp; a village. Finding both weren't difficult, but finding ones I could afford were the challenge of the hour.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701511756546-2.webp","id":2397} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701511756546-2.webp" alt="" /><figcaption>&quot;Classic Iron Gate 3D model&quot; on TurboSquid, 21/1/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701511763299-mc01.webp","id":2398} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701511763299-mc01.webp" alt="" /><figcaption>&quot;3D Fantasy Village Pack&quot; on TurboSquid, 18/11/2020</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>I have since been notified that "3D Fantasy Village Pack" appears to be inspired by Genshin Impact's "Mondstadt", by literally everyone I know that plays Genshin.<br>
+Given the 1 month difference between Genshin's release date &amp; the model's upload to TurboSquid, probably yeah.<br>
+However, the user <a href="https://www.turbosquid.com/Search/Artists/korboleev">korboleev</a> seems to have already been working on these specific set of models <a href="https://www.turbosquid.com/3d-models/3d-medieval-buildings-pack-model-1784642">previously</a>, &amp; just reskinned them in the wake of Genshin.</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>Unfortunately however, I was not going to pay ＄34 USD for a stupid model of a gate, so I shelved that idea. That as well as the fact that the gate was mostly there to act as a click funnel for the user to activate sound. As I thought more about the direction of Deceitville, the gate kinda got in the way (haha), as users' first action &amp; expectation on a website is to <em>scroll</em>, &amp; forcing a click reduced the "free" feeling being on the web, of being able to navigate wherever you wanted, whenever you wanted; I felt the restriction wasn't worth the payoff.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Thus, that leaves us with the budget-Genshin buildings. -＄12 USD.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I did also look for other assets to be used, but these just became the main few that acted as the anchor throughout the app.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>3D workflow</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>OK, I have the models, now how do I shove them into the web? <code>THREE</code>'s "native" way of consuming 3D models is through a format known as GLTF. It's basically a JSON index of a 3D model, backed by binary for the actual data of meshes, materials, etc. Actually loading a <code>.gltf</code> (the plan-text variant of GLTF) or <code>.glb</code> (the pure-binary variant of GLTF) is a different story though, as these files can get <strong>BIG</strong>. Even then, I may need to poke &amp; prod into the models to change parts of them at runtime too. As a foundation of basically the rest of the 3D parts of Deceitville, I needed to do some research...</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4><code>@threlte/gltf</code></h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I started out scouring the native solution for <code>threlte</code> — <a href="https://github.com/threlte/threlte/tree/main/packages/gltf"><code>@threlte/gltf</code></a>. It was, okay. It generated <code>.svelte</code> files from <code>.gltf</code>/<code>.glb</code> models, that simply split them up into <code>threlte</code> components. However, there were some major drawbacks of that approach, namely the monolithic nature &amp; non-modularity of the generated files.</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>You had to use them as a unit, &amp; you couldn't pick &amp; choose what you wanted to do what.</li> <li>You had to use them as a <code>svelte</code> component, &amp; you couldn't pass instances of the GLTF around without mounting them.</li> <li>You couldn't make changes to the file to fix any of these problems without losing them every time a you made changes to the backing GLTF.</li> <li>They didn't export their types, so I wouldn't be able to access their children in a type-safe manner (renaming something in Blender could crash things at runtime instead of dev-time).</li> <li>They can't be loaded &amp; streamed in individually, the whole <code>.glb</code> must be downloaded &amp; uncompressed before JS can start parsing &amp; instantiating them.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4><code>@threlte/extras::GLTF, useGltf</code></h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Going down a level, <code>threlte</code> also provides a few atomic components &amp; hooks that <code>@threlte/gltf</code> uses. These were basically the same story — non-type-safe, unstreamable, &amp; even slightly worse, because it didn't even provide the supposed improved DX of using a 3D model as a <code>svelte</code> component. It doesn't mean I won't use these later, but they weren't versatile enough as a full-fledged solution.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Taking matters into my own hands</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Once again, here we go...</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>Streaming</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>A bit of scouring brought me to <a href="https://blender.stackexchange.com/questions/211091/export-multiple-objects-to-individual-gltf-files">this StackExchange answer</a> regarding exporting individual objects as separate GLTF files. This solves the streaming part of the equation, as I could now push down the pipe individual chunks of GLTF — glory to HTTP2! However, by default the Blender extension provided didn't offer any support for DRACO or punctual lights. However, you can trivially pass these options into the builtin GLTF exporter, that this extension uses. Hence, hacking them in &amp; changing some defaults, <a href="https://gist.github.com/sxxov/9e46fe78a119dc6c6ca0299607169973">this</a> became the extension that drove the exporting.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701620512389-image-20231204002150286.webp","id":2399} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701620512389-image-20231204002150286.webp" alt="" /><figcaption>Panel of modified extension, 3/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Type safety &amp; deduping</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Beyond exporting, I also needed a way to, at dev-time, ensure I was accessing the correct things. This sounds like a codegen problem! Since I now had individual objects as separate GLTF files, &amp; plain-text GLTFs were just JSON, it was trivial to extract names &amp; types modularly into TypeScript files.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Unfortunately, it was around here that I realised there was tremendous amounts of waste when it came to the bytes that were outputted by the batch GLTF exporter above. It was because, many objects could use the same underlying mesh data, &amp; exporting them separately meant that we needed to bundle every dependency, every single time, for every object. It gave a lot of duplicate files.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The initial idea &amp; implementation was to naïvely associate all objects with the same name, but different number suffix as having the same mesh data. This worked, well enough, but it broke down the moment some one actually named something properly, or when you edited some of the duplicated data. Solving this was not as easy as it seems though, the solution needed to collapse binary data whilst taking account normalised names, writing out all the instances of these meshes to recreate the initial scene.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>However, with a lot of precision hair pulling, the final result worked much better than I ever could've imagined.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701517810872-image-20231202195008841.webp","id":2400} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701517810872-image-20231202195008841.webp" alt="" /><figcaption>Size comparison between DRACO compressed outputs: GLB (left), GLTF separate (middle), processed parts (right), 2/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>All that comes from <a href="https://github.com/sxxov/deceitville/blob/main/scripts/gltfs-to-parts.mjs"><code>scripts/gltfs-to-parts.mjs</code></a>, which generates the following files:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} --><ol>
+<li><code>gltfs.db.ts</code>: Exports all the individual GLTFs.</li> <li><code>instances.db.ts</code>: Exports all instances for each GLTF.</li> <li><code>index.ts</code>: Barrels <code>gltfs</code> &amp; <code>instances</code>.</li> <li><code>[name].ts</code>: Basically a <code>.gltf</code> file that integrates with <code>vite</code>'s module imports directives to be able to be put anywhere in the project.</li> <li><code>[name].bin</code>: The relevant binary data that backs each object.</li> <li><code>[name].jpg</code>: Textures, can be manually replaced with more optimised versions.</li></ol><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Integration into <code>svelte</code>/<code>threlte</code></h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Getting back the DX of <code>@threlte/gltf</code>, several part utilities were written up, such as the <a href="https://github.com/sxxov/deceitville/blob/main/src/lib/3d/part/Part.svelte"><code>≤Part≥</code></a> &amp; <a href="https://github.com/sxxov/deceitville/blob/main/src/lib/3d/part/Parts.svelte"><code>≤Parts≥</code></a> components that take in the imported props from the <code>index.ts</code> of a processed GLTF &amp; dumps it into the <code>threlte</code> context.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Mixing DOM content with 3D canvas content</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The main concept for Deceitville would be mixed DOM elements with 3D content inline with them. I've historically learnt that, this means <em>one</em> single, global canvas for everything to be rendered (browsers are really not great (performant) at compositing multiple canvases together). Since we're using <code>threlte</code>, its main container for things that it renders would be <code>≤Canvas≥</code>. However, it's designed in a way where it depends on all components mounted as children of <code>≤Canvas≥</code>. Adding onto that is that not only does <code>≤Canvas≥</code> wait for CSR to initialise the canvas element before mounting any children, it also voids out all mounted DOM elements by mounting them under the DOM <code>≤canvas≥</code>, which basically mean they will only render for users using IE8 &amp; below (which doesn't support <code>≤canvas≥</code> at all). I've filed an <a href="https://github.com/threlte/threlte/issues/753">issue</a> about this, asking the maintainers for mercy, but in the meantime, it's morbin time.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Okay, I'm getting ahead of myself a little here, SSR doesn't come in until a lot later in this story, so let's all huddle around &amp; hear how portaling made this possible in the first place.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Once upon a time, one DOM element liked another DOM element very much, but one of them was stuck in their parents' house. The other DOM element, really wanted to be with them, so they asked a good friend's help in DOM manipulation. Since the DOM element was an only child, they successfully created a little script that targets the parents of the DOM element &amp; commanded every single one of their children to be rehomed. Unfortunately, this meant that they would become the other DOM element's adopted child instead of their significant other. It is very messed up so don't worry about it too much. Stop telling me this is incest &amp; a "bad story".</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>In technical terms then, a component named <code>≤AmbientCanvas≥</code> would mount at the top level of the layout, &amp; everything else would slot under as its children. It would then slot said children under <code>threlte</code>'s <code>≤Canvas≥</code> &amp; use a <code>svelte</code> action (<code>use:</code>) to reattach them on mount into a sibling portal target.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701610856341-image-20231203214048523.webp","id":2401} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701610856341-image-20231203214048523.webp" alt="" /><figcaption>Very insightful diagram about portaling NOT drawn with MOUSE, 3/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Title (attempt #1)</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>With the most basic building blocks in place, it felt like maybe I could try shipping something that I could show Mr. Razif. The first thing I worked on then, would be the title, I mean how hard could it be? Create text, transform them on scroll, right?</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Well, there's a reason why this is annotated "attempt #1", because in this version, I used <code>troika-three-text</code> through <code>@threlte/extras/Text</code>. Which, by default, except for passing in parameters to change the font, the letter spacing, &amp; the size, would produce something like this:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701611625992-image-20231203215342910.webp","id":2402} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701611625992-image-20231203215342910.webp" alt="" /><figcaption>Recreation of text generated by `troika-three-text`, 3/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Notice the jagged edges &amp; visible non-roundness of geometry. Even if I was okay with that, the text generated came as one single mesh, &amp; if I'd wanted to control the transformations of each single character, I'd need to create a few of them aaaaaaand, do kerning on my own. If you know, you know, but I did it anyways. Not perfectly, but it was done. Adding some scroll linked animations (thank you for <code>@sxxov/ut/map01</code>, past me), &amp; I had a basic title.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701612680894-image-20231203221118488.webp","id":2403} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701612680894-image-20231203221118488.webp" alt="" /><figcaption>Individually transformed text, 14/9/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Unfortunately, it was still a bit dull, because you could do exactly this just in the DOM. I really wanted something that showed people that this is not your grandma's HTML5. I thus reached for ol' reliable, optical distortion. Double unfortunately, rendering two cameras with different outputs onto a single canvas is not that easy. There were two approaches I could take:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} --><ol>
+<li>Multiple <code>RenderTarget</code>s<ul>
+<li>Creates a completely separate render pass that can be slotted in wherever during compositing.</li> <li><em>Technically</em> enables a completely separate post-processing sequence.*</li> <li>Unmanaged by <code>threlte</code>, requires our own render loop.</li></ul></li> <li>Multiple <code>Scene</code>s<ul>
+<li>Composited over the main renderer's image.</li> <li>No post-processing (they remove the alpha channel).</li> <li>Managed by <code>threlte</code>.</li></ul></li></ol><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>Option 1 seemed better for flexibility, as I could then deep fry the title however I wanted, but I could not get it working for the slightest. Thus I went for option 2, which fit my needs &amp; had the benefit of fitting into <code>threlte</code>'s render loop &amp; inherit all its creature comforts. With a sufficient amount of headbanging, operation opticAl diStortion compoSition (ASS) was a success.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701618971457-image-20231203235607625.webp","id":2404} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701618971457-image-20231203235607625.webp" alt="" /><figcaption>Optically distorted title, 14/9/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Hmm... still a bit dull, ain't it. Still not really clear that this will be Three Dimensional Website. Whilst scouring the web, I came across this example of using <a href="https://codesandbox.io/p/sandbox/meshtransmissionmaterial-hmgdjq?file=%2Fsrc%2FApp.js%3A17%2C31"><code>@react-three/drei/MeshTransmissionMaterial</code></a> as well as <a href="https://okcest.cool/">OKCC Lab's site</a>, &amp; it is very pretty &amp; not something you typically see in real time (refractions are expensive) — so why not let the user control this glass thing that messes with the text in front of them?</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701622951340-sotd-okcc-interior-1.webp","id":2405} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701622951340-sotd-okcc-interior-1.webp" alt="" /><figcaption>OKCC Labs, n.d.</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>I could not get glass to work.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Turns out, the characters are created as alpha-having meshes, &amp; stacking multiple transparent objects is very tricky in WebGL. For now, users will just have to settle for controlling a regularly textured mesh (boohoo).</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701620317666-image-20231204001833940.webp","id":2406} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701620317666-image-20231204001833940.webp" alt="" /><figcaption>A fence post, distorted, following the user&#039;s cursor, 19/9/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Stupid title, I will come back for you.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Story</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>As seen in the original sketch, there was kind of an explanation right after the title. Very quickly I tried that format of a long string of text. I couldn't really read it, &amp; it was kind of just boring. You could very easily skip past it, as there was no separation between chunks. Hopping into Figma, with the goal of creating something that both required you to pause to read it, &amp; something that was interesting enough for you to stop &amp; read.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701623124795-image-20231204010521762.webp","id":2407} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701623124795-image-20231204010521762.webp" alt="" /><figcaption>Typographic explorations of laying out the story of Deceitville, 12/9/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Implementing this was a little bit of a headache though. How the hell do you even lay this out? Well, I decided to go for something like a TailwindCSS/utility class approach, where I would have many, many different type of flexboxes, decided by the combination of classes they had.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Scrolling them sideways was another pickle. Maths!</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701624694033-image-20231204013131421.webp","id":2408} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701624694033-image-20231204013131421.webp" alt="" /><figcaption>Code excerpt for mapping vertical scrolling to story scrolling, n.d.</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Then, the actual content would just span across a horizontally overflowing <code>≤div≥</code>, &amp; moved by using a <code>.scrollTo()</code> call.</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>CSS transform wasn't used because of mobile performance concerns. I've had enough nightmares with those, even though it should work the same as a scrollable container, both operations only happening on the compositor level.</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p><code>.scrollTo()</code> was used instead of directly mutating <code>scrollX</code>, as <code>scrollX</code> doesn't do any batching. Whilst that sounds like at first like a good thing, its performance is usually much worse than <code>.scrollTo()</code> because the browser can't predictively move scrolls. The effect is most visible on mobile (Safari 💀).</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:heading {"level":3} --><h3>Village</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I needed a way to entertain users whilst they were exposition dumped on. Deceptive design isn't the most hot &amp; sexy topic on the block. If it was a person, it probably kicked dogs &amp; smelt like garlic. Thus, the 3D streak shall continue.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Taking from "3D Fantasy Village Pack", I wanted the camera to follow a set path as the user scrolled along the site, inspired by <a href="https://threejs.org/examples/#webgl_geometry_extrude_splines">this example</a> from <code>THREE</code> themselves.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701620932171-image-20231204002849920.webp","id":2409} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701620932171-image-20231204002849920.webp" alt="" /><figcaption>`THREE`&#039;s example of a camera following a spline, n.d.</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Mapping out a route, I kinda just went wherever, doing the cool CGI movie thing &amp; putting the camera super close to the sides of buildings. "This would be temporary", I said confidently (wrong) to myself.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701621136732-image-20231204003214408.webp","id":2410} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701621136732-image-20231204003214408.webp" alt="" /><figcaption>Overview of camera path, 3/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>For the scene in THREE, I kinda just, loaded it in with the previously built tools &amp; it just worked. Getting the camera following the points was just a copying exercise from the official example, as well as a little tool to export the path from Blender, as points in JSON to be constructed into a curve in <code>THREE</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>I would show you the tool, but I literally cannot find it anymore. It is lost to time. Life is ephemeral.</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701621838714-image-20231204004355576.webp","id":2411} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701621838714-image-20231204004355576.webp" alt="" /><figcaption>Meshes + punctual lights, 21/9/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Well, these lights look really bad in WebGL, what happens if I get rid of them?</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701621744333-image-20231204004221898.webp","id":2412} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701621744333-image-20231204004221898.webp" alt="" /><figcaption>Meshes only, 21/9/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Hmm... even worse.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Okay, what if I work with them, maybe a little fog, some reduction in exposure?</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701622119324-image-20231204004836596.webp","id":2413} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701622119324-image-20231204004836596.webp" alt="" /><figcaption>Meshes + punctual lights + fog, 21/9/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Better, but the lights <em>really</em> slowed my machine down, &amp; they don't even look that great! I maybe need to rethink this.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>OK, in the face of a crappy renderer, there really is only one way to work around it, <em>🎨stylisation🎨</em>. To the <code>EffectComposer</code>!</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701625192776-image-20231204013949995.webp","id":2414} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701625192776-image-20231204013949995.webp" alt="" /><figcaption>Such noir, much wow, 21/9/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>A mish mash of typical crap, brightness/contrast, hue/saturation, vignette, SMAA (real AA is expensive), bloom, as well as special-er things like a LUT &amp; <code>drei</code>'s <code>DotScreenEffect</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>In retrospect, this village journey was big in proving the inefficacy of designing before entering a new environment, proving that, at least for this specific project, designing-in-code was very much the correct path. Check out the original vision in Blender:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701634154645-image-20231204040910035.webp","id":2415} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701634154645-image-20231204040910035.webp" alt="" /><figcaption>Screenshot of village in Blender, 4/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Such a big difference shadows, localised lighting, &amp; ambient occlusion, makes, compared to <code>THREE</code>'s PS2-looking attempt. On the other hand, I would not have been able to reach that stylised look in Blender either, &amp; all of my sketches or renders outside of <code>THREE</code> would immediately be invalidated. <code>THREE</code> has a very specific set of strengths, &amp; after getting over the culture-shock of not being able to plop in a three-point light setup for things to look nice, are definitely workable in order to get a web-accessible 3D experience.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Waze</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I needed a way to tell users "Oi, scroll down, dummy!", because the initial screen otherwise doesn't have any indication of further content. Well, in line with the flying/navigating theme, a navigator that points to a direction, that happens to be "down" when you first enter the page, seems like a cheeky enough idea that it might work. Maybe something that would go according a predefined route that was mapped to the scroll position.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701636746963-image-20231204045224148.webp","id":2416} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701636746963-image-20231204045224148.webp" alt="" /><figcaption>Navigator component, n.d.</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Well, that was exactly what was made, but with the majority of the energy put into the stupid arrows. What happens whenever a direction changes? The arrow pointing down snapping to direction arrow is quite jarring, it should animate to it on the next animation cycle! <em>...sigh.</em> Hopefully now you'll notice that on the final page.</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>Welcome to another game of: attention-to-detail or hyperfixation?</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:heading {"level":3} --><h3>Directory</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>As according to the sketch, I wanted a directory page that would showcase the buildings associated with each level by following the user's mouse. This is not as straightforward as it might sound, especially if slotting in with the other systems. You have to figure out where the mouse is relative to the 3D camera's current view — coordinate hell!</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This took a LOT of effort, including a <a href="https://github.com/sxxov/deceitville/blob/main/src/lib/3d/lmth/Lmth.svelte">failed attempt at mapping 3D objects 1:1 to DOM elements</a> &amp; many more failed attempts at tinkering with trigonometry. All you need to know, is that eventually, I was able to accurately map a point in screen-space onto a plane on a specified z-coordinate, in world-space.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701635455813-image-20231204043053120.webp","id":2417} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701635455813-image-20231204043053120.webp" alt="" /><figcaption>Building following mouse, n.d.</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Besides that, the rest of the UI was pretty straightforward, except for one exception:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701635858559-image-20231204043736365.webp","id":2418} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701635858559-image-20231204043736365.webp" alt="" /><figcaption>Vanity frame deconstruction, 4/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Yeah that's it. That's all I want to say/show about it. Just know it took WAY too long. Did I mention it's responsive?</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Completion/Health</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Users need to be able to see how much they've progressed, that's kind of the minimum I can do to call this a game. It was around here where the camera switching situation became serious, because it finally dawned on me that I would have lots of cameras for levels or even parts of levels. The solution? A camera stack! Woohoo Data Structures &amp; Algorithms!!</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Camera stack done, I was able to easily switch away from the previous cameras to one that looked at an overview of a very long spinning tower. I call it the kebab scene, but it canonically should be something like De Headquarters. Oh well, problem for future me.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This was the quickest part yet, &amp; I can't decide if it's because all the previous engineering is paying off, or it just kinda sucks in its current form.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701636349056-image-20231204044544505.webp","id":2419} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701636349056-image-20231204044544505.webp" alt="" /><figcaption>Simple, initial health bar, 1/10/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Separation between game stuff &amp; info stuff</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Beyond this point on the page then, would've been more on the informative content, either giving lore or lessons about deceptive design. Thus I needed kind of an on-theme way to present that. Presenting, my usual overuse of my custom <code>≤Marquee≥</code> tag:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701637010017-image-20231204045647087.webp","id":2420} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701637010017-image-20231204045647087.webp" alt="" /><figcaption>Scrolling caution tape, but it&#039;s a static image so you can&#039;t see it scroll, womp womp, n.d.</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Explainers</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>We come to the part where visitors actually need to learn what the hell this is all about. Originally, this was only supposed to be a super simple, summarising redirect to Harry Brignull's Deceptive Designs site, but I felt like it really didn't provide enough context to explain everything around Deceitville.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>"Memo"</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The LORE, think about the LOREE!!!! Educating people using text, in a normal fashion, would've been TOO boring. So, this section would basically try to explain the sinister tone of deceptive design, whilst keeping a air of mystery &amp; intrigue, through an internal memo from within De Corp. The design of the memo itself was pretty straightforward, graphic design yada yada. So what was this section's hyperfixation? I wanted to make it look like the paper was being shredded as the user scrolled down.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Now, I could've done this properly, use a 3D mesh with the document as the texture, then slice it up in Blender &amp; manipulate the mesh data in <code>THREE</code>, but no way am I going to be able to pull that off, especially because it meant manipulating raw vertex data to achieve a partial waving effect. What I could do instead is do it improperly! Which is why you can see in the final result, that the shadows don't quite match up with the shredding, because how this effect is achieved is purely through HTML &amp; CSS, just with the same <code>≤div≥</code> cloned many times, clipped, transformed, &amp; shaded individually.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701637526448-image-20231204050523053.webp","id":2421} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701637526448-image-20231204050523053.webp" alt="" /><figcaption>Programmatic shredding (not really), n.d.</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>My high school math teacher better be proud of me, cuz the hands coming from sin, cos, &amp; tan are HARD.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>"Company Profile"</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This section is the spiritual successor of the initial idea of a simple explainer, redirecting to Brignull's stuff. It does exactly that, but includes some more explanation, spoken from the perspective of De Corp.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Contact</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I'm gonna be honest, this was basically 100% yanked from my previous client project. So uh, yeah. At least this means it's user-tested?</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Footer</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Same story, basically 100% yanked. Oh how great it is to write your own custom components!</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>⚙️ Progress check!
+<a href="https://deceitville-n74bya8ks-sxxov.vercel.app/">de5831693866c3cb9a4f64241fcba4f1d552f5f0</a></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:heading {"level":2} --><h2>Phase 2: Actually Usable</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>Various over the wire optimisations</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This was the first time Deceitville was online, &amp; it thus exposed quite a bit of jank that needs fixing. The major thing was unifying all the various environments/HDRIs that different components were loading in, &amp; subsequently _<strong>decimating</strong>_ the resolution of that. You can't really tell now that the entire environment map is <strong>just</strong> 256x256, but you can tell that initial loading times have improved substantially.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Title (attempt #2)</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>OK, here we go. The main reason why I came back to the title wasn't actually because I was desperate for the glass effect, it's that the round-trip to fetch the font &amp; then only start creating the title, took too long for the first &amp; largest contentful paint of the site. Replacing the dynamically created text with static meshes enabled me to send everything down the wire together (once again, HTTP2 to the rescue), &amp; drastically increase visual fidelity of the text, too.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The upsides keep on coming, as since I now had full control of the mesh, I could move the anchor points to locations that <em>wasn't</em> the top left, making for much more natural transformations.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The final nail out of the coffin (??) was the fact that I now no longer had any transparent materials, &amp; that I could finally get my glass dream of refractions everywhere when people first open the site!</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>⚙️ Progress check!
+<a href="https://deceitville-6zz92o9yr-sxxov.vercel.app/">a1655f03fd2705dee653ae82d77cf08f4e97dfb5</a></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701638904129-image-20231204052820774.webp","id":2422} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701638904129-image-20231204052820774.webp" alt="" /><figcaption>Glass title!, 30/10/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Server-side Rendering (SSR)</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This was the first major overhauling of a combination of systems in Deceitville. Throughout the entire lifespan of the site until now, it only supported Client-side Rendering (CSR), due to the hackery required for DOM components to sit next to <code>threlte</code> components. Now that the site is online, it becomes quite apparent when content is hydrated &amp; a sudden flash of content appears. Even worse, is that the flash's duration is non-deterministic, &amp; it means it can leave users with no useful information on screen for a long time until the main bundle is downloaded &amp; executed.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>There are specifically two challenges that need to be solved to achieve idiomatic SSR:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} --><ol>
+<li><code>≤AmbientCanvas≥</code> allowing children components to be considered for SSR.<ul>
+<li>Currently, it swallows all children until the canvas is initialised.</li></ul></li> <li>Proper scroll restoration.<ul>
+<li>Currently, every time the page is navigated to, it jumps to the top.</li></ul></li></ol><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>They're more technical, so there's nothing much to detail here without just copying &amp; pasting out the code, but just know it happened, &amp; the site is much faster now.</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>⚙️ Progress check!
+<a href="https://deceitville-lawv9mn1e-sxxov.vercel.app/">b971b8caa0f49c6a899e60ebf7c3fea4a0e54daf</a></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:heading {"level":3} --><h3>Non-obstructing directory buildings</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>According to feedback by Mr. Kanan &amp; Ms. Anis, the building in the directory blocking the text is an issue, &amp; hampers usability. Whilst it is definitely true, it's a shame because I really liked that motif. So, I set about coming up with a compromising solution, keeping the pointer control, but getting the actual 3D model render away from the text that it may obscure.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>What I came up with was that the model would stay controlled on the Y axis at all times, but would snap over the the description pane when the user's pointer crosses a threshold determined by the width of the text.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701641611693-image-20231204061329312.webp","id":2423} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701641611693-image-20231204061329312.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701641634082-image-20231204061351728.webp","id":2424} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701641634082-image-20231204061351728.webp" alt="" /><figcaption>When cursor is riding the threshold of obscuring, building starts to grow, still following the cursor, 9/11/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701641654277-image-20231204061411841.webp","id":2425} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701641654277-image-20231204061411841.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>⚙️ Progress check!
+<a href="https://deceitville-1m13a8qw1-sxxov.vercel.app/">d0363a3e9ebcd37ef486ec9a285ab6d6d42235cc</a></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:heading {"level":3} --><h3>The rest of the horse</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Basically everything from here on out becomes iterative. Mostly fleshing out levels &amp; sharpening the tools that such a task requires. However, there are a few final improvements.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>Phase 3: De-point Points of Contention</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>Splash loader</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Ever since SSR was introduced, the render between first load &amp; hydration was always different enough that it would be distracting. This is especially pronounced when a user refreshed the page when they were mid-way through reading the story, as the scroll-linked horizontal scroll-translating logic wouldn't've loaded in by the time they were looking at something.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Initially I was just gonna let this be, because I was deadly opposed to adding a full page loader; it's not web like! You lose all the hard work the browser engine teams have done, just to get streaming HTML that starts rendering as soon as any discernible HTML tag is found. Alas, eventually I would cave, because the content flash without some sort of transition was distracting enough to be disorienting.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>OK, a middle ground then. Create a full page loader, that doesn't actually obscure the browser's loading? Emphasis could then be put into the loading status, instead of attempting to abstract that away. The goal would be to inform the user as transparently as possible, &amp; I think this is as far as we can go without literally printing to the screen the individual files that are coming down the wire.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The thing is, the reason why I got to get away with not implementing this loader for so long, was because I already had a guestimating progress bar up top. I just had to derive from it then, right?</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Wrong. it's more complicated than that, because in order to have this loader, I'd need to exit from <code>@sveltejs/kit</code> &amp; <code>vite</code>'s compilation all together; I'd be raw-dogging JavaScript! Then passing around when the page has hydrated, along with sniffing from the DOM Pace's (<a href="https://codebyzach.github.io/pace/">the auto progress bar library</a>) current progress, is a little bit of greasy elbow.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Pace, being a rather old library, also needed some help recognising certain network calls. It didn't track any <code>fetch</code> calls, so I just wrote my little progress source that took from any GLTF that was being loaded, which was basically all the big chunks that mattered anyways.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The shenanigans continued as even the browser engine fought back, where using CSS transitions would cause transform animations to fall back to non-compositor-only mode, &amp; stutter like mad! One, problem, at, a, time.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Eventually though, all this work for you, i-Xcess, you slow little thing, it works.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701643225621-image-20231204064022428.webp","id":2426} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701643225621-image-20231204064022428.webp" alt="" /><figcaption>Splash loader entry animation, 3/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Refreshed story design</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I've never been 100% pleased with the story design, mostly because it felt too, loose &amp; light compared to the busy 3D background. Messing about it, I even contemplated rehashing the entire site's design language just to accommodate such an important piece of the  experience. Alas, fortunately, I found a significantly better solution at not much higher of design cost — adding lines everywhere.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>OK, it's not as easy as I put it here, but it was basically that. Adding auxiliary UI elements that complement the existing text, along with letting them span all the way to the edge of the viewport like in every other UI element, fits them in perfectly!</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701642366421-image-20231204062603107.webp","id":2427} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701642366421-image-20231204062603107.webp" alt="" /><figcaption>First story pane of refreshed design, 3/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Refreshed completion/health design</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Since the beginning, it was always kinda, eh. For the longest time it didn't even work, &amp; when it did, it provided basically zero context to users on why they got that number of "health". A solution should be super clear &amp; direct on <em>why</em> the health is the way that it is, &amp; what they can do next. Maybe something heart-based, &amp; maybe even something that placed "dead" hearts at the start of the row, to indicate that you're actually <em>supposed</em> to chase dead hearts.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701644626551-image-20231204070342885.webp","id":2428} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701644626551-image-20231204070342885.webp" alt="" /><figcaption>Health/completion with refreshed design, 4/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>For even more extra double super clarity, users can also hover over them (or tap on mobile!) to reveal the correlated level &amp; their status. Clicking on them would bring them to said level.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1701644713762-image-20231204070510848.webp","id":2429} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1701644713762-image-20231204070510848.webp" alt="" /><figcaption>Employers, look! I can do accessible tooltips! 4/12/2023</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>⚙️ Progress check!
+<a href="https://deceitville-gw90bqa6h-sxxov.vercel.app/">291d8ef33896925f442b1c1e8644772b91af958c</a></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:heading {"level":2} --><h2>refllection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Congrats, you made it till the end!</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>🔴 Live site!
+<a href="https://deceitville.ljs.lol">deceitville.ljs.lol</a></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>I'm sure everyone's shaking in their seats waiting for me to ask the important questions — "how did working on this project make you feel?" If you're not tired of the yapping yet, it made me feel quite optimistic for my future in this career path. Whilst yes, it probably isn't healthy to crunch like this for any extended period of time, &amp; whilst yes, I did burn out a few times working on this, every time I come back I can't help but want to improve it further &amp; work on it just a little more. Right now I'm still looking at writing a monkey patch for <code>fetch</code> that will drastically ease the network burden of first time user by batching the same GET requests together across a set interval.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The fact that I made it this far though, is only because of the things I've learnt along the way. I would not have been able to create a site exactly like how it is at the current moment, even 3 days ago. I've learnt countless technical skills &amp; tid-bits, that I don't doubt will make it into my future projects. Maybe <code>≤AmbientCanvas≥</code> might just become a reoccurring component?</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Besides that, managing the work I have to perform to complete this project &amp; everything else, also was an experience that my teeth got dirty gritting through. I've learnt that I code faster drunk, which is probably not a great learning, but I did also learn how to schedule, balance, &amp; prioritise features I need to get into the site. Like what levels should go in, &amp; ensuring I leave the iterative stuff till the last.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Overall, would I do something like this again? Within the near future? No, I need a holiday. Within the same timeline? No, I need a proper sleep schedule. Eventually? Probably, yeah. As much as it was difficult, I'm looking forward to mingling in this domain for the foreseeable future... or until I get bored of it, whichever comes first.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Hire me &amp; find out.</p><!-- /wp:paragraph -->

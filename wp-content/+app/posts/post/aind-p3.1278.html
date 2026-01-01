@@ -1,0 +1,70 @@
+<!-- wp:heading {"level":2} --><h2>todo:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Create a site prototype in Adobe Animate</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>process:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Before even starting this project, I'd already hit a snag — my Spark AR filter was unrelated from the project. This was due to miscommunication, where Mr. Razif mentioned initially that the filter could be unrelated, but omitted the fact that this would entail the requirement of creating a new filter for this project. However, with a little consultation, we were both sorta at a standstill of "what to do", since the timeframe left to finish this project before the end of semester was tight. Thus, a compromise of integrating the filter any way possible into the site, was put into motion.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Well, yeah, have I mentioned the tight timeframe?</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Combination concept</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>To combine them both, was a little awkward, due to the fact that my brand for this project &amp; the first was a luxury ring merchant, whilst my filter was a throwback Y2K emulation of MS Paint. However, with a little brainstorming, I thought that <em>luminance</em> could host a sorta art contest, where the winners using <em>DRAWR XD</em> most creatively would get discounts or other perks, to promote their new "nostalgia" line of rings.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Ring assets</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The first thing then, that I needed to prepare for the project was a few renders of the rings, with the theme of "nostalgia". I first started with a pixel-art-ish ring, in the shape of a 8x8 &amp; 16x16 circle.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671032622011-image-20221214234340522.webp","id":1371} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671032622011-image-20221214234340522.webp" alt="" /><figcaption>Ring modelled off a 16x16 circle, 9/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>From there, I just went ham trying to come up with any cool designs I could use, including abusing tools &amp; fixing their traumas on the mesh. My favourite one turned out to be a 8x8 ring, with a concaved edges all the way. It may look deceivingly simple to model, but Blender's bevel modifier really required a lot more manual labour to clean up its messes. Not to mention the journey to properly merge smooth &amp; flat faces.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671032809715-image-20221214234648114.webp","id":1372} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671032809715-image-20221214234648114.webp" alt="" /><figcaption>All the rings designed. 10/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>However, when throwing it into a proper rendering scene, the creamy reflections helped justify the preparation a lot more.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671033063359-image-20221214235101850.webp","id":1373} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671033063359-image-20221214235101850.webp" alt="" /><figcaption>Render preview in Blender Eevee, 10/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671033206880-image-20221214235325526.webp","id":1374} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671033206880-image-20221214235325526.webp" alt="" /><figcaption>Rendered ring inside Magic Bullet Looks, 10/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Setting up</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>After the main few assets were there, I jumped into Adobe Animate to start. Aaaaand I already found a blocking bug/issue/very bad design. Whatever it is, if I'd create a new project, &amp; import the libraries of another project, but modify them in the new project, the resulting publish would emit nothing. After a lot of debugging &amp; whatnot, I just gave up &amp; just copied + pasted my <a href="/2022/10/aind-p1.html">project[1]</a> .fla so I could get its libraries. The main thing I changed though, was the document framerate to 60fps. When making the first project, the one thing I didn't realise was that the actual framerate of the canvas rendered onto the screen would follow the Adobe Animate one. Being a person more familiar with <a href="https://github.com/airbnb/lottie-web"><code>lottie-web</code></a> animations, which has sub-frames (basically frame interpolation, but at an attribute level), this behaviour was both jarring, &amp; basically irreversible after the amount of work already done following 24fps (the framerate of project[1]).</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Carousel</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Once I was set up, I already knew I wanted to have a full page carousel experience on the home screen, thus I immediately yanked the implementation I had from the previous project &amp; continued my work on it. Due to the fact I was also quite time constrained then, there was a bug that I'd never managed to fix — incrementing/decrementing slides too quickly would cause the viewing state to not update. However, basically on my first skim this time, I figured out a fix — a <code>next</code> variable to schedule a tween to run after the current one, when incrementing/decrementing was locked. Huzzah!</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>There's still however, one quirk about it that I'm still leaving unfixed — rolling over from the 1st to the last slide, or vice versa, looks wonky, due to how it would replay every animation one by one with their original eases, but faster, instead of smoothly transitioning using one motion. This could be fixed by reimplementing eases using a custom solution, similarly to what I'd normally do in After Effects expressions. Next time, I guess 🤷.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Text animation</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>At this point (the second thing I had to do), I was kinda fed up with how things were done in Adobe Animate, so I just, went ahead &amp; added some procedural animation, using ye olde <code>requestAnimationFrame()</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Since I had the library from the previous project to work from, I was able to get it up &amp; running quite quickly. <code>Store</code> was already available, as well as <code>MovieClipExtensions.package</code>, which enables cross-movie-clip reactive communication. I thus exported the <code>index</code> store from the carousel movie clip, &amp; had the text animate + change based on it.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Using this same method, I also managed to make progress dots to know which index the user was at, on the carousel. It's a little bit of a hack, as it uses the characters, <code>○</code> &amp; <code>●</code>, just in text, like an icon font.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Bopping</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The contest page looked quite boring static, &amp; I felt like it really needed a little ambient motion. What if its background elements would just bop, ever so slightly?</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Here comes <code>Math.sin()</code> to the rescue!</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>No yeah that's it, the code was only 50 lines, mostly to wrap <code>requestAnimationFrame()</code>, to coerce some radian math, &amp; to accommodate custom offsets, amplitudes, &amp; frequencies.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>final:</h2><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://site.luminance.staging.sxxov.design","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://site.luminance.staging.sxxov.design</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Final site prototype, 11/12/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>reflection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This was a big doozy. On one hand, I'm definitely more familiar with Adobe Animate, &amp; its quirks. On the other hand, the fact that its bearable at all is because of the 756 lines &amp; countless development hours towards library code. Including just shimming it onto <code>MovieClip</code> itself, noted more in <a href="/2022/10/aind-p1.html">project[1]</a>. I really can't imagine using Adobe Animate without my <code>.go()</code>, <code>.brake()</code>, <code>.isolate()</code> helper methods, plus the <code>MovieClipExtensions.package</code>/<code>Store</code> combo. It's almost like this app isn't designed to be used as a prototyping tool!</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Rant aside, I did still learn more about Adobe Animate. I also managed to really get into the Blender side of things. This was the first time I used linked files, which I now know that I won't be doing again unless extremely required. Cleaning up the bevel tool though, especially under time pressure, got me to explore time savers such as more of Mirror &amp; Solidify modifiers, as well as the Edge Split modifier, which I'll definitely be using more in the future.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>All in all, it was definitely one of the experiences of all time. Whilst I'm definitely not going to touch Adobe Animate, for hopefully a long, long time, I know the lessons &amp; sharpening of the soul, gotten from it will stay eternal.</p><!-- /wp:paragraph -->

@@ -1,0 +1,164 @@
+<!-- wp:heading {"level":2} --><h2>todo:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Create backgrounds</li> <li>Create sprites</li> <li>Create sound/music</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>process:</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>Sprites</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Player</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The first thing done was the animation for my character. Now, outside of Minecraft skins, this is the first time I've done pixel art; outside of Minecraft animations, this is the first time I've done walk cycles. God I'm glad I didn't enter animation as my specialisation.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011740213-image-20221214175537780.webp","id":2052} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011740213-image-20221214175537780.webp" alt="" /><figcaption>Player animation on Pixil, 24/11/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Destruct</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This didn't need to be that complicated, so I just used the tried &amp; true 2D circle pop animation, done in 32x32. The drop shadow was added to make the pop at least somewhat visible in light areas, but since the backgrounds have their colours shouldered, this was just for additional visibility.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671012265101-image-20221214180423259.webp","id":2053} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671012265101-image-20221214180423259.webp" alt="" /><figcaption>Destruct animation in After Effects, 4/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Background</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Branch</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>For the actual backgrounds, while I tried to do raw pixel art for them, I gave up real quickly. Fully abusing my Blender knowledge, I (not so) quickly put together a scene containing all the structures that represent the levels. This included a fully animated skybox, custom buildings, as well as animated lights. This animation would then be synched up to the in game time &amp; represent an actual day-night cycle. I found that it does help sorta pace the game, as well as act as a cue to go to sleep &amp; rest off the night.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671013005775-image-20221214181643944.webp","id":2054} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671013005775-image-20221214181643944.webp" alt="" /><figcaption>Branch level in Blender, 29/11/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Work</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>For the work level, I always had the idea of the player jumping on keys to get points. The most challenging part about this scene was thus the keyboard. With regular keyboards, their long keys differ in length to, assumably, accommodate human ergonomics. For the game though, I want them to be aligned (somewhat) to a grid, so it's a little easier to comprehend. Right now I'm a little behind on new Blender features, &amp; wanted to take this as an opportunity to learn Geometry Nodes, or even just brush up on Animation Nodes, but ultimately I just found it slightly easier to copy &amp; paste the keys row-by-row.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671013072555-image-20221214181751260.webp","id":2055} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671013072555-image-20221214181751260.webp" alt="" /><figcaption>Work level in Blender, 2/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Fun</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This level was a little more """fluid""", as it was the only one where I didn't have a solid plan for. Initially the idea was for the bubbles to be like, air molecules or something &amp; for the setting to be a club. However, for obvious reasons that doesn't really make sense (who goes to a club &amp; <em>breathes</em>??), so pivoting, the idea for the bubbles to be something more gore-y &amp; surreal like pure dopamine, does kinda fit the whole aesthetic of the game.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671013204197-image-20221214182000111.webp","id":2056} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671013204197-image-20221214182000111.webp" alt="" /><figcaption>Fun level in Blender, 2/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Pharmacy</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>With the last major visual asset up next, I spent a little more time on it. It was going to initially just be an empty room with a shelf in the middle, but adding the the lighting, then the lighting fixtures, then the poster boards, I think it might be the nicest looking room with the best ambiance.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671013338765-image-20221214182217482.webp","id":2057} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671013338765-image-20221214182217482.webp" alt="" /><figcaption>Pharmacy level in Blender, 2/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Post processing</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Putting all the assets into After Effects, I ran them all through some colour grading to sync up all the colours, &amp; as well as compress down the colour space. Then, initially using the <code>Mosaic</code> effect to pixelate the renders, but encountering weird asymmetrical results at low frame sizes (32x32), I just created a small composition &amp; scaled things down, whilst using the "Draft" rendering mode to keep colours sharp &amp; avoid any anisotropic filtering.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671013527242-image-20221214182525948.webp","id":2058} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671013527242-image-20221214182525948.webp" alt="" /><figcaption>Colour grading setup in Magic Bullet Looks, 28/11/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671013566611-0010.webp","id":2059} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671013566611-0010.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671013586307-10.webp","id":2060} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671013586307-10.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Raw render vs processed render, 28/11/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Sound/music</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Main menu theme</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Alright, I have to admit, this song was never meant to be for the main menu, but more to be played throughout the game. However, I may or may not went a little overboard on it, &amp; have it be too densely produced to have additional sound effects overlayed on top of it at all times. However, I'm still very proud of how the song turned out! I wanted to preserve the genuine-ish feel of the pixel art, so the synths I used were based on the NES, as well as not much time spent on mixing &amp; mastering (not an excuse at all~).</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671016464239-image-20221214191422653.webp","id":2061} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671016464239-image-20221214191422653.webp" alt="" /><figcaption>Main menu theme in FL Studio, 29/11/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>SFX</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>For sound effects, I used the same NES synths, but just shorter &amp; tighter.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671016545326-image-20221214191543793.webp","id":2062} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671016545326-image-20221214191543793.webp" alt="" /><figcaption>SFX in FL Studio, 29/11/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":2} --><h2>final:</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>Sprites</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Player</h4><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011902235-Crouch.webp","id":2063} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011902235-Crouch.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011910509-Idle2C20Bop2C200.webp","id":2064} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011910509-Idle2C20Bop2C200.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011917190-Idle2C20Bop2C201.webp","id":2065} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011917190-Idle2C20Bop2C201.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011923368-Idle2C20Bop2C202.webp","id":2066} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011923368-Idle2C20Bop2C202.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011894578-Idle2C20Bop2C203.webp","id":2067} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011894578-Idle2C20Bop2C203.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011929609-Idle.webp","id":2068} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011929609-Idle.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011934627-Walk2C20Front2C200.webp","id":2069} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011934627-Walk2C20Front2C200.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011940237-Walk2C20Front2C201.webp","id":2070} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011940237-Walk2C20Front2C201.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011945566-Walk2C20Front2C202.webp","id":2071} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011945566-Walk2C20Front2C202.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011950405-Walk2C20Front2C203.webp","id":2072} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011950405-Walk2C20Front2C203.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011956556-Walk2C20Left2C200.webp","id":2073} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011956556-Walk2C20Left2C200.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011963166-Walk2C20Left2C201.webp","id":2074} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011963166-Walk2C20Left2C201.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011976579-Walk2C20Left2C202.webp","id":2075} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011976579-Walk2C20Left2C202.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011983862-Walk2C20Left2C203.webp","id":2076} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011983862-Walk2C20Left2C203.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671011894912-Walk2C20Left2C204.webp","id":2077} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671011894912-Walk2C20Left2C204.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Player sprite animation, graded, 24/11/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Destruct</h4><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671016620005-explodey_0.webp","id":2078} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671016620005-explodey_0.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671016623742-explodey_1.webp","id":2079} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671016623742-explodey_1.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671016627676-explodey_2.webp","id":2080} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671016627676-explodey_2.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671016633896-explodey_3.webp","id":2081} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671016633896-explodey_3.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671016610848-explodey_4.webp","id":2082} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671016610848-explodey_4.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671016638317-explodey_5.webp","id":2083} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671016638317-explodey_5.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Destruct sprite animation, 4/12/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Background</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Branch</h4><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671017046442-out.webp","id":2084} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671017046442-out.webp" alt="" /><figcaption>Branch level background, 28/11/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Work</h4><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671017320450-Work.webp","id":2085} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671017320450-Work.webp" alt="" /><figcaption>Work level background, 2/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Fun</h4><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671017326088-Fun.webp","id":2086} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671017326088-Fun.webp" alt="" /><figcaption>Fun level background, 2/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Pharmacy</h4><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671017333840-Pharmacy.webp","id":2087} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671017333840-Pharmacy.webp" alt="" /><figcaption>Pharmacy level background, 2/12/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Sound/music</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Main menu theme</h4><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1402490989%3Fsecret_token%3Ds-QPaNxHUzbFQ&amp;color=%23b8a282&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;show_teaser=true&amp;visual=true","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1402490989%3Fsecret_token%3Ds-QPaNxHUzbFQ&amp;color=%23b8a282&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;show_teaser=true&amp;visual=true</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Succide main theme song, 29/11/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>SFX</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>(just trust me, play the game.)</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>reflection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This was a wild adventure. It feels like I explored every aspect of my skillset just to make it happen. Whilst yes, I could've very easily just have went the route of doing pixel art from scratch, or at least learning so, the timeframe allocated to do this part of the whole project really restricted my learning options.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>However so, not only did I learn a lot about the 3D-to-pixel-art workflow, including the grading &amp; crushing process, I also got the chance to learn more about sound design. Granted, it's NES levels of it, &amp; I had more fingers than it had dials to adjust the sound, but I still think the theme being my first fully sound-designed-from-scratch song really gave me a better basis for my future projects</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>All in all, while I feel like I could've done a better job if given a more reasonable timeframe, I learnt enough so that my next project will be better, even so with expanded timeframes. Hey, in defence of this situation though, what's more <em>industry standard</em> than crunch time for games?</p><!-- /wp:paragraph -->

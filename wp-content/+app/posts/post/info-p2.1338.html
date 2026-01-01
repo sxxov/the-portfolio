@@ -1,0 +1,186 @@
+<!-- wp:heading {"level":2} --><h2>project[2]A: Animated infographic</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Create a 1 minutes animated infographic, from the static one made in <a href="../02/info-p1.html">project[1]</a>.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Planning</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Before anything could start I needed to section out approximately how much time one each section of instruction could take up. There were 8 sections &amp; 60 seconds, <code>8 / 60^2 = 12secs</code>. That's honestly a wishful thinking fantasy land length of time for me to animate, so instead I shrank it down to about 10 seconds per section, while hoping that they would sort themselves out via pacing.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Like all abominations, I started back in Blender. Fortunately, past me did a relatively great job at texturing &amp; shading everything thus that step was a non-issue this time around; also fortunately, past me did a relatively supreme job at organizing things, parenting &amp; naming when needed, enabling me to reuse basically all of the assets.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644670036588-image-20220212204714887.webp","id":2294} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644670036588-image-20220212204714887.webp" alt="" /><figcaption>Scene structure of static infographic, 25/1/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>3D animating</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>With only happy thoughts to fuel my adventure, I went &amp; started placing keyframes.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644670345953-image-20220212205223565.webp","id":2295} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644670345953-image-20220212205223565.webp" alt="" /><figcaption>Graph of every keyframe in the project, 10/2/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Along the way I learnt a few neat tricks. One of the most notable one would be "shape keys". This would be the technique that enabled me to animate meshes' vertices to move from point A to point B. It's mainly used in rigging, but it was the simplest way without needing to keyframe every single vertex on its own using the AnimAll plugin (which wouldn't be possible/practical, since i was animating sculpted meshes with hundreds of thousands of vertices).</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644670735642-image-20220212205853814.webp","id":2296} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644670735642-image-20220212205853814.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644670748587-image-20220212205907265.webp","id":2297} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644670748587-image-20220212205907265.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Shape keys off vs shape keys on, 12/2/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After all that rendering! It took 2 days straight.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Compositing</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This process was slightly less straight forward than I expected.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>DOF</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>In EXR (the format I was using to store HDR output from Blender) had an option to export "Z Buffer". I enabled that, thinking all my woes would be solved with a depth map inserted into the files themselves. However, importing it into After Effects, there would not even be a "Z" channel.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644671695371-image-20220212211452911.webp","id":2298} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644671695371-image-20220212211452911.webp" alt="" /><figcaption>The channels in the exported EXR files, 10/2/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Apparently, unlike the new "noise reduction" checkboxes which did all the compositor node work for me, this dumb checkbox didn't. Thus, with shame, I went into the compositor, connected the nodes up, &amp; rerendered the entire animation (at a sample count of 1, since fortunately the Z pass is sample agnostic, which still took 2 hours).</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644672613260-image-20220212213010586.webp","id":2299} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644672613260-image-20220212213010586.webp" alt="" /><figcaption>The simple nodes required which if were there in the beginning I wouldn&#039;t have to rerendering things bruh moment, 10/2/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>After I got the depth map, I moved it into After Effects, whipped up a simple controller for focus plane &amp; width, then linked it to the blur.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644672908086-image-20220212213506776.webp","id":2300} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644672908086-image-20220212213506776.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644673006613-image-20220212213645315.webp","id":2301} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644673006613-image-20220212213645315.webp" alt="" /><figcaption>Blurred render from the depth map, 11/2/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":5} --><h5>Grading</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Nothing too special, took the grade from the static infographic &amp; dumped it here. Did make a small tweak though. Since this animation sequence was technically HDR (contains values that exceed 0.0-1.0), which the original didn't account for, the "overexposed" parts of the animation would render with incorrect piss-yellow colours. This was fixed by moving the hue of the colourizing of highlights to more orang-y, which didn't look as jarring.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Below is a comparison of the incorrect vs correct grades. Pay attention to the highlights on the eggs.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644673323953-image-20220212214202622.webp","id":2302} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644673323953-image-20220212214202622.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644673387315-image-20220212214306045.webp","id":2303} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644673387315-image-20220212214306045.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Incorrect vs correct grade, 11/2/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>Background</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This one was a little tricky but not too much of a pain. So the original render was lit with an environment texture (commonly known as HDRI). Thus, if I would want the paper texture to move along to the camera, I'd have to do it in a separate pass. Instead of doing it the correct way (same file, different config), the easy way was so much more easy that it was hard to turn down.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>There was an attempt somewhere in there of creating a box map in After Effects by positioning 3D layers solely in AE's 3D space, but that failed &amp; nothing much can(/should) be said about it.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I ended up with the solution of taking the paper texture, mirroring it in both the X &amp; Y directions, &amp; using it as the environment texture in a new file with the camera of the main file. The largest challenge here was getting the seams to not look too visible, but I  got it acceptable to me in not too much time.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644673857585-image-20220212215055596.webp","id":2304} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644673857585-image-20220212215055596.webp" alt="" /><figcaption>The new environment-only file, 11/2/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>You might notice I'm still lacking one of the key visuals from the static infographic — the orange thingies. Well, to reintroduce them, I simply used Trapcode Form in After Effects to distribute them out into a grid, &amp; respond to the camera exported from Blender.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644674189402-image-20220212215628383.webp","id":2305} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644674189402-image-20220212215628383.webp" alt="" /><figcaption>Orange background in After Effects, 11/2/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>2D animating</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Oof, was all very straight forward except the ingredient text, which needed a bunch of tweaking to get right mainly due to the <code>Vegas</code> effect glitching out. The effect is one that draws a line around the edges of a raster image, using its own edge detection engine to enable "pseudo-strokes". The glitch then, which I'd eventually find, is caused by a combination of the size (&amp; thus edge length) of a frame differing from the last, as well as the "Random Phase" option using the length as one of its parameters to choose the start of the stroke, which causes the strokes to flash &amp; move around every frame at seemingly random intervals. I solved this by moving the effect onto individual layers (which enables it to not worry about transformation animation), as well as disabling "Random Phase" all together.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644675377210-image-20220212221614373.webp","id":2306} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644675377210-image-20220212221614373.webp" alt="" /><figcaption>Fixed ingredient heading, 12/2/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1644675666343-image-20220212222104619.webp","id":2307} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1644675666343-image-20220212222104619.webp" alt="" /><figcaption>Full screenshot of the (very messy) main composition, 12/2/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Sound</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I recently rediscovered a song from a music collective with music I really enjoy — FROMTHEHEART. It's exactly 1 minute long so I thought, why the hell not.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://open.spotify.com/embed/track/6iE0frUpwVazvyCHBMPiFW?utm_source=&amp;theme=0","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://open.spotify.com/embed/track/6iE0frUpwVazvyCHBMPiFW?utm_source=&amp;theme=0</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Sound effects were added on top, since idk, it seemed like a project requirement.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>final:</h3><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://youtube.com/embed/rT4SjF0G6rQ","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://youtube.com/embed/rT4SjF0G6rQ</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Final animated infographic, 13/2/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>reflection:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Overall, this being my longest ever 3D animation (lol), was a great experience. Besides the overwhelming amount of freezes, &amp; the longest opening time I've seen in Blender for a project file, everything else went smoothly enough.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I definitely learnt a lot through this project, whether it be shape keys, HDR colour handling, z-map tweaking for motion blur enabled renders, coercion of the <code>Vegas</code> effect, &amp; more. It was my first time ever willingly parenting to a Null Layer as well, I'd describe the experience as surprisingly pleasant. For info design specific things I learnt, it was most definitely how I could leverage time as an extra dimension to chunk info. Eg. display information in their chunks one by one to specify their sequence of reading, use animations to signify changes in content on screen, etc.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>At the end of the day, these were things that I never would've picked up if I hadn't done this project, &amp; for that I'm grateful. There were surely no lack of things to complain about, but a nett positive is a nett positive, especially if such positives are skills I can use in my future projects.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>project[2]BA: Exercise 3 — Kinetic typography</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Choose a song.</li> <li>Create the kinetic typography video.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>In class during practical, we went through a preliminary exercise, where we experimented with text composition &amp; animation.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://www.youtube.com/embed/lxcz5Z0HFp4","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://www.youtube.com/embed/lxcz5Z0HFp4</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Text composition practice, 11/2/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://www.youtube.com/embed/AG080tmv6L0","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://www.youtube.com/embed/AG080tmv6L0</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Kinetic typography practice, 13/2/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After that, we were tasked to choose a song. We held a vote &amp; came to a consensus for <strong>Derivikat - REVIVED</strong>.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1642668473139-image-20220120164751132.webp","id":2308} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1642668473139-image-20220120164751132.webp" alt="" /><figcaption>Song poll results, 13/2/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>The first step of the execution was creating a glitch effect everyone in the group could use. I utilized the <code>wiggle</code> expression in After Effects, pulling it out into their own controls for amplitude &amp; frequency. That was dandy, however the real issue was replicating RGB split in vanila After Effects without some complicated precomping or CC compositing. I went with the CC Composite method, &amp; ended up with a convincing enough effect.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1642668820858-image-20220120165338582.webp","id":2309} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1642668820858-image-20220120165338582.webp" alt="" /><figcaption>image-20220120165338582</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>However, it took forever to render, due to how it works (for every channel, copy the entire frame onto the side, then shift it back with the screen blend mode). Thus, in the final render, every RGB split was replaced with <code>S_Shake</code> from the Sapphire suite.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>final:</h3><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://www.youtube.com/embed/TjLV7PVDYQI","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://www.youtube.com/embed/TjLV7PVDYQI</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Final kinetic typography, 20/1/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>feedback:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>20/1/2022<ul>
+<li>Looks like a final project.</li> <li>We somehow get 7 out of 5 marks.</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>reflection:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>My first time working on an animation in a group, it's definitely a mixed bag. On one hand, the benefit of actually needing to animate less things is an absolute plus, on the other, needing to manage consistency &amp; quality across the board becomes a whole different challenge. We did however, squeeze through, even with road bumps, blocks, &amp; cliffs along the way.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>For practical stuff, by creating the glitch effect polyfill thing, I found a new criminally underrated effect — <code>CC Composite</code>. What it does is just over/underlays the original frame contents before adding effects onto/under what the frame is currently rendered as. This definitely would've saved me a lot of unnecessary precomping in the past. It's not the fastest effect, but most of the time that performance hit is negligible. For soft skills, I learnt that I probably wouldn't fare very well managing an motion graphic studio, as creating a framework for all to build upon is tough work, &amp; getting everyone on the same page, to use said framework correctly is even tougher.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>At the end of the day, I learnt a lot, &amp; everyone else seemed to have had fun doing so too. Even though I'd never want to, I have to begrudgingly admit I probably can work together better the next time (or project(!!)) I'm needed to animate in a group.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>project[2]BB: Exercise 4 — Motion graphic chart</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Create a motion graphic chart video.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>During practical, we went through each chart type &amp; created a test video out of it.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1643092996477-practical.webp","id":2310} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1643092996477-practical.webp" alt="" /><figcaption>Practical test motion graphics, 20/1/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>After that, we were thrown to make our own. There is one catch though, we were to do only for one type of chart assigned to us. I got donut chart, &amp; to display info impact of COVID-19 on student mobility.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1643093421037-image-20220125145019855.webp","id":2311} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1643093421037-image-20220125145019855.webp" alt="" /><figcaption>Instructions for task, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>I went to work, &amp; instead of doing for only 1 I wanted to add all 3 charts into the video. &amp; also I used blender:</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>final:</h3><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://youtube.com/embed/wzCqCdicGZM","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://youtube.com/embed/wzCqCdicGZM</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Final donut chart, 22/1/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>reflection:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Nothing much happened for this exercise, wasn't really emphasized either. I did do it to my best of abilities, &amp; learnt about Blender's surprisingly robust curve animation system nowadays. I remember it wasn't that long ago (correction: nope I was wrong, it was a long time ago, 2014), that in order to create a 3D bevelled curve with a cap on the end, you'd had to create multiple objects &amp; link them together, then sacrifice a goat in order to hope it worked properly. Other than that, I definitely made heavy use of chunking, as well as making sure visual hierarchy was constructed. Was a good practice (or shall I say, exercise) &amp; I know it'll be a good prep for our upcoming project(s).</p><!-- /wp:paragraph -->

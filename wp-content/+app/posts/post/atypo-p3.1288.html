@@ -1,0 +1,469 @@
+<!-- wp:heading {"level":2} --><h2>instructions:</h2><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://drive.google.com/file/d/1FPPKD-m1vB2cmYCBWr9vmqX0GcdUQkU4/preview","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://drive.google.com/file/d/1FPPKD-m1vB2cmYCBWr9vmqX0GcdUQkU4/preview</div></figure><!-- /wp:embed -->
+
+<!-- wp:heading {"level":2} --><h2>task[3]: Type Exploration &amp; Application</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Create something typographic that solves/explores an existing problem (basically whatever we want as long as it contains text somehow)</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>research:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Things started out with me trying to come up with an idea.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>New bundled typeface in Microsoft products</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This first one I had was something to do with adding a typeface to Windows. This would be a new display type as it had been some time since any "fancy" types have been added to be included. Below is a table of a few older typefaces contrasted with the relatively mundane additions in recent years.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635712825285-jokerman.webp","id":1615} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635712825285-jokerman.webp" alt="" /><figcaption>Jokerman, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>While <a href="#feedback">bringing this idea up to Mr Vinod</a>, he suggested instead I could tackle a typeface, with a little more demand for improvement.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Caustic Sans</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This would be a non-faithful descendent of the (im)famous Comic Sans, almost a parody of how bad it is. However, to bully someone you'd need to know some things about them — some uranium for the nuke. Thus, I started out by dissecting the type letter by letter:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635713864013-Untitled-1.webp","id":1620} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635713864013-Untitled-1.webp" alt="" /><figcaption>Comic Sans analysis, 18/10/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>With a little more understanding of how it (kinda doesn't) work, I went ahead with conceptualizing my offences.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635714044379-sketches.webp","id":1621} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635714044379-sketches.webp" alt="" /><figcaption>Caustic Sans sketches, 20/10/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>As one can tell, they look super different from Comic Sans. I make my case with how it fixes some of the gripes I found:</p><!-- /wp:paragraph -->
+
+<!-- wp:table --><figure class="wp-block-table"><table>
+<thead>
+<tr>
+<th>Problem</th><th>Solution</th></tr></thead> <tbody><tr>
+<td>Curvy where it shouldn't be</td><td>* Increase weight contrast to accommodate tighter — thus more accentuated — curves <br>* Introduce oversized inktraps as an excuse to add curves</td></tr><tr>
+<td>Straight where it shouldn't be</td><td>* Uniform roundness all around stroke ends<br>* Attempt to curve every edge of the type</td></tr><tr>
+<td>Unintentional looking stroke weight variations</td><td>* Increase weight contrast</td></tr><tr>
+<td>Awkward stroke intersections due to not being designed for high resolution displays</td><td>* Add proper adjustments to reduce perceived additional weights at corners &amp; imbalances on curves</td></tr></tbody></table></figure><!-- /wp:table -->
+
+<!-- wp:paragraph --><p>From the sketches, I took all the attributes I liked, mainly the inktraps, the 't', the "deflated tyre" form, &amp; threw them all into a test digitization.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635714588007-caustic-31.webp","id":1622} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635714588007-caustic-31.webp" alt="" /><figcaption>Caustic Sans test digitization, 24/10/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Merging typefaces</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>So there's way too many typefaces out there. This was brought forth by my general search for ideas &amp; inspo for this project. I thought, since the reason of each font is to bring forth new features, what features would making soup out of the typefaces retain? Here's the gist of execution that might work:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Write a script to download maybe, top 100 sans serif fonts from dafont.com</li> <li>Write a script to lay &amp; centre them in after effects/javascript canvas</li> <li>Vary clamp threshold &amp; blur radius</li> <li>Run auto-trace on them</li> <li>Clean-up(?)</li></ul><!-- /wp:list -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635715654192-image-20211101052731724.webp","id":1623} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635715654192-image-20211101052731724.webp" alt="" /><figcaption>Initial test combining 10 typefaces already installed, 24/10/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>From this preliminary test, things were looking somewhat promising, as it didn't turn to mush. However, this was a pretty controlled environment with only regular-weighted sans serif fonts used, adjusted for font width. The dataset of merely 10 was probably way too little to risk any distortion; too little to generate any excited &amp; weird results.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Typography in sound spectrograms</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This is definitely the most experimental out of all. It exploits the concept of how sound can be converted to &amp; from images via a spectrogram. In short, a spectrogram is just a mapping of signal strength to a visual graph, with signal strength in this context being frequency (20-20kHz), &amp; the other axis being time.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635716345563-image-20211101053904216.webp","id":1624} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635716345563-image-20211101053904216.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635716353591-image-20211101053912251.webp","id":1625} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635716353591-image-20211101053912251.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635716373689-image-20211101053932498.webp","id":1626} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635716373689-image-20211101053932498.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Examples of visual content represented through sound spectrograms, n.d</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This conversion can be done using tools such as <a href="https://academo.org/demos/spectrum-analyzer/">this</a> to go from audio to visual, &amp; <a href="https://rdrr.io/cran/soundgen/man/invertSpectrogram.html">this</a> for the inverse.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://drive.google.com/file/d/1ZfkkO8rFfhiQayYUEiNp5RfZ7OE2UOXT/preview","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://drive.google.com/file/d/1ZfkkO8rFfhiQayYUEiNp5RfZ7OE2UOXT/preview</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>The at-the-end-useless proposal, 25/10/2021</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Strap in.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After giving it some thought, I decided to scrap the idea of Comic Sans completely, &amp; go with something a lot more out there. I was thinking about the last two ideas, &amp; how I could take em on. I vaguely remembered an idea of using a visual generation AI to generate music through feeding it spectrograms. This gave me a spark, as if I was doing the 2nd idea, &amp; I wasn't the one combining the fonts by hand, I could take in a lot larger of a dataset!</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This kickstarted me into the rabbit hole of machine learning, my first venture mind you. Here's a few terms I learnt if it might be useful for anyone reading:</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Mini machine learning glossary</h4><!-- /wp:heading -->
+
+<!-- wp:table --><figure class="wp-block-table"><table>
+<thead>
+<tr>
+<th>Word</th><th>My crappy definition</th></tr></thead> <tbody><tr>
+<td>Layer</td><td>An algorithm that transforms the input data.</td></tr><tr>
+<td>Latent value</td><td>The number of data points to keep when transitioning between the input &amp; output of a generator.</td></tr><tr>
+<td>Model</td><td>A "stack" of layers.</td></tr><tr>
+<td>Gradient</td><td>The change between function calls (each pass of a model most of the time).</td></tr><tr>
+<td>Shape</td><td>A tuple (an immutable array) matrix (that grid thing that swaps x &amp; y) describing how to construct a tensor (eg. <code>(1,3,3)</code> describes the tensor has a total of 3 dimensions, with 3x3 data points for the last 2 dimensions &amp; 1 data point for the first — <code>3x3x1</code> expressed as <code>x,y,z</code>).</td></tr><tr>
+<td>Tensor</td><td>A multi-dimensional vector (list of values) with a shape (eg. a vector of <code>[[1,1,1],[2,2,2],[3,3,3]]</code> with the shape <code>(3,3)</code>).</td></tr><tr>
+<td>Generative Adversarial Network (GAN)</td><td>The type of ML model used for generating images, consisting of a generator &amp; discriminator, which attempt to trick each other during the learning process.</td></tr><tr>
+<td>Deep Convolutional Generative Adversarial Network (DcGAN)</td><td>A more advanced version of GANs that use Deep Convolutional Neural Networks (DcNNs), most often implementing the <code>Conv2D</code> layer.</td></tr></tbody></table></figure><!-- /wp:table -->
+
+<!-- wp:heading {"level":4} --><h4>Info-hunting</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>With some foundation in place, I started looking for some resources to implement this model. I'm familiar with the NodeJS ecosystem, thus I went looking around implementations based on <code>tensorflow.js</code> — the web/NodeJS Javascript port of the traditionally Python &amp; C++ <code>tensorflow</code>. Unfortunately for me, ML is a niche topic, GAN is a niche within a niche, GANs implemented in <code>tensorflow.js</code> instead of its Python equivalent is basically a needle in <del>your mom</del> a haystack.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Nonetheless though, I did find some resources that helped a lot:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li><a href="https://github.com/mwdchang/tfjs-gan"><code>tfjs-gan</code> by mwdchang</a> (based on <code>tfjs-examples</code>)</li> <li><a href="https://github.com/tensorflow/tfjs-examples"><code>tfjs-examples</code> by tensorflow themselves</a></li> <li><a href="https://github.com/talvasconcelos/tfjs-dcgan"><code>tfjs-dcgan</code> by talvasconcelos</a></li> <li><a href="https://github.dev/DavidCai1993/dcgan.js"><code>dcgan.js</code> by DavidCai1993</a></li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>I also found some resources in Python, using either raw <code>tensorflow</code> or <code>tensorflow.keras</code>'s layers API, which has a similar implementation in <code>tensorflow.js</code> (note the word <strong>similar</strong>):</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li><a href="https://keras.io/examples/generative/dcgan_overriding_train_step/">DCGAN to generate face images, by fchollet</a></li> <li><a href="https://github.com/carpedm20/DCGAN-tensorflow"><code>DCGAN-tensorflow</code> by carpedm20</a></li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p><code>tfjs-gan</code> looked the most promising, as it was the only one who came with <a href="https://mwdchang.github.io/tfjs-gan/">a working web demo</a> using the MNIST dataset — a large collection of handwriting thumbnails. Thus, it became the backbone of the rest of the ML part in this experiment.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Scraping data</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>So I needed a lot of fonts, like, I'm talking enough to satiate a pretty dumb model (the example model in <code>tfjs-examples</code> &amp; subsequently <code>tfjs-gan</code> aren't very advanced, not using CNNs). I knew I needed to at least come somewhat close to the MNIST dataset, which contained 10,000 28x28 images.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Now honestly I'm not sure how much of this process I can share, as it's definitely, at least ethically questionable. I used a script to scrape <a href="https://fontshop.com">Fontshop</a>. They serve webfont versions of their typefaces on sale, &amp; I simply went onto their "best-selling" page, identified their internal API they were using for fetching + rendering data &amp;, oh nice! It was here when I discovered they included the webfont CSS stylesheet URLs in the API response itself. This was 100% extraneous data coming down the pipe as it was nowhere rendering previews on the browse page (it was a LOT of entries, not sure how browsers would behave with say, 2000 different fonts going at once in a page), it instead used the sensible option of rendering it on their server &amp; piping the thumbnail down.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635720320452-image-20211101064518588.webp","id":1627} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635720320452-image-20211101064518588.webp" alt="" /><figcaption>Text generated by Fontshop&#039;s `font_rend.php` endpoint, 1/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Initially, I thought of (ab)using this to get my thumbnails, but doing some napkin math, if I wanted to scale the operation by any amount, it would definitely nett me a 429 (a http error signalling I've sent too many requests &amp; I should slow the hell down).</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>2000[no. of fonts] * ((26 * 2)[a-zA-Z] + 10[0-9] + 10[symbols?]) = 92,000 API calls — definitely very suspicious</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>Thus I went with the way of doing it saner, but with more work involved. Here's the gist of what my scraping script did:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} --><ol>
+<li>While our total number of fonts is still less than the total number on the server<ol>
+<li>Download API data for the <code>n</code>th search page</li> <li>For each entry in the data<ol>
+<li>Download the CSS stylesheet containing a url to <code>fast.fonts.net</code> (which actually hosts the font)</li> <li>Download the <code>.woff</code> font</li> <li>Convert it from <code>.woff</code> to <code>.otf</code> using FontForge's CLI (they're using extremely weird containers for the <code>.woff</code> file, making it incompatible with basically everything except browsers &amp; FontForge. This included the <code>canvas</code> module used later)</li> <li>For each character in the character set (a-z, A-Z, 0-9, 10 symbols)<ol>
+<li>Render the character out onto a canvas using the <a href="https://npmjs.com/package/canvas"><code>canvas</code></a> module</li> <li>Calculate the bounds of the rendered character</li> <li>Take all the image data from the 1st canvas &amp; dump it to a canvas with our target resolution (28x28), this resizes it to ensure the character stayed within bounds</li> <li>Transform the 2D image into a 1D array &amp; dump it to a giant image sheet that looks like the MNIST dataset</li></ol></li></ol></li></ol></li> <li>Increment <code>n</code></li></ol><!-- /wp:list -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635721397821-_A5B655D.bin_.webp","id":1628} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635721397821-_A5B655D.bin_.webp" alt="" /><figcaption>Image dataset sheet for &#039;A&#039;, 28/10/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635721483597-reals.webp","id":1629} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635721483597-reals.webp" alt="" /><figcaption>Partial dataset for &#039;A&#039;, 28/10/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>There's quite a lot more to it, particularly things like padding, data type conversion, RGBA to single channel storage, exporting PNGs &amp; binary files, supporting options to selectively run parts of the program, etc. If you're interested, there'll be an extremely messy Github repo linked somewhere in this post.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>With the dataset gathered, I could now start the soup on low heat.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Scraping data's foreshadowed problems</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>You might recall me talking a lot about the amount of API calls I would make &amp; me being afraid I might be throttled. Well, let's just say I'm glad I went with this """saner""" option.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Initially running my tests, I would be able to ping the API tonnes with no (perceivable) repercussions. I'm talking ~200 calls in 2 minutes. However, perhaps the web admins came back from break &amp; noticed the massive uptick in (weirdly formed, as I was doing it not through a browser &amp; via their normal paths) requests, they enabled Cloudflare's rate limiting.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635723230829-Screen_Shot_2020-05-26_at_3.46.42_PM.webp","id":1630} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635723230829-Screen_Shot_2020-05-26_at_3.46.42_PM.webp" alt="" /><figcaption>Example of Cloudflare blocking access due to rate limiting, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>This prompted a lot more dirty tricks, like using VPNs to get around it. When I ran out of servers to connect to, I uh — (ab)used <a href="https://runkit.com">Runkit</a>'s node REPL (basically a code playground). I spun it up with a module that enabled me to access the internet, &amp; started scraping from there. In my defence it was <em>extremely</em> effective, as it seemed like they had tonnes of shards (parts of a larger server network) that served the REPL experience, so I could just press "run" (&amp; if it threw back the Cloudflare error, press it again) &amp; get back the data I needed.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After this though, I was prepared to get the actual ML meat up.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Pre-processing</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This step is super simple, just pick out the images that look weird. As you may have been in the image sheet for 'A' above, there's some odd looking, not-very-A shapes. Now to be clear, I definitely did not take out all the "weird" entries, only the "invalid ones". For example, this was kept in:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635746185691-image-20211101135624699.webp","id":1631} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635746185691-image-20211101135624699.webp" alt="" /><figcaption>Super weird looking &#039;?&#039;, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>While this was not:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635746227008-image-20211101135706025.webp","id":1632} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635746227008-image-20211101135706025.webp" alt="" /><figcaption>This is somehow a &#039;?&#039;, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>GAN, first attempt</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Following what I was going about before I started the implementation, I started <del>stealing</del> <del>copying</del> <del>taking</del> <del>robbing</del> politely referencing it in my own code. (In my defence some of its files still had the Google license header on it, which <a href="https://www.apache.org/licenses/LICENSE-2.0#:~:text=you%20must%20retain%2C%20in%20the%20source%20form%20of%20any%20derivative%20works%20that%20you%20distribute%2C%20all%20copyright%2C%20patent%2C%20trademark%2C%20and%20attribution%20notices%20from%20the%20source%20form%20of%20the%20work">by law</a> means that it's literally straight from the examples as well xd)</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This was surprisingly  working after one uh, medium sized hiccup. <code>tensorflow.js</code> was (understandably) stubborn with deallocating memory, thus causing sequentially running the training on multiple letters to throw an Out of Memory (OOM) error:</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>tensorflow/core/framework/op_kernel.cc:1651] OP_REQUIRES failed at cwise_ops_common.cc:82 : Resource exhausted: OOM when allocating tensor with shape[2522,28,28] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator gpu
+Exception code=0xc0000005 flags=0x0 at 0x00007FF959BAA277. Access violation - attempting to read data at address 0x0000000000000010</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>My first solution of using <code>worker_threads</code> (a module in Node.JS to parallelize workloads) failed, as <code>canvas</code> would fail to load its backend shenanigans there. The <a href="https://github.com/Automattic/node-canvas/issues/1394">issue</a> for it is few months short of kindergarten, which meant I had to use, wonkier methods. I ended up <strong>spawning a new NodeJS process every character &amp; destroying it after it was done</strong>. I mean, dirty, but very effective, since the only data I realistically needed to pass to it was the character it would be working on, &amp; the shape of the binary file saved on disk (imagine you have a long string of numbers <code>1,2,3,4,...</code>, that you want to turn that into a multi-dimensional vector <code>[[1,2,3],[4,5,6],...]</code>, you'd need to know the points of where the 1st, 2nd, &amp; 3rd dimensions started &amp; ended; how long they each were).</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After my laptop did some thinking, I got my results:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635736026329-chars.webp","id":1633} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635736026329-chars.webp" alt="" /><figcaption>AI generated characters, 28/10/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Not bad right? We'll come back to this.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>(Dc)GAN, second attempt</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I thought the images coming out of the 1st model was a little grainy, contrary to other GAN implementations I've seen. This set me out on a journey to rewrite a lot of the script core.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>At this point I was still under the impression of feature parity between <code>tensorflow</code>'s <code>keras</code> &amp; <code>tensorflow.js</code>'s <code>Layers</code> API. Thus, I went on to start porting over python implementations of a DcGAN, specifically the one from <a href="https://keras.io/examples/generative/dcgan_overriding_train_step/"><code>keras</code>'s documentation</a>.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>For the most part things went great. I managed to Object-Orientify a lot of the original Pythonic code &amp; even enjoy the sequential API from <code>tensorflow.js</code>. However, the first sign of trouble was that the <code>keras</code> code used some metrics that just, wasn't in <code>tensorflow.js</code>. I thought to myself, no matter, how different could they be anyways, &amp; moved on. The next issue though, was a little more blocking.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635736917140-image-20211101112156136.webp","id":1634} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635736917140-image-20211101112156136.webp" alt="" /><figcaption>Implementation note on the `Sequential#predict` function, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>It doesn't sound like a big deal, but looking at the url of the guide I was following:</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>https://keras.io/examples/generative/dcgan_overriding_train_step
+                                                             <strong>∟ overriding train "step"</strong></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>&amp; wouldn't you know it:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635737164700-image-20211101112603734.webp","id":1635} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635737164700-image-20211101112603734.webp" alt="" /><figcaption>&quot;Override `train_step`&quot; heading from keras.io, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>I was hours deep at this point, literally learning more python than I probably would need in a lifetime. Frustrating it was, but we live &amp; we learn.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>(Style)GAN, third attempt</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Hello I did not live nor learn.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>While finishing the implementation for the first GAN attempt, I remembered where the video about AI spectrograms that inspired this whole ordeal was from. It was a video by <a href="https://www.youtube.com/user/carykh">carykh</a> about feeding an AI spectrograms for it to generate music.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://www.youtube.com/embed/SacogDL_4JU","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://www.youtube.com/embed/SacogDL_4JU</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>He wasn't successful in his attempt at getting StyleGAN up &amp; running on his machine... but I was. The sunk-cost fallacy had fully set in &amp; I was determined to get a higher resolution output somehow.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Let me just start this section off by saying that I thought my laptop was pretty okay in terms of specs, not the newest but an RTX2060 Max-Q isn't a slouch with 6GB of VRAM. Unfortunately, StyleGAN3 absolutely violated it. StyleGAN's native resolution is at 1024x1024, so naïve me went ahead &amp; rerendered out characters for each of the fonts (which took absolutely forever because I had to rewrite parts that fit 28x28 but not 1024x1024 (133746.94% larger)).</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The next step was converting all the individual images into a format StyleGAN would understand. Helpfully, they included a <code>dataset_tool.py</code> file which helped with exactly that... except it would refuse to process RGBA files, which my PNGs were in. After a long session of more learning python &amp; fixing a previously bugged implementation (who knows why <code>canvas</code> exported PNGs has a line of #fff0 all around the actual characters), I got it working &amp; exported my datasets. Here's the results of when I tried to run each resolution:</p><!-- /wp:paragraph -->
+
+<!-- wp:table --><figure class="wp-block-table"><table>
+<thead>
+<tr>
+<th>Resolution           </th><th>Result</th></tr></thead> <tbody><tr>
+<td>1024x1024</td><td>Immediate OOM Crash, with no help adjusting parameters at all.</td></tr><tr>
+<td>512x512</td><td>Runs for around 8 ticks before crashing with <br><code>--batch-gpu</code> (the option to split-up memory hungry training batches)<br>of <code>4</code> — the lowest realistic option with ~1200sec/kimg.</td></tr><tr>
+<td>256x256</td><td>Runs for around 16 ticks before crashing with <code>--batch-gpu</code> of <code>4</code> with ~700sec/kimg.</td></tr><tr>
+<td>128x128</td><td>Runs with <code>--batch-gpu</code> of <code>4</code> with ~500sec/kimg.</td></tr><tr>
+<td>64x64</td><td>Runs with <code>--batch-gpu</code> of <code>8</code> with ~300sec/kimg.</td></tr></tbody></table></figure><!-- /wp:table -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635738037961-image-20211101114036221.webp","id":1636} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635738037961-image-20211101114036221.webp" alt="" /><figcaption>Example training log, 30/10/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>There were other problems (like metrics taking longer to generate than actual ticks), but it doesn't really matter in the grand scheme of things. The keen eyed amongst you however, might've noticed the measurement of <code>sec/kimg</code>. This measures how many seconds it takes for the computer to chew through 1,000 generated images &amp; train itself. The <a href="https://github.com/NVlabs/stylegan3">official implementation repository for StyleGAN3</a> notes that around 5,000kimgs are often enough for the network to converge (fancy words to say actually produce something usable), with the default set at 25,000kimgs. With some napkin math:</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>(350[secs/kimg] / 60[secs] / 60[mins])[hours] * 5000[kimgs] / 24[hours] = 20.25[days]</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>Yeah, no.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>However, it's not to say I didn't try... Here's what the network managed to produce after 13.5hours:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635738475869-fakes000152.webp","id":1637} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635738475869-fakes000152.webp" alt="" /><figcaption>Fakes from StyleGAN3 at 152 ticks, 1/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Back to square <del>1</del> 28x28</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Honestly, over the course of the entire rabbit hole, the original distorted look has grown on me more &amp; more. This is especially so after I let it train a little more &amp; implemented some of the new things I've learnt into the original non-convolutional implementation.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635738744369-image-20211101115223414.webp","id":1638} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635738744369-image-20211101115223414.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635738718339-image-20211101115157409.webp","id":1639} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635738718339-image-20211101115157409.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>I then took that Illustrator artboard with some of the characters, moved them around, &amp; come out with:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1635738967868-image-20211101115606770.webp","id":1640} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1635738967868-image-20211101115606770.webp" alt="" /><figcaption>Kern-ed characters, 1/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>I, really dig it actually!</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Noise normalization</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Things should be smooth sailing from here on out. Keyword — should. Unfortunately, this was a process that took the longest due to the little quirk of pixel mosaic creation I exploited.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Let me explain why this was even needed. The output of the training above was always 28x28 &amp; the letters inside of them were maximized to fill the maximum amount of space. In the real world however, an 'e' &amp; an 'E' have very different heights &amp; widths, requiring them to be scaled down. This would cause inconsistent resolution across all the letters, &amp; look horrid up close.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636440490612-Asset20614033.33x.webp","id":1641} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636440490612-Asset20614033.33x.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636440503964-Asset20884033.33x.webp","id":1642} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636440503964-Asset20884033.33x.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636440644338-image-20211109145043356.webp","id":1643} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636440644338-image-20211109145043356.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>This would be done by creating a mosaic of all the characters with the same global pixel count (28x28).</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Creating a mosaic basically means downsizing an input image to the specified pixel counts on each axis. It would take the pixels at the certain locations of an image &amp; apply the colour to the new chunk of pixels starting at the same location as the input image. Think of it as systematically using the colour picker tool in Photoshop every <code>n</code> pixels &amp; constructing a new image from all the colours u collected.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This however, meant there was math involved, &amp; when math is involved, you can exploit its edge cases. In a properly constructed mosaic, you'd maintain a good idea of the original gradients &amp; curves as the mosaic'd be effectively be a 1 to <code>n</code> scaling of the input image. However, not all mosaics are created equal. My exploit involves very minor losses in between Illustrator's (AI) exporting &amp; After Effect's (AE) mosaic effect. There would be very minor sub-pixel deviations between the grid in AI &amp; AE, which would create an extremely interesting artefact if the input image were positioned to align their grids.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636439984684-image-20211109143941987.webp","id":1644} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636439984684-image-20211109143941987.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636440033803-image-20211109144032835.webp","id":1645} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636440033803-image-20211109144032835.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>A properly constructed vs one exploiting the sub-pixel differences, 7/11/2021</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This result not only (imo) looked a lot cooler, but it also simplified the shape of the font &amp; """diluted""" the noise.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Look cool it did, but was it worth 4 hours of moving things around? Absolutely, I regret nothing.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Vectorization</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Vectorization is the process of turning raster (pixel) data into vector (path) data. Normally, one would do this manually by placing paths around an input image. However, not only was that not practical at all if I wanted to keep the noise &amp; opacities, I kinda wanted to keep the 100% synthetic nature of this typeface going.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>Tracing</h5><!-- /wp:heading -->
+
+<!-- wp:heading {"level":6} --><h6>Image trace (Illustrator)</h6><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This was the first choice I could think of, mostly due to it being the most effective version of this "genre" of tool I've used.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Firstly, I tried it with one of the 28x28 outputs.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636441074759-image-20211109145753789.webp","id":1646} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636441074759-image-20211109145753789.webp" alt="" /><figcaption>Image trace result on 28x28 input image, 6/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>That doesn't look quite right, &amp; stayed that way even after tweaking a bunch of the settings. However, there was an obvious workaround — give it more pixels. I thus exported all the assets at 33.33x scale &amp; ran it through the tracer again.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636441852855-image-20211109151051842.webp","id":1647} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636441852855-image-20211109151051842.webp" alt="" /><figcaption>Image trace result, 7/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Not bad right? However...</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636442351562-image-20211109151910535.webp","id":1648} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636442351562-image-20211109151910535.webp" alt="" /><figcaption>Wonky pixels from the image trace result, 7/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>That doesn't look right. To fix it, I did try to use various snap-to-grid/snap-to-pixel techniques, but none of them worked.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":6} --><h6>Auto-trace (After Effects)</h6><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I mean, AE has it so why not try. It surprisingly did a way better job that AI in retaining angles, however, it could only do solid traces, meaning the opacity data would be lost &amp; I'd have to set a tolerance the minimum opacity I'd trace over.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636442804982-image-20211109152643944.webp","id":1649} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636442804982-image-20211109152643944.webp" alt="" /><figcaption>Auto-trace result, 8/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":6} --><h6>Object mosaic (Illustrator)</h6><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>So this was a technique I found doing research on converting pixel art (which the letters basically were) into vectors. It involved rasterizing the image at a high resolution &amp; splitting it up into the exact grid of pixel squares.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636443455830-image-20211109153734811.webp","id":1650} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636443455830-image-20211109153734811.webp" alt="" /><figcaption>Raw result of object mosaic, 8/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Well there I had it, a working vector! ...Not quite.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Currently all the pixels go from black to white, instead of transparent to opaque. This would certainly pose a problem when translating into a font, as you kinda need the gaps to <em>read</em>.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>Unmulting</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Unmulting, short for unmultiplying, is the technique used most commonly in video to reverse the multiplying of the alpha channel into the RGB channels. Basically, if a pixel is transparent, it'll be 100% black, else it'll be whatever colour it is, multiplied by black. Unmulting reverses the process by mapping luminance to the alpha channel.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>In order to achieve this I had to write a short script, which basically did:</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<pre><code class="language-js">pathItem.opacity = 100 - pathItem.fillColor.gray
+</code></pre></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>to all paths in the document.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636444183408-image-20211109154942377.webp","id":1651} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636444183408-image-20211109154942377.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":5} --><h5>Optimizing</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Now there were still way too many paths in the document. The most obvious optimization was to remove all paths that had a really low opacity (everything less than or equal to 1). This was done using a simple script as well.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The other optimization step was not as obvious however — to merge all paths with similar opacities. I tried to use a script for this too, scouring the internet to find ways to execute pathfinder commands from script files, as well as clumping to-be-merged paths into one single data structure. However, I just could not get AI to behave when it came to actually applying the merge operation.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I had spent an hour+ on this &amp; was getting frustrated, which lead me to merge everything in frustration. Surprisingly... it just, worked. It would only apply the merge to shapes with the same opacity. Huzzah!(?)</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>The reason why I've never known the usefulness of this tool was because I'd always just used the Shape Tools "Unite" operation instead under the "Pathfinder" section of the properties (which would merge everything regardless of appearance &amp; not keep the properties of each). This gave me the assumption that, those <strong>were</strong> the pathfinder operations instead of the vastly more useful actual pathfinder operations.</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636444528825-image-20211109155527801.webp","id":1652} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636444528825-image-20211109155527801.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Kerning</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Now, it should be smooth sailing.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>&amp; surprisingly it was. Everything went well in the importing to FontLab (except for no one particularly knowing where it was actually storing the opacity data), &amp; I managed to get it all adjusted well (enough).</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636445301345-image-20211109160819439.webp","id":1653} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636445301345-image-20211109160819439.webp" alt="" /><figcaption>Kerned (sorta) result, 8/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Exporting</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Now there's generally 3 formats one can export coloured fonts</p><!-- /wp:paragraph -->
+
+<!-- wp:table --><figure class="wp-block-table"><table>
+<thead>
+<tr>
+<th>Format (creator)</th><th>Compatibility</th></tr></thead> <tbody><tr>
+<td>OTF + SVG (W3C)</td><td>PS, AI, Ind, Firefox, Safari, Edge</td></tr><tr>
+<td>COLR (Microsoft)</td><td>Chrome, Firefox, Safari, Edge</td></tr><tr>
+<td>SBIX (Apple)</td><td>PS, AI, Ind, Safari, Edge</td></tr></tbody></table></figure><!-- /wp:table -->
+
+<!-- wp:paragraph --><p>The sweet spot is probably OTF + SVG, as it gives compatibility for the crucial Adobe apps while being the easiest to export (FontLab supports it natively). A notable omission from the compatibility is of OTF + SVG is Chrome (including new Edge, Brave, Opera, Samsung Internet) however, they're <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=306078#c62">really stubborn about it</a> so just use firefox or smtg.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>final:</h3><!-- /wp:heading -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>66 hours</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:heading {"level":4} --><h4>the typeface itself</h4><!-- /wp:heading -->
+
+<!-- wp:heading {"level":2} --><h2>faint</h2><!-- /wp:heading -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>font + AI = fAInt</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636622059698-not20for20the20faint20of20heart-01200-00-00-12-1.webp","id":1654} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636622059698-not20for20the20faint20of20heart-01200-00-00-12-1.webp" alt="" /><figcaption>Faint, 11/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636623061470-charset-01200-00-00-00-1.webp","id":1655} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636623061470-charset-01200-00-00-00-1.webp" alt="" /><figcaption>Faint character set, 11/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>rationale</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>A<em>i</em> is a collective advocating for the ethical use of AI. Its mission is to spread awareness by utilizing AI artistically.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>AI/ML have the potential to do amazing things, often times this includes things no human will ever be capable of. What if that becomes true for surviving on this Earth? We need no apocalypse to be able to perceive its loom among us, just ask GPT-3, <a href="https://t.me/Quickchat_Emerson_bot">no literally</a>. Thus, every single one of us will need to equip ourselves with the abilities to fight back when the day comes.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>collateral</h4><!-- /wp:heading -->
+
+<!-- wp:heading {"level":5} --><h5>Ethics campaign posters</h5><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1637012562937-ethics202.1.1-01200-00-00-00-1.webp","id":1656} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1637012562937-ethics202.1.1-01200-00-00-00-1.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1637012106541-comprehend-01200-00-00-00-1.webp","id":1657} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1637012106541-comprehend-01200-00-00-00-1.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1637012132686-kill-01200-00-00-01-1.webp","id":1658} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1637012132686-kill-01200-00-00-01-1.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1637012149374-kill.s-01200-00-00-02-1.webp","id":1659} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1637012149374-kill.s-01200-00-00-02-1.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Posters for an ethics campaign, n.d</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1637012606495-poster20mockup2C20square.webp","id":1660} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1637012606495-poster20mockup2C20square.webp" alt="" /><figcaption>Poster mockup, 15/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":5} --><h5>Keychain</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>A simple magnetic keychain, able to wipe hard drives, floppy disks, &amp; pick locks.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636613356826-untitled200-00-00-00-1.webp","id":1661} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636613356826-untitled200-00-00-00-1.webp" alt="" /><figcaption>Ai magnetic keychain, 11/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":5} --><h5>Rubberducky</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>A rubberducky is a device that looks like a usb device, but when plugged into a computer, identifies itself as a keyboard &amp; types commands to execute a payload. (eg. typing <code>WIN</code> + <code>R</code>, <code>https://youtu.be/dQw4w9WgXcQ</code>, <code>ENTER</code>, will commence certain death)</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636623376877-untitled3200-00-00-00-1.webp","id":1662} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636623376877-untitled3200-00-00-00-1.webp" alt="" /><figcaption>Ai rubberducky, what does it contain? No one really knows, 11/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":5} --><h5>Keycap</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Put it on your <code>Delete</code> key &amp; hammer away. This one's mostly a novelty; it's cool looking xd</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1636623434547-untitled2200-00-00-00-1.webp","id":1663} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1636623434547-untitled2200-00-00-00-1.webp" alt="" /><figcaption>Ai keycap, 11/11/2021</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":5} --><h5>Captcha</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>An alternative captcha service utilizing the brand typeface to fight against bots. Introduction moving distortion also enables us to increase the total interference per frame, while retaining readability to humans.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>feedback:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>18/10/2021<ul>
+<li>Good idea, but I can also try messing around with improving Comic Sans.</li></ul></li> <li>25/10/2021<ul>
+<li>All 3 ideas are okay, but some are more safer than the others.</li> <li>Combining the fonts generated a pretty average looking result but with an interesting process.</li> <li>Not sure how the spectrogram idea will pan out, but it is definitely worth investigating.</li></ul></li> <li>1/11/2021<ul>
+<li>I shouldn't modify what was generated</li> <li>I should embrace it &amp; put forth the backstory at every opportunity</li> <li>I still needed an application for the typeface though</li></ul></li> <li>8/11/2021<ul>
+<li>I shouldn't worry too much about getting it to work in browsers, just what is required to finish the task</li> <li>I may try Glyphs (sad window noises)</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:separator --><hr class="wp-block-separator" /><!-- /wp:separator -->
+
+<!-- wp:heading {"level":2} --><h2>reflection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Holy sh*t what a task. Can't believe it's all done &amp; dusted. This was honestly simultaneously super stressful &amp; super fun, &amp; I'm glad I took the risky way in. Initially the lack of a proper brief was pretty daunting, &amp; left me kind of lost. However as time went by &amp; as I had a few nudges here &amp; there on what might be good things to try, things started to materialize &amp; formed something special. There were frustrating times &amp; a lot of wasted effort (I hope you skimmed through instead of actually reading any of it lol), but I feel like I learned way more than I would've otherwise, in typography, programming, &amp; just design sense.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The first thing I learnt was simply to start small &amp; shoot for the moon if I don't hit the stars (if all else fails can hit bumi gemilang). This was the most apparent by the progressive nature of development for the font. I kept hitting checkpoints until I couldn't reach any higher up, which is when I can accept I've done my best &amp; work with what I have; settling isn't always bad. Other than a few arbitrary skills like improving my Python, the 2nd large "lesson" I got was to exploit what I'm good at &amp; bite off something on the way out. This in my opinion is the best way to learn, as you'll manage to integrate whatever you chewed off (in my case some ML bits) into what you're already extremely familiar with.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>At the end of the day, this task was to create a problem, then solve it. Have I created a problem? Many. Have I solved them? I mean they're solved enough xd. Thus I count all of it as an absolute win. Even though I still do feel like there's room to further grow this idea, I'm more than satisfied as it's the best I've made so far. You bet I'm taking all the knowledge I got &amp; using it to take over another colony of info in the future (DcGAN I'm coming for you).</p><!-- /wp:paragraph -->
+
+<!-- wp:separator --><hr class="wp-block-separator" /><!-- /wp:separator -->
+
+<!-- wp:heading {"level":2} --><h2>further reading:</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>How AI Generates New Images: GANs Put Simply</h3><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/Pink-and-Purple-Sporty-Gradient-Fitness-YouTube-Thumbnail-8.png","id":1664} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/Pink-and-Purple-Sporty-Gradient-Fitness-YouTube-Thumbnail-8.png" alt="" /><figcaption>How AI Generates New Images: GANs Put Simply cover, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>This article is a very high level look at the concept of GANs. It uses cute animations that anyone &amp; their pet microbe can understand. In those animations they talk about the generator &amp; the discriminator, using money counterfeiter &amp; police respectfully as analogies.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>A Gentle Introduction to Generative Adversarial Networks (GANs)</h3><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/A-Gentle-Introduction-to-General-Adversarial-Networks-GANs.jpg","id":1665} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/A-Gentle-Introduction-to-General-Adversarial-Networks-GANs.jpg" alt="" /><figcaption>A Gentle Introduction to General Adversarial Networks (GANs) cover, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Don't be fooled by the "gentle" in the title, this is the article that real nerds drool over. There's some use of jargon but they explain it relatively well. It goes into detail on what training even is, how GANs basically train themselves, the model which they use to do it, &amp; even different types of implementation of GANs. I fully recommend giving this a read for anyone that actually enjoyed the article above this.</p><!-- /wp:paragraph -->

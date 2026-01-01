@@ -1,0 +1,136 @@
+<!-- wp:heading {"level":2} --><h2>todo:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Create prototype of game idea</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>process:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>So, where do we start?</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671018296960-image-20221214194455577.webp","id":2088} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671018296960-image-20221214194455577.webp" alt="" /><figcaption>Succide in Unity, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Organising pre-existing components</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Going off of the tutorials, I already had a few components. Whilst scattered, they acted as the foundation where I'd build on.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Overview</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li><code>GamdTut.Core</code><ul>
+<li><code>Animation</code><ul>
+<li><code>Aniwaitor</code> — helper that adds animation events programmatically to enable <code>await</code>ing animations</li></ul></li> <li><code>Behavioural</code><ul>
+<li><code>CollectableBehaviour</code> — wrapper to declare if the current object has been collected</li> <li><code>DamagableBehaviour</code> — wrapper for damageable objects, managing animation, projectile collision, &amp; health (yes, there's also a typo)</li> <li><code>ProjectileBehaviour</code> — declares the current object as causing damage to damageable objects</li> <li><code>SelfDestructBehaviour</code></li> <li><code>SelfDestructOnAnimationEndBehaviour</code></li> <li><code>SelfDestructOnDieBehaviour</code></li> <li><code>SelfDestructOnStartBehaviour</code></li> <li><code>SpawnOnDestroyBehaviour</code></li></ul></li> <li><code>Character</code><ul>
+<li><code>AbstractMeasurable</code> — a skeleton class holding a single <code>count</code> prop</li> <li><code>CoinMeasurable</code> — another skeleton class extending <code>AbstractMeasurable</code></li> <li><code>GunController</code> — Manages bullets shot from a gun on the player object</li> <li><code>PlayerController</code> — Controls player movement</li></ul></li> <li><code>Things</code><ul>
+<li><code>CoinController</code> — Manages a coin's lifecycle, animation, &amp; collection</li> <li><code>DoorController</code> — Enables the door when the gem key is collected, &amp; manages its opening</li> <li><code>GemKeyController</code> — Manages a gem key's  animation &amp; collection, &amp; the current camera</li> <li><code>GemKeyManager</code> — Manages its gem key child's active state depending on <code>CoinMeasurable</code> </li> <li><code>VirtualCameraManager</code> — Abstracts away cameras in the scene into individual indices, so they can be changed easily</li></ul></li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>Already, there were a few sore spots that should be changed for a real game.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Phasing out the <code>Manager</code> suffix for components</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>A <code>Manager</code> is already nomenclature widely used to describe a class that congregates various functionalities under its own umbrella. This differs slightly from how I was using it in <code>GamdTut</code>, which is a component that manages its children. Going on google &amp; finding a synonym for it, landed me with a perfect match — <code>Comptroller</code>, aligning with the pre-existing <code>Controller</code> convention.</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p><code>VirtualCameraManager</code> → <code>VirtualCameraComptroller</code></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:heading {"level":4} --><h4><code>Controller</code>? <code>Comptroller</code>? <code>Behaviour</code>?</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Now here comes another problem, how do I differentiate between these three random ahh words? I sorta had a feeling on what they should mean, but this was the time I drew a hard line around them:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li><code>Behaviour</code> — Component with no side effects (eg. a component which only stores data, provides events, registers event handlers etc., but does not modify the state of the <code>GameObject</code> itself)</li> <li><code>Controller</code> — Component with side effects (eg. a component that modifies the position, velocity, animation of the <code>GameObject</code> itself)</li> <li><code>Comptroller</code> — Controller component that manages the children underneath it (eg. a component that disables all its children on an arbitrary condition)</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>Transforming existing components</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>There were a few components from the tutorial that I felt needed a little bit more love in order for them to fit the final game.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Modularising <code>PlayerController</code></h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>There were definitely things to tweak &amp; add. The first being simply to implement support for an animation state machine. However, whilst doing that in the base <code>PlayerController</code> class, it became awfully apparent that I should modularise it. Thus, I renamed <code>PlayerController</code> into <code>PlayerMovementController</code>, added a <code>PlayerAnimationController</code>, &amp; used the existing <code>PlayerController</code> class as a wrapper for all the modules (via the ever helpful <code>RequireComponentAttribute</code>!).</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Interaction</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>From the tutorial, I already had <code>GunController</code>, which read from the input directly &amp; spawned bullet objects. However this would pose to be annoying if, &amp; when, I'd want to read or change the input somewhere else. Thus I took the fire reading logic &amp; abstracted the input management into <code>PlayerFireController</code>. Using events, I also added a fire rate.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Measurables</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The original measurable class was bare &amp; barren, so there I went fleshing it out. Before that, I knew that a measurable should function more or less like a writable store. Thus, after implementing <code>Store</code>, the new <code>Measurable</code> would derive from it. A measurable would need to ambiently reduce its value, so I knew this would've needed to be done through ticks. Whilst implementing withering in a <code>Tick()</code> method, I got the idea of just making the whole class an enumerator. This would allow me to start a <code>Measurable</code> as a coroutine, &amp; not worry about manually ticking it.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After migrating <code>Tick()</code> to <code>MoveNext()</code> &amp; adding a few more methods, it suddenly struck me how annoying manually tracking, adding, &amp; subtracting from the current wither rate would be. This made me come up with a, probably extremely overengineered, solution of a transformer/modifier-based system to modify the value of a <code>Measurable</code> per tick. Using the built in C# <code>event Action?</code> as a reference, I vomited out <code>MeasurableTransformer</code>, which would enable me to just use the <code>+=</code> &amp; <code>-=</code> operators to add delegates that would run as """pipes""" through the data, transforming it &amp; return the result, every tick.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Implementing the rest of the game</h3><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1667456159451-fetchimage.webp","id":2089} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1667456159451-fetchimage.webp" alt="" /><figcaption>Analogy of this section, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Level brancher</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The first thing I thought to implement in this game was where the player would land to make their decision. I thought this would be a relatively straightforward thing to implement, &amp; I was relatively right... Only relatively. The only tricky part was architecting the required modules for interaction, triggering, &amp; arbitrary reveals to be modular — <code>IntersectableBehaviour</code>, <code>InteractableBehaviour</code>, &amp; <code>InteractableHintController</code> — to form a setup where a hint would appear &amp; interaction would be enabled once the player steps close enough to an object. After that, duplicating that 3 more times basically built the level.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Mood, Wealth, &amp; Health</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The backend for these were a breeze, big thanks to the <code>Measurable</code>s &amp; <code>MeasurableTransformer</code>s that were implemented earlier. However, showing them was a little weird. This was where I found the difference between scale &amp; size of a <code>RectTransform</code>. Whilst peculiar on a plain square object, is immediately obvious when any texture or curvature is applied, with scale distorting significantly. Thankfully it was a quick fix, but it made me scratch the inside of my skull for long enough that I felt compelled to put the short story here.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Procedurally generated fun</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Hitting keyboard keys by jumping &amp; interacting was one of my main inspirations for the game idea. As the anchor for the other ideas, &amp; because it would consist of a lot of modules that would be reused for other levels (random spawner, responsive colliders, triggerable projectiles), I made it first.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Starting with the spawner, midway through a rough implementation, I realised I was rewriting a lot of the same code found in <code>Measurable</code>. So, before the spawner, I extracted the enumerator &amp; ticking logic into <code>Ticker</code> &amp; used that as a basis to trigger spawns at a fixed rate. This would eventually end up as a grid spawner. Whilst close, a keyboard isn't a strict grid, consisting of a variety of different sized keys. Evolving from that, &amp; failing to find a way to implement custom editor instantiation functionality, I just used anchors as the spawner's children, of which the spawner would use their size &amp; position to spawn.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Whilst even, even more close, it was here where I remembered box colliders have dimensions independent from their <code>RectTransform</code>s, enabling the user at this point to fall through some of the keys. A quick component to "maximise" the <code>BoxCollider2D</code> to the <code>RectTransform</code> would finally then, finish a keyboard. Using all these components, I reapplied them to the fun &amp; pharmacy scenes, to complete a large chunk of the minigames.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>All that in place, it... still felt really crappy to play. Everything felt, lifeless. I needed some physics, &amp; the most satisfying effect I could think of was for the keys to be sorta elastic &amp; bouncy. However, I had no idea how to implement it, even after searching online. After trying &amp; trying many code snippets copied &amp; pasted, eventually I kinda, accidentally created the effect. Adding onto that, the code made perfect sense too. Well, yeah, now I had fun AND satisfying minigames.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Routing</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Now I had scattered levels, but no way to really swap in between them whilst persisting data. Looking through the Unity docs however, showed that it was possible to load multiple scenes at once. This gave me the idea to implement something sorta similar to web SPA's, where they would have an entrypoint page, &amp; a hash router to switch between components nested inside of it. Eventually, this would look like a "main" scene, which contains the player &amp; the measurables, routing between the game branches, which contains a player beacon to position the player in the level.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Awaiting animations</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Whilst patching &amp; fixing bugs, I found myself readjusting a lot of timings to destroy an object, so it happens right when the animation ends. This feels extremely icky, because the data is there, there must be some way to trigger an event or check for completion or something. Eventually, I stumbled across <code>AnimationEvent</code>s, which were events that could be registered &amp; triggered when a specific frame of an animation was reached. Creating a component which would register those events &amp; expose them as regular C# events, along with a <code>Await</code> method would improve DX significantly, &amp; even enable the infinitely useful <code>SelfDestructOnAnimationEndBehaviour</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Asyncification</h4><!-- /wp:heading -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>Callbacks; delegates,
+Callback hell; Unity's API.</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>Similarly to JavaScript's slow recovery away from callbacks, much of Unity's asynchronous programming relies on events &amp; delegates. Similarly again to JavaScript, C#'s async/await programming style is a godsend to readability. However, converting the old ways of asynchronous programming to async/await is ugly, involving <code>TaskCompletionSource</code>, assignments, &amp; even redeclaring the function signature. Abstracting it all away, again, similar to JavaScript's countless <code>promisify</code> helpers, eases the transition &amp; interop between old &amp; new. With all that said, this is exactly the <code>Asyncify</code> class, powering <code>Aniwaitor.Await()</code> &amp; <code>AsyncOperation.ToTask()</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Bopping intro</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I wanted something reminiscent of the old 8/16-bit demo scene, where the bopping animation would be extremely common on texts. Granted, they also had super cool brain melting effects, but I do not know how to write shader code, so that shall be shelved. Going in to implement it, I had in my mind that it sorta looked like the sprites moved along a sine wave, &amp; with a few lines of code, plus a little messing about the frequency &amp; amplitude, I did manage to recreate the effect somewhat using <code>Mathf.sin()</code>. Who knew math was at the core of many of man's spectacles?</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Tutorials</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>For tutorials, there were a few prerequisites. The first being that <code>Ticker</code>'s frequency had to have a way to be modified, in a way that would be global. The second being a way to emphasise some text over others, perhaps a smooth flicker effect. Then with both of those, a proper tutorial that would be dismissed after a click would be able to be made.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>Augmenting <code>Ticker</code></h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>For this new functionality, there was already a sorta equivalent inside Unity — <code>Time.timeScale</code>. However, it wouldn't be the most direct way to augment Ticker to have it, since instances of <code>Tickers</code> aren't tied to any update mechanism of Unity by design, which meant they'd be ticking even if certain hooks are slowed down, like <code>MonoBehaviour.FixedUpdate()</code>. How I ended up implementing it was to modify the current handle-able tick counts per enumeration on <code>Ticker</code> according to <code>Time.timeScale</code>. This also means that it would properly discard ticks that would've otherwise be simply deferred &amp; ran in batches after the deferral.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>Smooth text flashing</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Now, another problem with smooth transitions between 0 &amp; 1. Whilst I could do some fancy tweening &amp; what-not, I just couldn't shake the thought of how this could be just another <code>Mathf.sin()</code>-able problem. So, with a little copy &amp; paste, as well as some swizzling of the code down to 1-dimension, plus targeting it to <code>TMPro.TextMeshProUGUI.color.alpha</code>, everything just basically worked.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>The actual tutorial logic</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The logic &amp; spawning part was pretty simple, with the only tricky part being, how am I going to track if a user has dismissed the tutorial? Initially I went around pretty complicated, finding weak maps in C#, perhaps I'd have to clobber the router for a <code>data</code> prop, etc. At the end though GitHub Copilot actually made a suggestion that swept away everything I had in mind — <code>gameObject.scene.buildIndex</code>. With that, I could just store it in a static list on dismissal. Then if the scene was switched to, but the tutorial had already been marked as dismissed, I just destroy the tutorial in <code>MonoBehaviour.Awake()</code>, like nothing ever happened!</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>feedback:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>28/10/2022<ul>
+<li>Make sure the game is in 16:9, not free-aspect</li> <li>Add hints &amp; prompts to inform the player what to do &amp; what's happening</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>final:</h2><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://succide.staging.sxxov.design","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://succide.staging.sxxov.design</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>The final game, 4/12/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>reflection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This part of the combined assignment actually taught me a lot. It was surprisingly fun as well; can't ever get enough of C#! The cool creature comforts, <code>new()</code>, <code>new {}</code>, operator overloading, extension classes, mmm... Not only just the coding, being able to interact with &amp; play the things written down; crafted, was extremely gratifying as well. Whilst I recognise it is not for everyone, &amp; the struggles were definitely struggle-ful, overall I rate it.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The main &amp; obvious thing learnt was coding. I mean, kinda hard not to, having to write in it. The extra engineering rabbit holes that sorta stray away from the main game though, was where I thought I learnt the most. As I needed to solve more niche problems, I had to explore more around how things worked &amp; their limitations, including the language &amp; the IL that powered it. Besides that, the modularity of all the components, &amp; the usage of composition rather than inheritance is thoroughly swaying me away from OO in my own code. Whilst I was already super on the edge before this, such a modular pattern was extremely useful &amp; superseded inheritance time &amp; time again. We'll see if my OO module/class (educational context lol) next semester manages to sway me then.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>At the end of the day, I learnt a lot that I'll definitely make use of again in the future. Who knows, maybe I'll make another game, maybe I won't. Maybe I'll start to use C# more, maybe I'll write my own language called D-flat. Spooky.</p><!-- /wp:paragraph -->

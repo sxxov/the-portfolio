@@ -10,19 +10,45 @@
 <!-- /wp:bare/composite-fill -->
 <!-- /wp:bare/composite-provider -->
 
+<!-- wp:bare/weaver -->
+<div class="my-4 px-4"><!-- wp:terms-query {"termQuery":{"perPage":10,"taxonomy":"post_tag","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false}} -->
+<div class="wp-block-terms-query"><!-- wp:bare/weaver -->
+<div class="flex flex-wrap gap-1 *:contents"><!-- wp:term-template -->
+<!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
+<!-- wp:block {"ref":360,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:bare/weaver -->
+<div class="flex gap-[0.5em]"><!-- wp:term-name {"isLink":true} /-->
+
+<!-- wp:term-count /--></div>
+<!-- /wp:bare/weaver -->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider -->
+<!-- /wp:term-template --></div>
+<!-- /wp:bare/weaver --></div>
+<!-- /wp:terms-query --></div>
+<!-- /wp:bare/weaver -->
+
 <!-- wp:bare/composite-provider {"name":"app/section/frame"} -->
 <!-- wp:block {"ref":559,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill -->
 <!-- wp:query {"queryId":0,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[],"format":[]}} -->
 <div class="wp-block-query"><!-- wp:bare/weaver -->
-<div data-ripple="" class="flex flex-col overflow-clip rounded-lg p-4"><!-- wp:bare/weaver -->
+<div data-ripple="" class="flex flex-col overflow-clip rounded-lg p-4"><!-- wp:bare/composite-provider {"name":"app/counter/provider"} -->
+<!-- wp:block {"ref":347,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:bare/weaver -->
 <div class="grid grid-cols-1 gap-x-4 gap-y-16"><!-- wp:post-template {"className":"contents"} -->
 <!-- wp:bare/composite-provider {"name":"posts/list/post"} -->
 <!-- wp:block {"ref":680,"lock":{"move":true,"remove":true}} /-->
 <!-- /wp:bare/composite-provider -->
 <!-- /wp:post-template --></div>
 <!-- /wp:bare/weaver -->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider -->
 
 <!-- wp:query-no-results -->
 <!-- wp:bare/weaver -->

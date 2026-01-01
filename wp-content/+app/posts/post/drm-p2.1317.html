@@ -1,0 +1,181 @@
+<!-- wp:heading {"level":2} --><h2>todo:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Find 5 research articles.</li> <li>Gather notes on them.</li> <li>Write critical review summarizing all 5 articles.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>research:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The 5 articles I found were:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} --><ol>
+<li>Day, G., &amp; Stemler, A. (2020). Are dark patterns anticompetitive? <em>Alabama Law Review</em>, <em>72</em>(1), 1–46. HeinOnline. http://heinonline.org/HOL/Page?handle=hein.journals/bamalr72&amp;div=5</li> <li>Hausner, P., &amp; Gertz, M. (2021, May 8). Dark patterns in the interaction with cookie banners. <em>CHI Conference on Human Factors in Computing Systems</em>. https://dbs.ifi.uni-heidelberg.de/files/Team/phausner/publications/Hausner_Gertz_CHI2021.pdf</li> <li>Mathur, A., Acar, G., Friedman, M. J., Lucherini, E., Mayer, J., Chetty, M., &amp; Narayanan, A. (2019). Dark patterns at scale: Findings from a crawl of 11K shopping websites. <em>Proceedings of the ACM on Human-Computer Interaction</em>, <em>3</em>(CSCW), 1–32. https://doi.org/10.1145/3359183</li> <li>Mathur, A., Kshirsagar, M., &amp; Mayer, J. (2021). What makes a dark pattern... dark? <em>CHI Conference on Human Factors in Computing Systems (CHI ’21)</em>, 1–18. Association for Computing Machinery. https://doi.org/10.1145/3411764.3445610</li> <li>Narayanan, A., Mathur, A., Chetty, M., &amp; Kshirsagar, M. (2020). Dark patterns: Past, present, and future. <em>Communications of the ACM</em>, <em>63</em>(9), 42–47. https://doi.org/10.1145/3397884</li></ol><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>notes:</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>[1]: Dark Patterns in the Interaction with Cookie Banners</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>(Hausner &amp; Gertz, 2021)</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Main issues raised by writer:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Majority of cookies nowadays are used to track users for targeted ads instead of providing beneficial functionality to said users (Urban et al., 2020, as cited in Hausner &amp; Gertz, 2021).</li> <li>Most users do not want to be tracked this way, but are coerced into consenting to it anyways using dark patterns (Kulyk et al., 2018, as cited in Hausner &amp; Gertz, 2021).</li> <li>The EU introduced GDPR to attempt to counteract such issue by requiring explicit consent for cookie storage (Regulation (EU) 2016/679 of the European parliament and of the council, 2016, as cited in Hausner &amp; Gertz, 2021). However, their implementation of legislation resulted in consent forms that ranged wildly in terms of quality &amp; user friendliness. </li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Major interpretations:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>This kind of manipulation can be described as using dark patterns.</li> <li>Dark patterns can be interpreted as "an instance of interface interference, particularly a case of aesthetic
+manipulation".</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Biasness:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>The author seems to argue for the consumer over the entities that are implementing dark patterns against said consumers.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>How it relates to other literature/my own experience:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>It ties in other literature like "Dark Patterns at Scale: Findings from a Crawl of 11K Shopping Websites"</li> <li>In my experience, traversing through DOM nodes manually &amp; running through non-learning algorithms is enough to detect "clickables" of interest; finding their maliciousness shouldn't require neural networks as their attributes (both HTML &amp; CSS) are known &amp; unobfuscated at runtime, enabling us to simply reconstruct subsets of pages &amp; cluster by similarities of their (relatively) small amount of attributes.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>General critique:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li><p>Their working definition of a dark pattern by Gray et al. is very broad, marking any instance of "visual manipulation" as a dark pattern without acknowledging how these general UI patterns can be used with no malice/inline with users' interests. eg. a close button marked red, an emphasized title link.</p></li> <li><p>It makes the statement of "it is clear that purely rule-based methods are not sufficient to tackle the problem of dark pattern
+detection" with no evidence to back it up. There are already sophisticated rule-based systems for things like ad/tracker filtration &amp; website theme inversion.</p></li> <li><p>It also doesn't elaborate on certain items like what "certain keywords" they use, as well as the "heuristics" in order to make the results of this article reproducible.</p></li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>[2]: Dark Patterns: Past, Present, and Future</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>(Narayanan et al., 2020)</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Main issues raised by writer:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Companies &amp; governments are using dark patterns to manipulate their userbase/citizens into performing/consenting to certain actions/agreements (Elliott &amp; Waldron, 2019, as cited in Narayanan et al., 2020, Federal Trade Commission, 2019, as cited in Narayanan et al., 2020, Venkatadri et al., 2019, as cited in Narayanan et al., 2020).</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Major interpretations:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Dark patterns are simply a continuation of normalized hostile practices in various sectors — retail's deceptive practices, research/public policy's nudging, &amp; design's growth hacking.</li> <li>Nudging has been accepted widely outside of dark patterns, which poses a challenge for intervention as users might be complacent of malicious practices.</li> <li>Growth hacking's use of dark patterns can be direct (to grow) or indirect (to squeeze money from users after the growth spirt).</li> <li>Data driven UI optimization via A/B testing, which is commonplace in the current web design landscape, makes creating UIs with dark patterns easier.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Biasness:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>The article seems relatively unbiased, taking the stance of the designer, user, &amp; employer, aiming to create a world where all three of their interests intersect.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>How it relates to other literature/my own experience:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>It bases itself off of concepts clearly defined in literature from other fields, these concepts mirror that of dark patterns in inherent functionality but not environment.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>General critique:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Puts the responsibility of avoiding dark patterns on the designer themselves, even though the incentive/motive for dark patterns themselves are not directly one of the designer.</li> <li>This article attempts to correlate Growth Hacking with dark patterns, however does not make justifications on how growth hacking is different from other business strategies, such as gamification, which may employ the same manipulation tactics.</li> <li>It noted Google's change of ad labels A/B test as an example against A/B testing, however one could argue that that is a perfect example of A/B testing working well the organization may receive responses from diverse chunks of users, and subsequently iterate on their product using either the backlash or the good remarks received without affecting an entire userbase.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>[3]: What Makes a Dark Pattern... Dark?</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>(Mathur et al., 2021)</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Main issues raised by writer:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Occurrences of dark patterns are frequent in contexts such as privacy settings, online gaming, &amp; online shopping (Bösch et al., 2016, as cited in Mathur et al., 2021, Zagal et al., as cited in Mathur et al., 2021, 2013, Mathur et al., 2019 as cited in Mathur et al., 2021).</li> <li>Currently in the academic field though, the foundation where articles are written mentioning dark patterns is lacking, as while said articles describe designs their authors are familiar with clearly, they fail to draw the line on where UI becomes a dark pattern &amp; what makes such dark patterns problematic.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Major interpretations:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>It distils dark patterns to be patterns that affect how users make their choice. This was gotten through a comparison between dark pattern definitions from various sources. It looked at the specific terms used for each definition &amp; categorizes them; it looked at the types described, how they're collected, &amp; notes how their methodologies are flawed; it split each dark pattern into several attributes that affect "choice architecture".</li> <li>After all that, it conceptualizes a set of themes that describe each type of dark pattern.</li> <li>It mirrors dark patterns to multiple other sectors, including the nudge &amp; sludge in behavioural economics which is defined as initiatives that steer people while still allowing them to go their own way, the subversion of decision making through "invisible" manipulation in philosophy/ethics, as well as how marketers skirt the law &amp; exploit non-rational behaviour of humans to sell products.</li> <li>It attempts to define dark patterns normatively through multiple lenses — individual welfare where a dark pattern would be any pattern that harmed an individual whether monetarily or otherwise, collective welfare where a dark pattern would be any pattern that harmed society or a group of individuals, regulatory where a dark pattern would be any pattern that nudged users to undermine certain regulatory objectives, &amp; individual autonomy where a dark pattern would be any pattern that influences a user's decision process in any way.</li> <li>It lists down surveys, ethnography, lab/field studies, field deployments, &amp; experiments as empirical ways to measure dark patterns, along with methods to use each of those ways to measure through each of the lenses mentioned above.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Biasness:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>The article seems to be relatively unbiased, speaking from all fields &amp; only about the topic at hand without trying to argue for or against any party.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>How it relates to other literature/my own experience:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>The article takes a lot from other literature &amp; digests them into one source. It acknowledges all their flaws as well as their stand out points, using its interpretations from them to establish its own definition.</li> <li>Mathur also refers to his own previous article "Dark Patterns at Scale: Findings from a Crawl of 11K Shopping Websites" for a basis on how dark patterns are used &amp; their prevelance.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>General critique:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>In describing how to apply the discussed methods to analyze dark patterns, the article mentions "neutral designs" &amp; "baselines" but fails to provide any method to derive such design from one with dark patterns. If the design is synthetic, how would one know the dark pattern aspect is removed (as one would need to know if there's a dark pattern in the first place to be able to remove it); if the design is from the real world, how would one know if other dark patterns aren't being applied that might influence the result (if we use Twitter's UI to evaluate Facebook's, who's to evaluate Twitter's?)</li> <li>The article goes on to attempt to resolve this by specifying to use multiple variations from the dark pattern bearing design, but what attribute to vary, how one would determine if the varied attribute has contributed any side-effects, or what if varying an attribute produces a result even more in the realm of a dark pattern than the initial subject, are questions not addressed.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>[4]: Are Dark Patterns Anticompetitive?</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>(Day &amp; Stemler, 2020)</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Main issues raised by writer:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Current legislative protection against anticompetitive behaviours do not prohibit dark patterns; they actively label it as procompetitive as they view marketing (whether deceptive or not) &amp; pushing a product to the users as part of competition.</li> <li>Such laws also only focus on economic harms done to the consumer, while disregarding the premiere online currency of privacy &amp; attention sought after by "free" platforms (Lao, 1997, as cited in Day &amp; Stemler, 2020).</li> <li>Tech giants have used their advantage in amount of information collected to influence the choice of their users (McGill, 2019, as cited in Day &amp; Stemler, 2020).</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Major interpretations:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Dark patterns creates anticompetitiveness by providing large companies more data (via captivating attention &amp; subsequently influencing a user's behaviour to expose more of their private info) that can be analyzed &amp; subsequently used to further ascend over their competitors, which may not have as much data due to it being a smaller size/having a small userbase; a positive event loop</li> <li>Dark patterns (eg. Privacy Zuckering) take advantage of System I decision making, which produces hasty results, akin to "how an American would absentmindedly look the wrong way when crossing into London traffic" (Kahneman, 2003, as cited in Day &amp; Stemler, 2020).</li> <li>A price-focused anticompetitive legislative framework causes exclusionary conduct by "free" services to fall under legal grounds</li> <li>Non-price injuries caused by such "free" platforms are hard to prove too as users are generally satisfied with said platforms. (Manne &amp; Sperry, 2015, as cited in Day &amp; Stemler, 2020)</li> <li>Digital manipulation via coercion instead of merely persuasion is considered anticompetitive.</li> <li>"one’s attention is finite, digital manipulation can erect barriers to entry where consumers compulsively use a platform to the exclusion of upstarts; this can hook users onto the platform even though superior interfaces exist".</li> <li>Digital manipulation as a result of dark patterns entail the manipulation of a user's usage of a platform while providing them a qualitatively worse product.</li> <li>Both antitrust laws &amp; the FTC's Section 5 powers may act as powerful tools to fight against dark patterns &amp; promote decisional privacy. However, antitrust laws achieves it by forcing competition, whilst consumer protection laws achieves it regardless of competition in the space.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Biasness:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>It argues against corporations' tactics &amp; attempts to use existing policies as well as create new ones to take them down, whilst not purposely appealing to any single party.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>How it relates to other literature/my own experience:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>It uses quite a lot of citations from various industry &amp; sources, including law, economics, psychology, &amp; HCI.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>General critique:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>This article includes a lot of information, however some seem to swerve far away from the intended topic without providing significant support for their intended topics — talking about a merger policy for privacy being a currency incentivising dark patterns, Actavis's anticompetitive behaviour for coercion the key for dark patterns being anticompetitive.</li> <li>It reads extremely scattered, trying to cover way too many aspects at once — digital manipulation, monopolistic behaviours, attention driven addiction, privacy.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>[5]: Dark Patterns at Scale: Findings from a Crawl of 11K Shopping Websites</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>(Mathur et al., 2019)</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Main issues raised by writer:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>There exists no large-scale evidence for dark patterns' reach in modern UI design.</li> <li>There exists no investigation into how different types of dark patterns cause harm to users.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Major interpretations:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>The majority of impulse-buying-facilitating elements on a page do not constitute as dark patterns.</li> <li>The "primary interaction path" (eg. the path the user has to take to buy an item on an e-commerce site), is where dark patterns are most prominent.</li> <li>Many instances of dark patterns contain similar textual content (eg. confirm-shaming patterns often begin with "no thanks").</li> <li>1,818 instances of dark patterns from 1,254 (a total of ~11.1%) websites in the sieved dataset of 11K shopping websites.</li> <li>7 instances of the "Sneak into Basket" dark pattern was found — when an additional product is added to the cart without a user's consent or when a checkbox is ticked by default. It is only partially deceptive but fully information hiding.</li> <li>5 instances of the "Hidden Costs" dark pattern was found — when a website adds "service fees" or "handling fees" only revealed at checkout. It is only partially deceptive but fully information hiding.</li> <li>14 instances of the "Hidden Subscription" dark pattern was found — often appearing next to the "Hard to Cancel" pattern, is when a reoccurring fee is charged under the disguise of a one-time payment/free trail, with the user not being aware of it until some time later. It is only partially deceptive but fully information hiding.</li> <li>393 instances of the "Countdown Timer" dark pattern was found — when a dynamic indicator of "how much time is left" is shown for an offer or sale. It is at least both partially covert &amp; deceptive.</li> <li>88 instances of the "Limited-time Message" dark pattern was found — when a static indicator with no set timeline is shown for an offer or sale. It purposely withholds information from the user &amp; is also partially covert.</li> <li>169 instances of the "Confirmshaming" dark pattern was found — when language is used that causes the user to feel "guilty" for making a certain choice. It portrays fully the attribute of asymmetry.</li> <li>25 instances of the "Visual Interference" dark pattern was found — when visual elements are used to manipulate a user away from a choice, by either making a certain choice appear more appealing, or to inflate an offer. It is partially asymmetric, partially deceptive, but fully covert.</li> <li>9 instances of the "Trick Questions" dark pattern was found — when confusing language is used to manipulate a user away from making a certain choice. It is fully asymmetric &amp; fully covert.</li> <li>67 instances of the "Pressured Selling" dark pattern was found — when defaults or high-pressure tactics (anchoring, scarcity bias) are used to sell a user additional products/services. It is partially asymmetric, &amp; partially covert.</li> <li>313 instances of the "Activity Message" dark pattern was found — when a, commonly persistent &amp; attention grabbing, notification, either dynamic or static, exists on the site to indicate other users' activity. It is partially covert &amp; partially deceptive.</li> <li>12 instances of the "Testimonials" dark pattern was found — when testimonials from previous users, where origin cannot be objectively determined, are used to manipulate new users. It is partially deceptive.</li> <li>632 instances of the "Low-stock Message" dark pattern was found — when a message is shown signalling to the user that stock on an item might be low/limited, increasing its desirability. It is partially covert, partially deceptive, &amp; partially information hiding.</li> <li>47 instances of the "High-demand Message" dark pattern was found — when a message is shown signalling to the current user that a specific item is of high desirability to other users. It is partially covert.</li> <li>31 instances of the "Hard to Cancel" dark pattern was found — similar to the "Roach Motel" dark pattern, is when an obstruction prevents a user from cancelling a subscription/membership easily, even though signing up was simple. It is restrictive &amp; partially information hiding.</li> <li>6 instances of the "Forced Enrollment" dark pattern was found — when users are forced to perform a side effect to complete their main goal. It is asymmetric &amp; restrictive.</li> <li>The by far most common offender being the "Low-stock Message" at 632 instances out of 1,254 instances of dark patterns (~34.7%).</li> <li>There are entities providing dark patterns as a service, with 1,069 out of 1,254 websites using them to some capacity (~85.2%).</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Biasness:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>It was fair by not swaying to any party &amp; only referring to data gathered on its own.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>How it relates to other literature/my own experience:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>It is the basis for the definitions used in "What Makes a Dark Pattern... Dark" (Mathur et al., 2021) &amp; is cited by 92 other articles for its findings &amp; taxonomy (ResearchGate, n.d).</li> <li>Its use of OpenWPM &amp; subsequently Selenium was probably a good choice for browser control, as it enabled them to "act" as regular users via fingerprint spoofing &amp; thus bypass many of bot-detection frameworks in place in e-commerce sites (Goßen &amp; Hugo Jonker, 2020).</li> <li>It used clustering ML algorithms like in Dark Patterns in the Interaction with Cookie Banners (Hausner &amp; Gertz, 2021), however it only uses it for data gathering &amp; puts the bulk of the actual dark pattern analysis &amp; detection on human experts.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>General critique:</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Its reliance on humans to detect dark patterns may create misses or false positives, as they're going after their subjective view of certain such patterns.</li> <li>It is not clear what the authors did with the clustered data, as it would seem that only textual data was all that remained from the initial websites, however the analysis describes categorization of dark patterns based on style &amp; research based on the actual flow of the website.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>feedback:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>30/9/2021<ul>
+<li>We do not need to cross-compare, cite, &amp; derive subtopics at this stage of research; mainly we’re judged on how well we understand the content.</li> <li>Our critical review should note for each article, its relevance, its findings, &amp; its critiques.</li> <li>If there are figures that may benefit my own research topic I may use with citation.</li> <li>Our final submission will be one report on 5 of the articles in relative isolation (one subgroup per article, instead of subgroups between articles)</li></ul></li> <li>7/10/2021<ul>
+<li>I should add the references to the introduction heading.</li> <li>Critique length is not as important as critique content; as long as the critique looks through things like logical flaws &amp; refers to past experiences it is good.</li> <li>Some articles are straightforward &amp; leave space for interpretation.</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>final:</h2><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://docs.google.com/document/d/14EKPJZe-ZqgkCJsGR2Sxw6sGazRkSTKRGtEVnUj_KJY/preview","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://docs.google.com/document/d/14EKPJZe-ZqgkCJsGR2Sxw6sGazRkSTKRGtEVnUj_KJY/preview</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Final critical review, 10/10/2021</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>reflection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Reading through all those articles was tedious at times, but they contained really cool information, such as ones relating to law &amp; economics. It gave me the opportunity to explore new knowledge I'd never have the chance to. After absorbing everything, we'd then argue against parts of them, addressing any good &amp; bad while providing solutions. This gave a sense of progression as the act of finding holes in research &amp; filling them is inherently helpful to the entire research community.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The main thing I observed through this project was how articles were structured &amp; how the style of writing differed from regular readable material. They used a lot of objective &amp; passive language while also managing to mix in their own substantiated opinion. This is a balance I'd definitely have to work to strive for but I know one day it'll come more naturally. I also observed that there was a lot of types of citations, &amp; they all unfortunately don't fit together perfectly. I worked around it by scraping my own information from the papers rather than relying on what was provided.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>At the end of the day, this writing of the critical review taught me a lot &amp; I'll be able to use what I've learnt through it via my own writings or simply in deducing the arguments of others &amp; being critical. It really brings a science aspect to design, demystifying its unknowns.</p><!-- /wp:paragraph -->

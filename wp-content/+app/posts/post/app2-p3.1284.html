@@ -1,0 +1,87 @@
+<!-- wp:heading {"level":2} --><h2>todo:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Create interactive prototype of app using web technologies</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>process:</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>Setting up</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>There were a few sagas to this journey, but we'll get to them when we get to them. First things first was definitely just setting up. Nothing eventful there, copy files, updating dependencies... until I found out SvelteKit introducing yet another breaking change that affected the configuration, &amp; that I had to spend another half an hour finding out how to migrate. Oh yeah, have I mentioned I was using Svelte/SvelteKit &amp; TypeScript for this project? Alongside all my own in-house built components.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Now, I'll be the first one to admit that using so much in-house built tech, especially built on top of an ever changing platform, is a recipe for abandonware, but in my defence... this SvelteKit migration was to v1.0, which means probably no more breaking changes for a bit.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Then, after all that, I began to build.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Icons</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Very quickly after setting things up, it occurred to me that I needed a better way to get icons into my files. I was originally using a slightly wonky build plugin that took from <a href="https://github.com/marella/material-design-icons/tree/main/svg"><code>@material-design-icons/svg</code></a>, while reading from the import specifier to determine which icons were exported. This meant a really uncanny setup, that was sorta typesafe, but often not; sorta treeshake-able, but practically not. With that then, I was determined to build something that I could use for the rest of time.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>That then, cumulated into <a href="https://github.com/Sxxov/maic"><code>maic</code></a>:</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>maic's README, n.d</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3><code>＜BottomSheet＞</code></h3><!-- /wp:heading -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>Well, well, well. We meet again, my arch nemesis — <code>＜BottomSheet＞</code>!</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>On platforms where this pattern is natively supported &amp; implemented (i.e. Android &amp; iOS), it's a breeze to use, &amp; supremely helpful for UIs with multiple layers of nested screens, &amp; users which might want to swap between them. However, on the web, one would have to implement this from scratch.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Drag physics</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The first challenge of implementing a <code>＜BottomSheet＞</code> from scratch involves the dragging part of it, since the concepts of floating over everything &amp; coming up from the bottom are mostly trivial. With a little poking &amp; prodding, I managed to get something that would follow my finger as I dragged, using no less than <code>mousedown</code>, <code>touchstart</code>, <code>mousemove</code>, <code>touchmove</code>, <code>mouseup</code>, <code>touchend</code>, <code>touchcancel</code>, &amp; <code>drag</code> events. With a little more prickling &amp; pushing, I managed then to get it to snap to a fixed height when I let go, using CSS transitions.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>States</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>For states, a <code>＜BottomSheet＞</code> has a surprising large number of them, since it would need to be able to:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>occupy the full height</li> <li>occupy a peek height</li> <li>be hidden</li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>&amp; for each of those, we'd need to be able to tell whether it was:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>currently being dragged by the user</li> <li>currently settling into the state, after being dragged by the user</li> <li>currently at the state</li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>Thus, armed with my zero formal computing knowledge, I decided to use bits to describe them. More specifically:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671029347660-image-20221214224905607.webp","id":1386} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671029347660-image-20221214224905607.webp" alt="" /><figcaption>BottomSheet state enum, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Any consumer of the state of the <code>＜BottomSheet＞</code>, would then be able to check any of the above combination of states by simply doing a bitwise operation (i.e. <code>state &amp; BottomSheetStates.PEEK</code>). This operation is actually used prominently in the internal guts of my <code>＜BottomSheet＞</code> implementation, especially since its usage ergonomics significantly improved by Svelte's reactivity (no need for any stores/events, just variable assignments &amp; <code>＄:</code>).</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Touch capturing</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>At this point in time, things are still kind of wonky without touch capturing/swallowing when interacting with the <code>BottomSheet</code>. Currently, when you drag it to collapse it or hide it, the background content would receive the scroll events as well. There would also be a need to support scrollable content within the <code>＜BottomSheet＞</code>, &amp; the lack of this feature would be a major blocker.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Whilst I don't think I have completely solved the issue, I think I've come close enough for it to not be noticeable anymore. So, how did I do it? A very precise combination of <code>touch-action: none</code>, <code>Event.preventDefault()</code> on the first <code>touchmove</code>/<code>mousemove</code> event, &amp; <code>Event.stopPropagation()</code>. Which one does what? I have already forgotten, &amp; I will not touch any of it.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3><code>＜Mod＞</code>, <code>＜Expandable＞</code>, &amp; <code>＜WhenDo＞</code></h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p><code>＜Mod＞</code> is the end goal, containing an <code>＜Expandable＞</code>, containing a <code>＜WhenDo＞</code>. All this will then form the repeated component found throughout the initial prototype, where it would preview a module, &amp; allow the user to access it.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671030491796-image-20221214230810531.webp","id":1387} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671030491796-image-20221214230810531.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671030453979-image-20221214230732640.webp","id":1388} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671030453979-image-20221214230732640.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Prototype vs implementation, n.d</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3><code>＜WhenDoEdit＞</code> &amp; <code>＜WhenDoAdd＞</code></h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>These would showcase the core functionality of editing a <code>when</code> or a <code>do</code> action in a module, as well as adding them. They would appear as <code>＜BottomSheet＞</code>s as well, but hook into the state of it to display a warning if the user attempts to dismiss it before saving their changes.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1671031390878-image-20221214232309573.webp","id":1389} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1671031390878-image-20221214232309573.webp" alt="" /><figcaption>Prompt when a user accidently exits without saving, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":2} --><h2>final:</h2><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://nmd.staging.sxxov.design","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://nmd.staging.sxxov.design</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Prototype of nomaid, 4/11/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>reflection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This project was pretty interesting. It was quite a lot more technical than anything I've done throughout my BDCM journey. However, I'm not sure how much of that was due to my own doings, rather than it being a requirement. I guess when left to my own devices, This was the most optimum way I could find to create the best outcome I could.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The main things I've learnt here was in the details. Creating <code>maic</code> was a tangent not gotten into here, as I felt it wasn't that applicable, but it was quite a rabbit hole, including its build process, as well as its integration to consumers' build processes via a <code>vite</code>/<code>rollup</code> plugin. That &amp; also creating the darn <code>＜BottomSheet＞</code> was truly an exercise in knowledge &amp; determination.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Not only do I have the additional technical enlightenment that will contribute to my future web development ventures to take away, I also have a whole self-sustaining Material Icons NPM package, plus a <code>＜BottomSheet＞</code> implementation I can finally reuse till the dusk of time.</p><!-- /wp:paragraph -->

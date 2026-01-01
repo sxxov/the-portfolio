@@ -1,0 +1,99 @@
+<!-- wp:heading {"level":2} --><h2>todo:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Write reflection of App 1 project outcome</li> <li>Find usages of Gestalt Theory in App 1 project outcome</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>reflection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>In Application Design I, I made an app called "nomaid" &amp; there are a few things I think weren't done up to the best in hindsight. Whilst I still am proud &amp; satisfied with the final outcome, the possible improvements given the time &amp; resources beyond the 14 week limitation, is undeniable.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://xd.adobe.com/embed/19a3d9a5-e407-4f30-adbc-2f5784bb9b01-4cf0/?fullscreen","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://xd.adobe.com/embed/19a3d9a5-e407-4f30-adbc-2f5784bb9b01-4cf0/?fullscreen</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Live demo of nomaid, 10/7/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote"><p><a href="https://ljslol.notion.site/ljslol/app1-project-4-prototype-fe813e17f763471e8def806bf2ac211f">https://ljslol.notion.site/ljslol/app1-project-4-prototype-fe813e17f763471e8def806bf2ac211f</a></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:heading {"level":3} --><h3>Layout</h3><!-- /wp:heading -->
+
+<!-- wp:table --><figure class="wp-block-table"><table>
+    <tbody>
+        <tr>
+            <td>
+                <h4>Module dropdowns</h4> <h5>❌</h5> <table>
+                    <tr>
+                        <td>
+                            <img src="assets/1663067702606-home@3x.webp"> </td> </tr> <tr>
+                        <td>
+                            <ul>
+                                <li>Trailing buttons on each module dropdown is confusing, as user won't be able to know that button is attached to the dropdown on first glance</li> </ul> </td> </tr> </table> </td> <td>
+                <h4> </h4> <h5>✔️</h5> <table>
+                    <tr>
+                        <td>
+                            <img src="assets/1663071756863-home@3x.webp"> </td> </tr> <tr>
+                        <td>
+                            <ul>
+                                <li>Buttons within the module dropdown boundary relates its actions to the module itself</li> </ul> </td> </tr> </table> </td> </tr> <tr>
+            <td>
+                <h4>FAB groups</h4> <h5>❌</h5> <table>
+                    <tr>
+                        <div>
+                            <img src="assets/1663072069297-variables2C20edit@3x.webp"> <img src="assets/1663072062944-variables@3x.webp"> </div> </tr> <tr>
+                        <td>
+                            <ul>
+                                <li>FAB groups feel unlinked and too far apart</li> <li>Inconsistent with module dropdowns</li> </ul> </td> </tr> </table> </td> <td>
+                <h4> </h4> <h5>✔️</h5> <table>
+                    <tr>
+                        <td>
+                            <div>
+                                <img src="assets/1663072052797-variables2C20edit@3x.webp"> <img src="assets/1663072052801-variables@3x.webp"> </div> </td> </tr> <tr>
+                        <td>
+                            <ul>
+                                    <li>FAB groups feel linked</li> <li>Consistent with module dropdowns</li> </ul> </td> </tr> </table> </td> </tr> </tbody> </table></figure><!-- /wp:table -->
+
+<!-- wp:heading {"level":3} --><h3>Execution</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Lack of contentful screens</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Since the idea was to build a platform that would integrate with various on-device &amp; cloud services, most of the mind-space was dedicated towards everything around the concept &amp; interface that would enable such functionality, rather than the functionality itself. Like Mr. Razif said, "building an API". This meant that in the prototype, the screens that would be presented as the main functionality for a user, only were relegated to input boxes &amp; text labels.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>A more """visually stimulating""" experience should be put forth, not only to ensure users aren't intimidated, but just increase their overall ease-of-use. Everyone loves a few pictures. In hindsight, more care &amp; thought should've been put into presenting that area better, perhaps leading harder into Google Home or Home Assistant integration with tile based UIs, or more into phone automation with an AutoInput-esque setup flow, perhaps even just making a bigger fuss of the (at presentation-time, broken) IntelliSense-like autocomplete that has icons &amp; too the variables that retain type information.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>All-in-all, I still think the concept &amp; the majority of the app was """there""" at presentation-time, it's just the lack of a """sellable""" key feature or """wow""" screen, really hampered its appeal.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Limitations of Adobe XD</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Maybe I should've used Figma 🤷. The grass is always greener on the other side, I guess.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Adobe XD gave me tonnes of issues &amp; kept me constantly fighting against it. Here's a self-quote from my """closing-words""" of the project itself, that I think encapsulates how I felt about the whole ordeal:</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>"Pushing XD to its limits feels a lot like driving very close to the sun. My car (analogy for brain) is not designed for the surface of the sun (analogy for Application Design 1)."</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>Not only was state management a pain, a lot of visual features, like runtime flexbox-like layouts, was simply absent &amp; definitely dragged my final outcome down a few steps on the goodness-ladder.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>There were even some features &amp; ideas that I simply couldn't express inside XD. These meant that they had to be separately implemented, fragmenting the prototype. The main two culprits were the animations &amp; <code>ResResList</code>. The former was simply difficult to show, as there isn't really a 1-to-1 example of animation anywhere. I probably should've done some simulated animations in After Effects or something, but in a time crunch I could only show what I had. This not only generated extraneous questions &amp; turmoil, but also was just kinda unpleasant for the audience of the presentation. <code>ResResList</code> was a different beast on its own. I wanted a responsive list that had previews for what was inside each module. However, if one were to simply arrange cards along a typical list view, the information density would've been even more atrocious compared to information-dense competitors like <code>Tasker</code>. This lead me to implementing <code>ResResList</code> separately to showcase my hard-to-explain-using-static-imagery, difficult-to-animate-traditionally concept which solves that problem.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Whilst I am very proud of <code>ResResList</code>, it's not perfect, needing much optimisations &amp; probably a refactor to remove dependency on JavaScript to perform its layout. It is also just confusing, as its layout differs quite a bit from the one presented in XD, causing the presentation audience to fail to form the linkage between how the movement, animation, &amp; scrolling would work, compared to how the normalcy of all three attributes in the XD prototype.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>In conclusion, probably use Figma, &amp; don't reimplement parts of a prototype in multiple places (eg. reserve an empty spot to show <code>ResResList</code> instead of putting a list &amp; pointing to <code>ResResList</code> as its replacement).</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Big scope, small time</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The scope for the app was objectively, silently massive. It attempted to improve upon &amp; combine the technical-prowess &amp; containerisation of <code>Tasker</code>, the user-friendliness &amp; cloud-connectedness of <code>IFTTT</code>, the UX &amp; user-adoption of Apple's <code>Shortcuts</code>, the store &amp; portal-esque UI of <code>Macrodroid</code>, all whilst reinventing list-data-display.</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>"14 weeks is never enough."</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>What I probably should've done, is to have tackled a subset of any one of those apps &amp; excel in that, instead of attempting to pluck a leaf off of every plant to form a garden. That would've enabled me to focus on polish &amp; experience over needing to take into account every single corner of a virtual apeirogon.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Closing words</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>In conclusion, time, technical, &amp; resource constraints restricted the quality of the final product, but that's not the end of the story either. All three of them could've probably been used more efficiently given further optimisation to the idea, but there comes to catch-22 of a lack of those three aspects on the idea itself (the first few weeks of Application Design I was basically a waste). I guess all that matters now &amp; all that has probably ever mattered, is that I'll be able to produce something much more refined given the same timeframe &amp; topic, now or much further in the future as needed.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Gestalt</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The principles of design are very important to a design's viability &amp; clarity. It's this case which compels a review on whether Gestalt principles were properly applied onto my final output of Application Design I.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://docs.google.com/presentation/d/1gInt-uaEYNWNARhMmGwy9k-gzby1Lz1Fwjr7MItb-QI/preview","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://docs.google.com/presentation/d/1gInt-uaEYNWNARhMmGwy9k-gzby1Lz1Fwjr7MItb-QI/preview</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Gestalt theory in nomaid, 9/9/2022</p><!-- /wp:paragraph -->

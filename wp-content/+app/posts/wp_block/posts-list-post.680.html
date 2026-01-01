@@ -1,6 +1,6 @@
 <!-- wp:bare/weaver -->
 <div class="pointer-events-none relative grid h-full gap-4 grid-areas-row-auto! max-lg:grid-areas-3x2 lg:grid-areas-3x1"><!-- wp:bare/weaver -->
-<div data-voxel-swipe="" data-theatre-project="voxel-swipe" data-theatre-sheet="grid" class="pointer-events-none absolute -inset-4 overflow-clip rounded-lg"></div>
+<div data-voxel-swipe="" data-theatre-project="voxel-swipe" data-theatre-sheet="grid" class="pointer-events-none absolute -inset-4 overflow-clip rounded-lg" data-theatre-sheet-discriminator="0"></div>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
@@ -14,7 +14,7 @@
 
 <!-- wp:bare/weaver -->
 <div class="flex grow flex-col gap-4"><!-- wp:bare/weaver -->
-<div class="pointer-events-auto flex w-fit flex-wrap items-start gap-1"><!-- wp:bare/composite-provider {"name":"post/term-chip"} -->
+<div class="pointer-events-auto flex w-fit flex-wrap items-start gap-1"><!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
 <!-- wp:block {"ref":360,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill -->
@@ -24,10 +24,32 @@
 <!-- /wp:bare/composite-fill -->
 <!-- /wp:bare/composite-provider -->
 
+<!-- wp:bare/composite-provider {"name":"post/term/separator"} -->
+<!-- wp:block {"ref":1074,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+
 <!-- wp:terms-query -->
 <div class="wp-block-terms-query"><!-- wp:bare/weaver -->
 <div class="flex flex-wrap gap-1"><!-- wp:term-template {"className":"contents"} -->
-<!-- wp:bare/composite-provider {"name":"post/term-chip"} -->
+<!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
+<!-- wp:block {"ref":360,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:term-name {"isLink":true} /-->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider -->
+<!-- /wp:term-template --></div>
+<!-- /wp:bare/weaver --></div>
+<!-- /wp:terms-query -->
+
+<!-- wp:bare/composite-provider {"name":"post/term/separator"} -->
+<!-- wp:block {"ref":1074,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+
+<!-- wp:terms-query {"termQuery":{"perPage":10,"taxonomy":"post_tag","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false}} -->
+<div class="wp-block-terms-query"><!-- wp:bare/weaver -->
+<div class="flex flex-wrap gap-1"><!-- wp:term-template {"className":"contents"} -->
+<!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
 <!-- wp:block {"ref":360,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill -->

@@ -1,0 +1,51 @@
+<!-- wp:heading {"level":2} --><h2>todo:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Create a hi-fi prototype of the redesigned app</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>process:</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>ResResList (responsive, bidirectional, list)</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This started out as an experiment to figure out if fully implementing the hi-fi prototype in code was possible. The first item on my list was this concept list I had in my mind, mainly due to me being hyper aware of the low information density in my prototype. Tangent — it definitely came from comparing some of the screens to their equivalents in Tasker. Tasker has a very utilitarian approach to design (using majority built in Android components), &amp; makes little compromise for aesthetics. It was very apparent in screens like the properties screen, where 2 properties took up as much space as 4 in Tasker. Tangent over. With this very problem under the microscope, as well as the side urge to find a way to solve the responsive problem, I came up with the concept of <code>ResResList</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>As I started actually writing the implementation though, it got increasingly apparent that I was definitely not completing the entire prototype in code. However, having a frame of reference for a <code>ResResList</code> implementation was still high up in my priority, as there was no way XD could represent it anywhere closely.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The implementation of <code>ResResList</code> itself is split into two components: <code><resreslist> &amp; <code><resresitem>.
+The implementation of the prototype's modules are split into two components: <code><module> &amp; <code><moduleitem>.</moduleitem></code></module></code></resresitem></code></resreslist></code></p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I could so nerd out on &amp; on about what, how, &amp; why certain details were there, but today is not the day; <a href="https://github.com/Sxxov/nomaid">just check out the repository</a>.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://youtube.com/embed/nZch2XTCfno","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://youtube.com/embed/nZch2XTCfno</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Demo of a rough implementation of ResResList, 30/6/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Drawer, sub-button, list item editing</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I wanted fancy animations. Fortunately I had fancy animations, so I shall show you.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://youtube.com/embed/5pg78cNNoUA","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://youtube.com/embed/5pg78cNNoUA</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Demo of the implementation of animations in “Notify”, 30/6/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>The actual prototype lol</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>For this, I took the identified pain points from the <a href="/2022/07/app1-p3.html">last project</a> &amp; fixed them all up in Adobe XD. I did also implement a few more screens that I felt were apart of the app's core functionality. Whilst I was at it, hey, making things look prettier &amp; fixing up some layout inconsistencies too!</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>final:</h2><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657395951223-image-20220710034547900.webp","id":1379} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657395951223-image-20220710034547900.webp" alt="" /><figcaption>Organised notion with everything, 30/6/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote"><p><a href="https://ljslol.notion.site/ljslol/app1-project-4-prototype-fe813e17f763471e8def806bf2ac211f">https://ljslol.notion.site/ljslol/app1-project-4-prototype-fe813e17f763471e8def806bf2ac211f</a></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:embed {"url":"https://xd.adobe.com/embed/19a3d9a5-e407-4f30-adbc-2f5784bb9b01-4cf0/?fullscreen","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://xd.adobe.com/embed/19a3d9a5-e407-4f30-adbc-2f5784bb9b01-4cf0/?fullscreen</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Hi-fi prototype, 1/7/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>reflection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>My experience was generally positive. The mix-media rojak approach to this project really does show itself to be different from the rest of my work in Application Design I. Whilst I did have some trouble getting everything up to tip top shape, finishing the rest of the project didn't feel like absolute hell.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I feel like, other than the practical skills like better <code>svelte</code> composition &amp; Adobe XD utilisation, the largest takeaway was to simply to use tools that let you achieve what you want most efficiently. I could've definitely found a way to implement the full prototype in code, but I eventually found that doing it in XD was much more efficient, as breaking things by moving, adding, removing, was a lot quicker in something that was designed for it. I could probably even make the statement that using it improved my final outcome by not needing to worry about any nitty gritty. However, all that still doesn't excuse the limitations, &amp; the fact that limitations are what drove me to explore less efficient options. Mixing a tool that's limited, with one that is not, but a lot less efficient, has genuinely been an eye-opening concept to me, however trivial it sounds.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Finally, it may be obvious to all that knows it, but I feel like I'll be utilising this approach a lot more for prototyping in the future, especially when it comes to tight schedules or limited skillsets. For that, I think I'd redo this project any day of the week.</p><!-- /wp:paragraph -->

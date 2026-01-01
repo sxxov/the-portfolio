@@ -1,0 +1,110 @@
+<!-- wp:heading {"level":2} --><h2>todo:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Create a prototype of the proposal</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>implementation:</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>Interpreter</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>World to grid</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This was the main algorithmic challenge brought up by Mr. Razif when discussing my proposal. My stubborn headass instead took it as a challenge. With game on, I took what I knew I could use for tokenisation from traditional compilers, &amp; started my base — <code>CardNode</code>. Uniquely to Buddies’ One-of-a-kind Walking Language (BOWL), card tokens can actually appear in 2 dimensions. This means a simple doubly-linked node can't cut it — it's a job for the quadruply-linked node, linking <code>top</code>-<code>bottom</code> &amp; <code>left</code>-<code>right</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Actually constructing a grid from the nodes was the real meat of the challenge though. For this, after some silent thought, I came up with probably one of the worst algorithms for it. This is a simplified implementation:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} --><ol>
+<li>For each <code>nodes</code> as <code>node</code><ol>
+<li>For each <code>edges</code> as <code>edge</code><ol>
+<li>Let <code>nearestDistance</code> be Infinity</li> <li>Let <code>nearestNode</code> be None</li> <li>Let <code>prevDistances</code> be all the distances of the surrounding nodes to this one, before the <code>node</code> moved</li> <li>Move <code>node</code> locally towards the <code>edge</code></li> <li>Let <code>currDistances</code> be all the distances of the surrounding nodes to this one, after the <code>node</code> moved</li> <li>For each [<code>currDistances</code>, <code>prevDistances</code>] as [<code>currDistance</code>, <code>prevDistance</code>]<ol>
+<li>If <code>currDistance</code> is less than <code>prevDistance</code> &amp; <code>currDistance</code> is less than <code>nearestDistance</code><ol>
+<li>Set <code>nearestDistance</code> to <code>currDistance</code></li> <li>Set <code>nearestNode</code> to node that is <code>currDistance</code> away from <code>node</code></li></ol></li></ol></li> <li>Link <code>nearestNode</code> at <code>edge</code></li></ol></li></ol></li></ol><!-- /wp:list -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p><strong>NOTE</strong><br>
+The above implementation makes a few assumptions:<br>
+1. <code>nearestNode</code> will only ever appear once, &amp; when linking, it's not present at other <code>edge</code>s
+2. The distance <code>node</code> moves locally is the minimum distance between every node<br>
+For the full implementation, see <a href="https://github.com/Sxxov/walking-buddies/blob/master/Assets/Core/Card/CardGrid.cs">Assets/Core/Card/CardGrid.cs</a></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>It's kind of, so stupid, that it wraps around to being elegant!</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Tokenisation</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>After a lump of qudruply-linked card nodes, a proper data structure, more easily traversable, is required. Despite the heading, the card grid construction is definitely part of the overall tokenisation process... &amp; I totally could've combined this with process with it. Whatever, I'm stupid, sue me.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Besides mapping over the card nodes' kinds into a jagged array, deduplication is also done if the tokeniser finds two of the same kinds stuck to each other, forming one card.</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p><strong>TODO</strong><br>
+Yeah, that's a bug. If a player places two same top cards, the tokeniser will dedupe it into one card, &amp; thus collapsing the two actions into one. Too bad, this a prototype &amp; the repo is public, fix it yourself.</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:heading {"level":4} --><h4>Interpreting</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>No ASTs or IRs, because that would be stupid for a card game; the tokens are all simply interpreted.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The interpretation itself is pretty straight forward as the cards map over to pretty simple logic in C# land. I used a few compiler-esque seeking functions here too like <code>Eat</code> &amp; <code>Until</code>, not sure what they're supposed to be called thought, but I learnt them by combing through <code>svelte</code>'s compiler. Why am I telling you this? Dunno.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>There is one big thing of note here, which is the algorithm that detects when there is an infinite loop. The only reason the Turing Halting problem doesn't apply here is the simple assumption that if buddies' positions loop, they cannot ever reach the end. A simplified implementation of the algorithm can be described with a simple sentence — if the end of a set of sequential positions intersect with the start of the another set of sequential positions with the same combination, in a list of every single outputted position, then terminate. Elegant right?? Some little sh*t have probably written a whitepaper on this in the 60s, but I came up with it again alone in my bedroom, &amp; I feel pretty proud of it.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Another notable implementation detail is also how parse errors are handled. They are thrown in the innards of the interpreter &amp; caught from the public <code>#Interpret*</code> methods, which then bubble up to be displayed by whatever should handle it.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Targets</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Behaviour</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Every image target imported into Unity from the Vuforia database will have this <code>TargetBehaviour</code> component on it. It assigns them a <code>kind</code> &amp; also propagates the events triggered by Vuforia into grid updates in <code>TargetController</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657316872371-image-20220709054751244.webp","id":2021} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657316872371-image-20220709054751244.webp" alt="" /><figcaption>Subset of targets in the project, 9/7/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Controller</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The controller, implemented as <code>TargetController</code> is the central brain managing the targets. It keeps track of every target that is found &amp; lost, updating the card grid as they change. A perpetual, per second tick is also fired from the controller to update the card grid.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Level</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Field</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The field holds the actual state of the level, &amp; is the context object used by the interpreter. This includes the success states, events, &amp; buddies positions.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Tiles</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The tiles shown in the game are programmatically generated based on pre-defined levels.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657317129040-image-20220709055207357.webp","id":2022} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657317129040-image-20220709055207357.webp" alt="" /><figcaption>Level tiles, 9/7/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>Controller</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The main brain controlling the level, constructing the objects as the game <code>Awake</code>ns, spawning toasts as the game <code>Start</code>s, centre the level tiles on the card grids as the game <code>Update</code>s. The main grunt of the logic its responsible lies in <code>OnGridUpdate</code> which is invoked, when the grid updates (duh). It tokenises the level field, &amp; runs the interpreter on it, handling any errors with a floating toast, &amp; successes with an animation (using my own <code>Bezier</code> &amp; <code>Tween</code> implementation!) + toast.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Scenes</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>FtueScene</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The "First time user experience" (StrictPascalCase gang) houses the initial experience of a new player, with UIs that spawns each other using <code>ReplaceSelfHook#ReplaceSelf()</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657316220703-image-20220709053658702.webp","id":2023} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657316220703-image-20220709053658702.webp" alt="" /><figcaption>FtueScene in Unity editor, 9/7/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>MainScene</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The main scene with the AR shenanigans. It contains all the potential targets objects, a canvas for the help &amp; the programmatically generated minimap, &amp; as well as all the required dummy objects which housed the controllers &amp; toast canvas.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657316791326-image-20220709054630100.webp","id":2024} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657316791326-image-20220709054630100.webp" alt="" /><figcaption>MainScene in Unity editor, 9/7/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":2} --><h2>final:</h2><!-- /wp:heading -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657317353025-image-20220709055551060.webp","id":2025} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657317353025-image-20220709055551060.webp" alt="" /><figcaption>Sxxov/walking-buddies, 9/7/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote"><p><a href="https://github.com/Sxxov/walking-buddies" target="_blank">https://github.com/Sxxov/walking-buddies</a></p></blockquote><!-- /wp:quote -->
+
+<!-- wp:embed {"url":"https://youtube.com/embed/vwrjVACCIJM","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://youtube.com/embed/vwrjVACCIJM</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Proposal video walkthrough, 6/7/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>reflection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The experience overall was, pretty fun. Was not expecting things to be pleasant at all, but I guess both C# &amp; Unity's API are battle-tested enough to facilitate dummies! As I proceeded through setting scenes up &amp; scripting them out, whilst there were bumpy spurts of road &amp; high hilltop terrain, the ratio of easy to hard is quite baffling; great productivity is facilitated.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The main things I learnt here was definitely the ability to utilise Unity to create game-like prototypes that functioned with AR. The AR concept whilst still quite foreign &amp; abstracted away via Vuforia, really does open up doors to potential new ways of game design &amp; creation. I also learnt how much I surprisingly liked C#. Whilst it is very unfortunate Unity's runtime lags behind the bleeding edge of C# language features, like multiline <code><a href="/2021/08/vsp-e.html#dubbingautomated-dialog-replacement-adr"></a></code> strings &amp; perhaps even the <code>required</code> keyword, it still provides a broad set of language features that put Java to pure-OOP shame.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>At the end of the day, I know whatever I've learnt from this project will be used by me the future for game prototypes &amp; even jams or jellies. Again, was a very challenging &amp; taxing experience, but not one I would prefer to be without.</p><!-- /wp:paragraph -->

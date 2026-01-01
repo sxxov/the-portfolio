@@ -1,0 +1,855 @@
+<!-- wp:heading {"level":2} --><h2>toc:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>(<a href="#week1-woo--mediapipe">↓</a>) week[1]: Woo! Mediapipe</li> <li>(<a href="#week2-zzz">↓</a>) week[2]: Zzz</li> <li>(<a href="#week3-reima-socia-what">↓</a>) week[3]: Reima-socia-what</li> <li>(<a href="#week4-games--culture">↓</a>) week[4]: Games &amp; culture</li> <li>(<a href="#week5-haha-jk">↓</a>) week[5]: Haha jk</li> <li>(<a href="#week6-__proto__">↓</a>) week[6]: __proto__</li> <li>(<a href="#week7-aggg2-rp">↓</a>) week[7]: AGGG2 RP</li> <li>(<a href="#week8-ar-for-dummies-me">↓</a>) week[8]: AR for dummies (me)</li> <li>(<a href="#week9-await-draw">↓</a>) week[9]: <code>await draw()</code></li> <li>(<a href="#week10-uhhhhhhhhhhh">↓</a>) week[10]: uhhhhhhhhhhh</li> <li>(<a href="#week11-training-camp">↓</a>) week[11]: Training camp</li> <li>(<a href="#week12-await-promiseallhadicodepr-mochiecodepr">↓</a>) week[12]: <code>await Promise.all([hadi.codePr(), mochie.codePr()])</code></li> <li>(<a href="#week13-breaking-engine-changes">↓</a>) week[13]: Breaking engine changes</li> <li>(<a href="#week14-merge-dat-shidz">↓</a>) week[14]: Merge dat shidz</li> <li>(<a href="#week15-everything-else">↓</a>) week[15]: Everything else!</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>week[1]: Woo! Mediapipe</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Assimilate</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Getting started</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>We were briefed on what it is to be expected from this module, more specifically the need to create a prototype of a game that had AR functionality in it. This lead me to brainstorm on what could be the AR mechanic that the game would ultimately centre around.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After sitting around for a bit, as well as scouring around to find out what was possible, I had a few choices:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Single object detection/tracking</li> <li>Multiple object detection/tracking</li> <li>Pose detection/tracking</li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>Well, not many things sound cooler than <em>✳️pose detection✳️</em>, which absolutely intrigued me.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Getting poses into a game engine</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Yeah what, how-</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I noticed a lot of the demo videos of hand tracking used OpenCV, an open-source, computer-vision platform, developed by Intel. Unfortunately, dealing with an AI library from scratch is f*cking difficult, even if there are great Unity packages to help with it; fortunately, someone else has done the heavy lifting in the form of Mediapipe.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>O' saviour, Mediapipe</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Mediapipe on its own is not a Unity or Unreal thing, it's simply a wrapper library over OpenCV that implements &amp; bundles along the base components required to do fancy computer-vision shenanigans like:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Face Detection</li> <li>Face Mesh</li> <li>Iris</li> <li>Hands</li> <li>Pose</li> <li>Holistic</li> <li>Selfie Segmentation</li> <li>Hair Segmentation</li> <li>Object Detection</li> <li>Box Tracking</li> <li>Instant Motion Tracking</li> <li>Objectron</li> <li>KNIFT</li> <li>AutoFlip</li> <li>MediaSequence</li> <li>YouTube 8M</li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>Don't worry I don't know what half those things do either. These are implemented as "solutions", where each "solution" composes together components, along with the Mediapipe engine to solve a specific computer-vision problem.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>What is especially interesting is the "Hands" solution, where it enables hand pose detection without the use of fancy hardware like Magic Leap.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Mediapipe + Unity?</h4><!-- /wp:heading -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<p>Just to address "why Unity" upfront, it's because it's easier, refer to <a href="/2021/06/desprin-p3.html">this gruelling blog post</a> for my past "experience" with Unreal.</p></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>Since Mediapipe is a library that is agnostic to platform &amp; even language, some glue is needed to abstract away parts &amp; idiosyncrasies that are unidiomatic to the host environment (Unity, in this case). This, again, can be very fortunately stolen from a person on GitHub, which developed <a href="https://github.com/homuler/MediaPipeUnityPlugin">MediaPipeUnityPlugin</a>.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Unfortunately, the absolute c*nts (angel developers) did not (could not) include the prebuilt versions of the Mediapipe core library, thus requiring a lengthy (agonising) build process to obtain them before this plugin can be used to actually develop any games.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Building Mediapipe</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>The first step to build Mediapipe was to...<em>squints</em>...use Linux. There were Windows solutions, but they all came with their own caveats:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Native<ul>
+<li>Can't build for Android</li></ul></li> <li>Docker (Linux)<ul>
+<li>Can only build for Android</li></ul></li> <li>Docker (Windows)<ul>
+<li>Can only be used on Windows Pro editions (I have Windows 11 Home)</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>Not wanting to install Linux just to test &amp; build something once, I pursued Docker running in Windows mode, since it supported building everything, just like in Linux. Docker is usually the easier option as well, as it's designed to basically set up an environment that's precisely controlled by the developer, with just a few commands, instead of downloading &amp; hunting binaries &amp; installations to set up your own system to match the expected environment.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>Docker (Windows) shenanigans</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>God bless the Docker front-end developers, &amp; by god bless I mean I hope someone hexes their cats &amp; their moms. I was unaware of the requirement for Windows Pro editions at first, so I was just expecting it to work. Following instructions on how to switch Docker to "Windows" mode seemed to "work" as well. However, I started encountering extremely bizarre behaviour, like the Docker daemon stopping &amp; not restarting, as well as any started daemon not installing the required Windows-mode-only packages without proper error messages.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After finding out that Windows mode required Hyper-V, I installed that using a workaround. However, Docker then had artificial limitations locking out users from switching to Hyper-V, which were applied <strong>on install time</strong>. Even pushing through that &amp; changing the Windows build name inside the registry, enabling the option itself in Docker, it still didn't work, failing to start up.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1652778662178-image-20220517171100880.webp","id":2090} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1652778662178-image-20220517171100880.webp" alt="" /><figcaption>Editing the Windows edition in the registry, 28/3/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1652778264084-141776632-10155350-293e-4474-9f07-aa4538eaf2a5.webp","id":2091} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1652778264084-141776632-10155350-293e-4474-9f07-aa4538eaf2a5.webp" alt="" /><figcaption>Docker? More like Pearl harbour, 28/3/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":5} --><h5>Docker (Linux) shenanigans</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>After giving up on the Docker (Windows) approach, I settled with the WSL 2 based Docker (Linux) approach. This went quite smoothly (well, as smoothly as any Docker build goes), &amp; ended with an Android binary to be used for building for Android.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>However, that doesn't include any libraries required to, you know, actually run it in Unity...</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>Native shenanigans</h5><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>After everything, including assuming using Docker was the easier choice, I ended up downloading Bazelisk, MSYS2, C++ dev tools, Python, NuGet, &amp; NumPy, just to build something once for the rest of time.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This process had its own hiccups, including taking absolutely forever to run, &amp; failing in the most obscure ways possible, including just not outputting anything but showing success, or providing error messages in Unity so cryptic the Riddler would be proud. However, with bunch of tinkering, &amp; figuring out that I needed to explicitly tell it to build every thing one by one <em>except</em> Android, the outputted binaries started properly working.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>The prototype itself</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Uh, yeah I don't have a prototype — ran out of time. I did get their demo working great, but combing through the sheer amount of code required to getting that set up, even for just being a simple demo, really put things into scale if I were to pursue this avenue of AR.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[2]: Zzz</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Wait for week 3??</li> <li>Create a game history presentation, showcasing all the games that influenced me</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>No brief?</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Yeah we didn't do anything this week cuz Dr. Charles was indecisive. The class as a whole were proposed a game jam that we could participate in, posed as a simple brief adjustment. Eh, why not?</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>Game history</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Okay so this was supposed to be week 1's problem, but this week's journal entry was kinda empty, so f*ck it. Sue me.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I felt like being extra, so I designed the presentation in After Effects, &amp; exported it as a Lottie animation.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1652782413377-image-20220517181330419.webp","id":2092} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1652782413377-image-20220517181330419.webp" alt="" /><figcaption>Presentation inside After Effects, 3/4/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>With the Lottie animation, I would be able to play &amp; control it on the web. This thus lead me to develop a whole framework around it to enable scrolling to control playback.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Fortunately, this isn't the first time I've wonked around with Lottie in this matter, heck it's not even my <a href="https://github.com/Sxxov/jiashe.ng">first fully Lottie-content-based site</a>. However, this time came with new challenges. This is due to my decision to use my, very-overkill-for-a-simple-presentation starting template, which included Sveltekit, Typescript, &amp; Tailwind. This greatly complicated the build process, alongside Sveltekit being a currently non-semantic-version-following project, made getting everything playing well together a pain.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>At the end though, not only did I end up finishing the super fancy looking presentation, I managed to make its underlying code extendible for future presentations, so that in the future, any presentation would simply be another Lottie file.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>final:</h3><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://presentation.ljs.lol/game-history","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://presentation.ljs.lol/game-history</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>My game history presentation, 3/4/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[3]: Reima-socia-what</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>lectures:</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>[A]: Social thingy game jammy</h4><!-- /wp:heading -->
+
+<!-- wp:heading {"level":5} --><h5>Aim</h5><!-- /wp:heading -->
+
+<!-- wp:heading {"level":6} --><h6>Of the cause</h6><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>To grow a community &amp; environment of ecosystem of game creators who think about creating games for greater good — games address social issue in community/environment, or have some sort of social impact</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":6} --><h6>Of the talk</h6><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>To introduce/raise awareness what it means for games to be for the greater good/socially conscious games.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":6} --><h6>Of the workshop</h6><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>To bolster &amp; further the ideas to improve social consciousness.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>Game jam info</h5><!-- /wp:heading -->
+
+<!-- wp:heading {"level":6} --><h6>Application open</h6><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>22/4/22</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":6} --><h6>2d workshop</h6><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>26-27/5/22</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":6} --><h6>2d game jam</h6><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>28-29/5/22</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":5} --><h5>Themes</h5><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Indegenous rights</li> <li>Work-life balance</li> <li>etc.</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>[B]: Imagine reimagining "Reimagine"</h4><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Imagining a game</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":true} --><ol>
+<li>Figure out a purpose</li> <li>Figure out the sandbox (how's the world gonna be like)</li> <li>Facilitate a playtest with prototype</li></ol><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>"Problematise"</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Aka. design to solve the issue via something playable</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} --><ol>
+<li>[empathy] pick an issue</li> <li>[define] find a direction/title</li> <li>(...maybe later?)</li></ol><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Reimagining a game</h4><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>What are you reimagining/fantasising about? (look at a local context)<ul>
+<li>We will reimagine a problem &amp; communicate that problem</li> <li>The problem will be one that contributes to society (basically social consciousness bruh)</li> <li>Fight for the problem (pose a challenge?)</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Group up</li> <li>Discuss how the game is to be played in a weekly basis</li> <li>Discuss how to get other ppl to play physically</li> <li>Discuss how the physical proto will be translated to digital</li> <li>Find a game in our culture to showcase</li> <li>Wait for week 5??</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>The idea</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I grouped up with Hadi, Mochie, &amp; Ellis to form our, quadfecta? quadlet? croissant?</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Nothing much else happened, we simply discussed a bit:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Group up<ul>
+<li>Yes</li></ul></li> <li>Discuss how the game is to be played in a weekly basis<ul>
+<li>We'll gather on campus</li></ul></li> <li>Discuss how to get other ppl to play physically<ul>
+<li>We'll bribe them or threaten their family</li></ul></li> <li>Discuss how the physical proto will be translated to digital<ul>
+<li>I know how to code; Hadi &amp; Mochie will be forced to (they are IT <del>degenerates</del> students)</li></ul></li> <li>Find a game in our culture to showcase<ul>
+<li>We decided to do this individually &amp; I picked Minecraft (:</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>We also created a doc for each of our ideas, with each person giving three. Mine were:</p><!-- /wp:paragraph -->
+
+<!-- wp:quote --><blockquote class="wp-block-quote">
+<ol>
+<li>JRPG where you spawn in with no objective other than to survive. Choices include crime or going according to the “system”. The people in game treat you like shit as you do crime &amp; get caught; going according to the system will eventually kill you. Handicaps can be introduced as you get hurt etc. It should be hyperrealistic in terms of mechanics (no healing, finding food is very hard). Teaches players about why crime happens, &amp; humanizes “criminals”; moral is to be kind etc.</li> <li>A 3D game where the player plays a scientist, who finds out something is killing the planet. However, the population <em>lack social consciousness</em> &amp; thus do not care. The end goal of the game is to either convince the population, or put resources into saving the world yourself. The tactics that the scientists use to convince though, can be arguably worse than the thing they’re trying to convey (eg, actually kill the planet to show people what point they were missing, using forceful dictatorships, mind control, etc.); as the scientist helps the world himself, he gets more &amp; more bitter against the world, making it more tempting to want to convince them (it is also impossible to finish this route purely without help from the population). This teaches about the issue of a lack of social consciousness, &amp; how society has to be wholly responsible for certain issues.</li> <li>A 3D game where the end goal is to destroy the world. You start as a regular ass person, doing regular ass things. A narrator in your head tempts you. You can make multiple choices at every step at the way. However, every choice made has to be actually executed in real life through XR hand pose detection. You could start by flipping someone off in an office (or just thumbing up &amp; nothing happens), then you move on to things larger, eventually being able to play god &amp; destroy the environment. As you progress through the game you are rewarded XP &amp; good points for completing the “objective” (money?), but the environment around you is visibly degrading. At the end, you either spend your last breath killing one more thing, or fight back the game design &amp; be crippled by debt or something. Either way you suffer. (inspo: stanley parable, destroy the world).</li></ol></blockquote><!-- /wp:quote -->
+
+<!-- wp:paragraph --><p>Yeah a lot of words, but I didn't want to draw. My favourite out of the three was the last game, which when presented to my other group mates, seemed to be one they liked as well.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>However, when it came time to actually pick an idea, we couldn't really decide on one that everyone really enjoyed. This lead us to a group activity, where we took the games from everyone's game history, picked two at random, &amp; attempted to create an idea from combining their concepts. Double unfortunately, nothing much came from this.</p><!-- /wp:paragraph -->
+
+<!-- wp:details {"showContent":false,"summary":"Everyone&#039;s games"} --><details class="wp-block-details"><summary>Everyone&#039;s games</summary>
+ <ul>
+<li>Minecraft</li> <li>Clash of Clans</li> <li>League of Legends</li> <li>Clash Royale</li> <li>PUBG Mobile</li> <li>Doki Doki Literature Club</li> <li>Fun Run 3</li> <li>Mobile Legends</li> <li>Among Us</li> <li>Everdale</li> <li>Helltaker</li> <li>AC: NH</li> <li>Monkey Quest</li> <li>Pokemon Emerald</li> <li>Sonic Advance</li> <li>After dark games</li> <li>Mushroom age</li> <li>Hamster ball</li> <li>Diner dash</li> <li>Sally salon</li> <li>Cake mania</li> <li>GTA</li> <li>Loco roco</li> <li>Pou</li> <li>Crossy road</li> <li>Subway surfer</li> <li>Nintendogs</li> <li>Fruit ninja</li> <li>Plants vs zombies</li> <li>Stronghold games</li> <li>Nfs carbon and mw2</li> <li>Civ</li> <li>Command and conquer</li> <li>Crash games</li> <li>Dota 2</li> <li>Last of us</li> <li>mario</li> <li>crash bandicoot</li> <li>crash racing</li> <li>grand turismo</li> <li>Wwe</li> <li>Fifa</li> <li>cat vs dog</li> <li>tetris</li> <li>solitaire</li> <li>csgo</li> <li>wow</li> <li>pokemon</li> <li>stardew valley</li> <li>terraria</li> <li>friday night funkin'</li> <li>cytus</li> <li>mhw</li> <li>auto chess</li> <li>genshin</li> <li>sims</li> <li>blade&amp;soul</li> <li>detroit become human</li> <li>dinner</li> <li>cat simulator</li> </ul> </details><!-- /wp:details -->
+
+<!-- wp:heading {"level":4} --><h4>Game jam? More like game scam</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>After we were briefed on the game jam, there was, push back. The expectation of it being simply a brief change was shattered, as there were expectations of a game being planned, created, &amp; presented within a 48hour period, instead of 14 weeks. This, I thought was stupid, since none of us has made any games before, nor participated in anything remotely close.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After a 30 minute long Class v. Charles case, Dr. Charles was convinced to reconsider reverting the change of brief, getting back to us next week.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[4]: Games &amp; culture</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>lectures:</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>[A]: Games &amp; culture</h4><!-- /wp:heading -->
+
+<!-- wp:embed {"url":"https://docs.google.com/presentation/d/1UZmHTGRk1PVwkKiDsihRqMtWgBJEZ6tV9AX92VsuerU/preview","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://docs.google.com/presentation/d/1UZmHTGRk1PVwkKiDsihRqMtWgBJEZ6tV9AX92VsuerU/preview</div></figure><!-- /wp:embed -->
+
+<!-- wp:heading {"level":5} --><h5>Violent games</h5><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>No clear cause-effect for violent games &amp; violence</li> <li>We do contemporary research; this research finds contexts to apply gamification</li> <li>Contemporary games require real-time 3D image synthesis</li> <li>The realer things look, the more "immersive" the violence</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":6} --><h6>Doom aesthetic</h6><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Doom started a shift towards "adult-oriented" games</li> <li>Due to how it enabled first person view with real-enough violence</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":5} --><h5>Gamification</h5><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Produces rewards for certain actions</li> <li>eg. point systems in e-payment epps (Grab, Setel, TouchnGo)</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":5} --><h5>Immersion</h5><!-- /wp:heading -->
+
+<!-- wp:heading {"level":6} --><h6>First-person view</h6><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Focuses on the task at hand</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":6} --><h6>Third-person view</h6><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Focuses on the character</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":6} --><h6>Components of gameplay immersion</h6><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Sensory immersion<ul>
+<li>Via sounds &amp; interactive images in virtual space,</li> <li>Environment design!!</li></ul></li> <li>Challenge-based immersion<ul>
+<li>Via actions of play ("flow" experience, imitation reality)</li> <li>Roleplaying!!</li></ul></li> <li>Imaginative immersion<ul>
+<li>Via fiction (can be achieved by text alone)</li> <li>Storytelling??</li> <li>Like Sensory immersion, but without the environment</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":5} --><h5>Game review</h5><!-- /wp:heading -->
+
+<!-- wp:heading {"level":6} --><h6>Criteria</h6><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Video</li> <li>Can review specific aspects of the game (eg. gameplay, graphics)</li> <li>Can be either an edited down game recording, or a documentary</li> <li>Can be a game played or not-played before</li> <li>Can be a mod for a game</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":6} --><h6>Topics</h6><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Exercise 2: Cultural influences in Games</li> <li>Exercise 3: Remediating the non-digital game</li> <li>Exercise 4: Digital games evolution and revolution</li> <li>Exercise 5: Mixed and Extended Realities in Games</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":6} --><h6>Things to consider</h6><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>3D vs 2D<ul>
+<li>If a game has a 2D variant, is the 3D variant better?</li></ul></li> <li>Realtime vs turn-based<ul>
+<li>Describe core game-mechanics</li> <li>Explain the player's experience</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Find an idea for the game (again)</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Oh hey, it's next week! Dr. Charles heard our feedback &amp; rolled back the changes linking the game jam to our syllabus. This meant our preliminary ideas were largely nullified. Hadi, Mochie, Ellis, &amp; I all got together again &amp; started discussing. It was at this point we had to pick a group name. Our working title was the "Anti Ellis Ellis Club", but that didn't really fly with, ahem, some members. Instead, we went with "Sille" instead, which yes is confusing to both pronounce &amp; spell, but it does look cool.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>proposal:</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>We also tasked each other with an idea. This time, continuing on from the "anti" theme, I came up with the idea of the "Anti Game-studies Game-studies Game".</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This game would be a sort of parody of the Game studies, where the goal would be to get the highest marks in the module, no matter the cost. In order to conceptualise how this game would be played, &amp; what it would be like to play, I started writing things down... in pseudo code:</p><!-- /wp:paragraph -->
+
+<!-- wp:details {"showContent":false,"summary":"Game plan in mmdd"} --><details class="wp-block-details"><summary>Game plan in mmdd</summary>
+ <pre>
+# seiduts emag
+<br>
+%player_count = 4
+%round_count = 14
+%Phase = {
+    %.RESEARCH = 0
+    %.IMPLEMENTATION = 1
+}
+%ActionCardCount = {
+    %.RESEARCH = 1
+    %.IMPLEMENTATION = 2
+}
+%deck = @arr ($, $$) -&gt; {
+    // arranged according to priority (execution order)
+<br> <br>
+    @$$(4) @Card {
+        %.name = do nothing
+        %.description = you do nothing
+        %.on_use = () -&gt; {}
+    }
+<br>
+    // provoking cards; opponents can react with a reaction card
+<br>
+    @$$(4) @Card {
+        %.name = steal
+        %.description = you steal the cards the opponent chooses to use in the current round
+        %.on_use = ({ opponent }) -&gt; {
+            %opponent.action.cancel()
+            %player.hand.merge(%opponent.action.cards)
+            %opponent.action.cards.clear()
+        }
+    }
+<br>
+    @$$(4) @Card {
+        %.name = swap
+        %.description = you swap the cards the opponent chooses to use in the current round
+        %.on_use = ({ opponent }) -&gt; {
+            // TODO
+        }
+    }
+<br>
+    // skill cards; gains marks when placed
+<br>
+    @$$(28) @SkillCard {
+        %.name = skill: x
+        %.description = you learnt x (hooray!), allowing you to create a chunk of your game
+        %.marks = 10
+    }
+<br>
+    // reaction cards; can only be placed when provoked
+<br>
+    @$$(4) @ReactionCard {
+        %.name = report
+        %.description = you report the opponent attempting to steal/copy/swap from you, they lose any skill cards they would've gotten plus the amount of marks totalling from the those cards; they keep any non-skill cards
+        %.responds_to = @arr ($) -&gt; {
+            @$ steal
+            @$ copy
+            @$ swap
+        }
+        %.on_use = ({ opponent }) -&gt; {
+            // TODO
+        }
+    }
+<br>
+    @$$(2) @ReactionCard {
+        %.name = bribe
+        %.description = you bribe dr. charles, the opponent attempting to report you is framed &amp; will have the effects of the report put on them
+        %.responds_to = @arr ($) -&gt; {
+            @$ report
+        }
+        %.on_use = ({ opponent }) -&gt; {
+            // TODO
+        }
+    }
+<br>
+    @$$(2) @ReactionCard {
+        %.name = convince
+        %.description = you convice dr. charles that you're innocent, the opponent attempting to report you fails
+        %.responds_to = @arr ($) -&gt; {
+            @$ report
+        }
+        %.on_use = ({ opponent }) -&gt; {
+            // TODO
+        }
+    }
+<br>
+    @$$(4) @ReactiveCard {
+        %.name = sabotage
+        %.description = you plant fake info around you, the opponent attempting to steal/copy/swap from you steals/copies/swaps nothing
+        %.responds_to = @arr ($) -&gt; {
+            @$ steal
+            @$ copy
+            @$ swap
+        }
+        %.on_use = ({ opponent }) -&gt; {
+            // TODO
+        }
+    }
+<br>
+    @$$(4) @ReactiveCard {
+        %.name = trace
+        %.description = you look closer &amp; trace the real info of the opponent, the opponent attempting to sabotage you fails
+        %.responds_to = @arr ($) -&gt; {
+            @$ sabotage
+        }
+        %.on_use = ({ opponent }) -&gt; {
+            // TODO
+        }
+    }
+}
+%hand = @arr ($) -&gt; {
+    // arranged according to priority (execution order)
+<br>
+    @$ @Card {
+        %.name = sleep
+        %.description = sleep &amp; remember all the things you've researched
+        %.on_use = ({ player, opponent, phase }) -&gt; {
+            @if(%phase |==| %Phase.RESEARCH) {
+                // "cash-out" research points; get to keep &amp; see cards that can be used after RESEARCH phase
+                %player.hand.merge(
+                    @take_random(
+                        count: %player.uncommited_research_point_count
+                    ) %deck,
+                )
+                %player.research_point_count += %player.uncommited_research_point_count
+                %player.uncommited_research_point_count = 0
+            } @else @if(%phase |==| %Phase.IMPLEMENTATION) {
+                // you get so powerful you start dreaming about other player's decks
+                // pick opponent's card
+                %picked_card = @player.pick(count: 1) %opponent.hand
+<br>
+                // player privately views the chosen card
+                %player.peek(%picked_card)
+            } @else {
+                @throw @Error { %.message = unknown phase }
+            }
+        }
+    }
+<br>
+    @$ @Card {
+        %.name = distract
+        %.description = distract someone
+        %.on_use = ({ opponent }) -&gt; {
+            @if(%phase |==| %Phase.RESEARCH) {
+                // erases the opponent's research points
+                %opponent.uncommited_research_point_count = 0
+            }
+<br>
+            // cancels the opponent's currently selected action
+            @if(|!|%opponent.action.hasExecuted)
+                %opponent.action.cancel()
+        }
+    }
+<br>
+    @$ @Card {
+        %.name = research
+        %.description = do some regular ole R&amp;D
+        %.on_use = ({ player, phase }) -&gt; {
+            @if(%phase |==| %Phase.RESEARCH) {
+                // increase research point by 1
+                %player.uncommited_research_point_count += 1
+            } @else @if(%phase |==| %Phase.IMPLEMENTATION) {
+                // give new card(s) immediately
+                %player.hand.merge(
+                    @pick_random(count: 2) %deck,
+                )
+            } @else {
+                @throw @Error { %.message = unknown phase }
+            }
+        }
+    }
+<br>
+    @$ @Card {
+        %.name = copy
+        %.description = copy the action of an opponent
+        %.on_use = ({ player, opponent }) -&gt; {
+            %opponent.action.execute.call(%player)
+        }
+    }
+<br>
+    @$ @Card {
+        %.name = ideate
+        %.description = come up with an idea (roll a dice)
+        %.on_use = ({ player, opponent }) -&gt; {
+            // TODO
+        }
+    }
+<br>
+    @void @Card {
+        %.name = alt copy
+        %.description = attempt to copy the action of an opponent
+        %.on_use = ({ player, opponent, dice }) -&gt; {
+            %research_point_count_difference = %player.research_point_count |-| %opponent.research_point_count
+<br>
+            @if(%research_point_count_difference |&gt;| 0) {
+                // if a player has a research point difference of 3+, it's guaranteed to succeed
+                %player_choice_count = %research_point_count_difference |*| 2
+<br>
+                @if(%player_choice_count |&gt;=| 6) {
+                    // copying is guaranteed to succeed
+<br>
+                    %player.action.execute.call(%opponent)
+                } @else {
+                    // copying might still fail
+<br>
+                    // opponent chooses numbers on the dice
+                    %player_chosen_numbers = @map(
+                        @range %player_choice_count
+                    ) (i) -&gt; @int %player.prompt(Pick a number between 1-6)
+<br>
+                    // player rolls the dice
+                    %dice_rolled_number = @opponent.roll %dice
+<br>
+                    // if player didn't roll opponent's number(s), player successfully executes opponent's action as themselves
+                    @if(|!|@some(%player_chosen_numbers) (player_chosen_number) -&gt; %player_chosen_number |==| %dice_rolled_number) {
+                        %player.action.execute.call(%opponent)
+                    }                    
+                }
+            } @else {
+                @throw @Error { %.message = research point of player too low, cannot copy opponent }
+            }
+        }
+    }
+}
+<br>
+%players = @map(@range %player_count) (i) -&gt; @Player {
+    %.hand = %hand
+}
+</pre> </details><!-- /wp:details -->
+
+<!-- wp:paragraph --><p>After plotting down the plan, I ran the entire idea through the group. Then getting the LGTM's, worked to put it all into a (relatively) more easily consumed document.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://docs.google.com/document/d/1pzIM9vBIboPbR6f3ZhHEJInRNo57vcbi/preview","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://docs.google.com/document/d/1pzIM9vBIboPbR6f3ZhHEJInRNo57vcbi/preview</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Anti Game-studies Game-studies Game draft proposal, 25/4/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>prototype:</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Going according the proposal &amp; specs, courtesy to Mochie, we even got to play a prototype version of the game.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1652787748743-WhatsApp20Image202022-04-2220at201.20.0120PM.webp","id":2093} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1652787748743-WhatsApp20Image202022-04-2220at201.20.0120PM.webp" alt="" /><figcaption>Mochie&#039;s card prototype contribution, 23/4/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>The plan was to get people to played it initially without Modifier cards, &amp; later when they were more familiar with the game flow, with Modifier cards.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I anticipated the switch may be kinda jarring, especially so when it was yet another thing to keep track with. This lead me to contribute to the prototype by developing a small Command Line Interface (CLI) app that randomises the modifier cards, as well as keep track of which one the players were currently on.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"data:text/html;charset=utf-8,&lt;script%20src=&#039;https://gist.github.com/Sxxov/2dfd81a2b9e9eeace043e196d59980e6.js&#039;&gt;&lt;/script&gt;","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">data:text/html;charset=utf-8,&lt;script%20src=&#039;https://gist.github.com/Sxxov/2dfd81a2b9e9eeace043e196d59980e6.js&#039;&gt;&lt;/script&gt;</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Source code for "modifier timeline" CLI app, 21/4/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1652787514814-image-20220517193832458.webp","id":2094} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1652787514814-image-20220517193832458.webp" alt="" /><figcaption>Screenshot of &#039;modifier timeline&#039; CLI app, 21/4/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":4} --><h4>testing:</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>After playing a few rounds, we identified a few key pain points:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Keeping track of points got a little confusing</li> <li>Identifying whose cards went first was challenging</li> <li>The ending felt a little hollow</li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>Besides playing it ourselves, we also had a chance to play it with a card game collector/enthusiast. His main feedback were as follows:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>A lack of a feeling of gratification (cause-effect) due to the cumbersome process of getting Event cards</li> <li>Execution flow is unorthodox due to the need for the DISTRACT card</li> <li>The naming scheme for card types were confusing<ul>
+<li>Event cards -should-be→ Action cards</li> <li>Modifier cards -should-be→ Event cards</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>week[5]: Haha jk</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Find an idea for the game (again) (again)</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Dr. Charles's final blow</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>We presented the game in its current state to Dr. Charles, as well as the issues we were facing. He added on a few more things that sealed the fate for this initial game idea:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>The lack of a feeling of gratification (like above)</li> <li>It doesn't really feel like an <strong>Anti</strong> Game-studies Game-studies Game</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":4} --><h4>Starting from scratch</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>There were a few reasons why starting from scratch would be the best course of action now:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>The base concept itself was under question, as it may not fulfil the original vision<ul>
+<li>Not <strong>anti</strong> enough, cuz we're trying to succeed in the module, interacting with the "students", instead of breaking it</li></ul></li> <li>There exists fundamental mechanics that cause awkward &amp; confusing play<ul>
+<li>The DISTRACT card forces cards to be revealed at once, which forces execution flow to be determined not by player sequence, but priority of each card. This would then require a lookup by the players every round, which gets annoying. This is further amplified when mixing cards from the Event &amp; Core deck</li></ul></li> <li>The logic of the game was very complicated<ul>
+<li>This would've been able to be solved by a computerised solution to keep track of things, but due to the complicated logic, as well as its aggressively multiplayer nature, it becomes extremely difficult to implement (trust me I've tried)</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>With a clean state, the group regrouped &amp; started discussing.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>We threw around a bunch of ideas, &amp; ultimately one idea by Hadi stuck simply due to its absurdity. We wanted to keep the concept of an "Anti Game-studies Game-studies Game", but just make it, more <strong>anti</strong>. Inspiration was drawn from when Dr. Charles was discussing with us, he mentioned his spikey earrings &amp; subsequently his "other side". This lead us to think, what <em>is</em> Dr. Charles other side? Well there can only be three possibilities:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Paedophilic</li> <li>Homicidal</li> <li>Suicidal</li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>However, it is quite hard to describe &amp; explore this using a card game, plus we (me) were kinda burnt out trying to resolve problems unique to card games. Thus, we decided to execute this concept with a simple digital game.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Initially, the concept was to have the AR be an integral concept by having it be accessible throughout the round. This access would simulate the player being the "developer" &amp; enable them to poke around behind the scenes &amp; make them pass. This poking around though, came with side-effects, such as influencing Dr. Charles's "other side".</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>However, interaction through AR is hell. Refer to the Mediapipe adventure above. We were also in week 5, meaning we really didn't have much time to experiment &amp; fail at that point. Along with further discussion of game play &amp; mechanics, we decided on the dream sequence concept, as well as the general play style of the game.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Besides how the game would be played, we also had to come up with storylines &amp; endings to serve as the actual content. Me, Hadi, &amp; Mochie were to come up with storylines for pedophilic, homicidal, &amp; suicidal respectfully. All that then cumulated into the draft proposal:</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://docs.google.com/document/d/1XimhdxVtpvMjSPU6S5eTs0JR9F7pFTBv/preview","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://docs.google.com/document/d/1XimhdxVtpvMjSPU6S5eTs0JR9F7pFTBv/preview</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Anti Game-studies Game-studies Game 2 draft proposal, 11/5/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[6]: __proto__</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Stop finding new ideas for games</li> <li>Develop part of the game</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>prototype:</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I pulled up the same starting template as the presentation framework, &amp; started work on getting a rough prototype up. I could've (should've?) used Unity here so that the underlying architecture is all prepared, but only me in the team is even slightly familiar with it. Doing it using web tech enables everyone to contribute, as well as having the benefit of my deep familiarity with it.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Unfortunately, even though I'm familiar with the web trifecta, I have virtually no experience in game development. Initially I tried to apply the Object Oriented (OO) approaches I was familiar with (eg. <code>Player -extends→ Sprite -extends→ Entity</code>), however as game developers have figured out a long time ago, OO is shit for games, due to the non-hierarchal structure of components needed to form things inside a game (eg. <code>Player</code> may have a <code>Sprite</code>, but may also want to have a <code>Highlight</code> as be <code>Walkable</code>, both of which may be used by other <code>Sprite</code>-containing <code>Entity</code>s exclusively or together, etc.). I then switched to a component-based structure, which so far has been robust enough to implement whatever I want, but in 3 months it'll look stupid &amp; I'll make sure to hate myself for it then.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Besides the architecture, there is also one very different choice compared to traditional games — the use of event-driven programming (eg. <code>renderEntity()</code> is called only when the <code>Entity</code>'s <code>position</code> changes) instead of a constantly spinning loop per frame (eg. <code>renderEntity()</code> is called every frame, which checks for the <code>Entity</code>'s <code>position</code> compared to the last frame, doing things if it has changed). This theoretically increases the complexity of the logic, as well as increases the likelihood of spaghetti problems much more. It does however, bring the ultimate benefit of efficiency. Since this game stays largely static logically, keeping the browser engine spinning whilst nothing is happening is a real waste of resources, which when translated into people playing on mobile, means worse battery life. Adding onto all that, the simplicity of the game logic also enables this whole choice to be viable, &amp; I'd argue even makes programming said logic, much more intuitive.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://62783e35defc7d000895a7ff--antigamestudiesgamestudiesgame.netlify.app/","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://62783e35defc7d000895a7ff--antigamestudiesgamestudiesgame.netlify.app/</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>The AGGG2 technological prototype, 9/5/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>testing:</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Sending this prototype to the group, everyone seemed to be able to interact with it intuitively. Describing the whole game to Dr. Charles, as well as showing him the prototype also gave us the feedback that this was good. Dr. Charles suggested we roleplay the storylines to get a better understanding of how the game worked as well.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[7]: AGGG2 RP</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Roleplay the game</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Due to some, difficulties, I was the only one who was able to make it to campus to roleplay the storyline with Dr. Charles. I brought along a few stuffed toys, borrowed some paper, used some creative describing skills, &amp; placed them all around the classroom.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>As Dr. Charles walked around, I would notify him that some things were interactable, such as the aforementioned paper left on the ground, or the pretend-tote-bag at the corner of the class. He would then tell me if he interacts with those items, &amp; I would recite to him the action that happens in the classroom.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After he "exits" the classroom, the consequences of his actions were stated to him as like in the "dream sequence".</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>All this went on for a few rounds, after which we were given a good-to-go with the concept &amp; the execution style. He seemed also especially infatuated with the "paedophilic" aspects of the game, which is, suspicious.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[8]: AR for dummies (me)</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Walk Mochie &amp; Hadi through the game engine</li> <li>Find a way to AR</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:heading {"level":4} --><h4>Lecturing</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I was under the impression that both Hadi &amp; Mochie had some Javascript knowledge, as they've communicated to me. This was thus how I built my """lecture""", going through the abstractions provided by the engine, rather than simply the API. However, in hindsight, this was probably not the best idea. As I went, their base knowledge was obviously at the head end of the Dunning-Kruger curve. However, I did record everything, just in case they felt the need to rewatch it whilst implementing new entities, adding timestamps on the way too!</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://youtube.com/embed/tsGt6HFgjY4","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://youtube.com/embed/tsGt6HFgjY4</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Shitty game engine tutorial, 17/5/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>AR Camera</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Yeah, I was absolutely clueless on how I'd implement it. I started with looking for a vanilla Javascript solution utilising the built in <code>deviceorientation</code> event to get gyro data, &amp; the native HTML <code>video</code> element to stream from the device camera. However, through some quick prototyping &amp; testing, I realised that it would involve me doing <em>✨mathematics✨</em>, &amp; god knows not even him was about to let that happen.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This then brought me on a journey of looking through libraries to do it for me. A little bit of tossing &amp; turning in bed with google later, I found small examples of people controlling the <code>THREE.js</code> camera using the gyroscope. However, they used this <code>DeviceOrientationControls</code> primitive which has been long removed from the codebase. Nothing some Google-foo couldn't fix though.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"data:text/html;charset=utf-8,&lt;script%20src=&#039;https://gist.github.com/kopiro/86aac4eb19ac29ae62c950ad2106a10e.js&#039;&gt;&lt;/script&gt;","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">data:text/html;charset=utf-8,&lt;script%20src=&#039;https://gist.github.com/kopiro/86aac4eb19ac29ae62c950ad2106a10e.js&#039;&gt;&lt;/script&gt;</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>I was still however, very hesitant on learning &amp; integrating <code>THREE.js</code> into the project, due to the rumoured complexity. Tangent — I so could've learnt it when doing Contextual Studies, but just due to its rumoured learning curve, I chose <code>Babylon</code>, its competitor (I fully regret that decision, no description). This time, I was still on the edge, so I started finding things that would make its integration much more smoother, &amp; cost me the least work. It's here where I found its ability to position HTML elements in 3D space according to the active camera, with another set of obscure classes — <code>CSS3DRenderer</code>, <code>CSS3DObject</code>, <code>CSS3dSprite</code>. These were found from the <code>THREE.js</code> examples, &amp; were rewritten into <code>typescript</code>. This was where all the required puzzle pieces came into my possession, as I now had a way to position HTML elements, &amp; thus any existing <code>Entity</code>s/<code>Sprite</code>s, around 3D space as the user spun their device around.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>It was here then, where I started on &amp; ended up with, a mildly working cube prototype:</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://www.youtube.com/embed/75pjmrs3vbE","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://www.youtube.com/embed/75pjmrs3vbE</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Gyroscope controlled basic cube scene, 19/5/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} --><h4>AR Rendered Objects</h4><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>There were two parts to this problem. The first being positioning them, &amp; the second one being to generate correct random rotations. For the first problem, I did initially face some issues due to XYZ confusion (the object would be 0 depth, &amp; be facing sideways towards the camera, making it invisible), however as things progressed &amp; workarounds were constructed, manually placed objects rendered fine &amp; tracked perfectly.</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://youtube.com/embed/TaRtrROITNU","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://youtube.com/embed/TaRtrROITNU</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Single UI inside AR space, 19/5/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The bigger issue was placing objects equidistant from the camera, &amp; ideally maintain a little space between each other even after being randomised. The first of these sub-issues were simply solved by using parenting &amp; rotating the parent. The second one however, was a little more involved. I mean like, what the FUCK are radians??? What do you mean blue noise takes a lot of time to generate??? I'm rotating the what &amp; what??? Things like that. At the end though, with some help from some StackOverflow algorithms, I had UIs generating all over me!</p><!-- /wp:paragraph -->
+
+<!-- wp:embed {"url":"https://youtube.com/embed/ADunQextK64","type":"rich","providerNameSlug":"embed"} --><figure class="wp-block-embed is-type-rich"><div class="wp-block-embed__wrapper">https://youtube.com/embed/ADunQextK64</div></figure><!-- /wp:embed -->
+
+<!-- wp:paragraph --><p>Many UIs inside AR space, 20/5/2022</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[9]: <code>await draw()</code></h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Wait</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I waited.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>...Yeah this week on my end was just awaiting assets by Ellis.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[10]: uhhhhhhhhhhh</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Other assignments, lmfao</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>There was no progress this week from me for game-studies. Shame?</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[11]: Training camp</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Get Hadi &amp; Mochie's coding environment set up</li> <li>Get Hadi &amp; Mochie going with collaborative git</li> <li>Get Hadi &amp; Mochie to code at least one story item in the doc</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I got on call with Hadi first, with Mochie joining a little after. No time was spared, &amp; we got straight into things. The required prerequisite pieces of software were installed:</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} --><ol>
+<li>Visual Studio Code (VSCode)</li> <li>NPM</li> <li>Git</li></ol><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>With the next step being fetching the repository from Github.</p><!-- /wp:paragraph -->
+
+<!-- wp:code {"language":"bash"} --><pre class="wp-block-code"><code>git clone https://github.com/Sxxov/aggg2
+</code></pre><!-- /wp:code -->
+
+<!-- wp:paragraph --><p>After that, installing the recommended (painstakingly curated) plugins in VSCode.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>After that, installing the dependencies of the project itself.</p><!-- /wp:paragraph -->
+
+<!-- wp:code {"language":"bash"} --><pre class="wp-block-code"><code>npm i
+</code></pre><!-- /wp:code -->
+
+<!-- wp:paragraph --><p>In VSCode, running startup tasks was also enabled, starting the debug build server every time they opened the project.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Now, with the environment all set up, we continued to the basic git tutorial. Here, I briefed them about the concepts of committing, pushing, branches, &amp; pull requests (PRs). Just enough to get them bootstrapped into writing code as fast as possible. Hadi seemed to be a little lost at times, but Mochie seemed more than powering through it. After ensuring everyone can follow relatively similarly, we moved on to actually implementing an <code>Entity</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Here, by referring to an example implemented <code>Entity</code>s, we step by step managed to get both Hadi &amp; Mochie to create a PR with their changes. This was a breakthrough, as it was their first contributions to the game prototype codebase.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Both of them were then left with a route to complete by the end of the week, following what was taught during the session.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[12]: <code>await Promise.all([hadi.codePr(), mochie.codePr()])</code></h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Wait</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I waited.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>...Yeah this week on my end was just awaiting PRs from both Hadi &amp; Mochie.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[13]: Breaking engine changes</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Spiff up engine backend</li> <li>Document breaking changes &amp; present migration plan</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Oof, it's another engine week, yippie! The main changes that can be felt by users are the much more reliable touch/click detections based on the touch radius of a finger, as well as a saner highlight width on mobile. Behind the scenes though, other than dependency updates, there were also bunch of fixes pertaining to how the descendants of the <code>Store</code> class were implemented, more specifically, the removal of the reliance on precomputed getters &amp; setters from <code>ExtendableStore</code>, which gave bunch of weird behaviour when paired with values containing more properties than their prototype. If this all sounds like jargon to you, good, welcome to engine week.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The other main large change was the modification of <code>InteractivePropEntity</code>, from which all props in the classroom were based on. It was for the better, as it greatly simplified some of the required configuration. However, it did mean all existing code depending on it needed to be migrated. This would be documented all thoroughly in a Notion. Why? Because I really didn't want to explain it more than half a time.</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282841610-image-20220708202040390.webp","id":2095} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282841610-image-20220708202040390.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Check the Notion out I spent a lot of time on it thx</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>There was actually a lot more changes that I can't even get to detailing here, just know that it brought the game into <code>2.0.0</code>, meaning it made it playable! (or something like that)</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[14]: Merge dat shidz</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Go through &amp; review the PRs</li> <li>Perform any cleanups &amp; corrections as necessary</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I mean, what can I say, I did just that. Not a fault of Hadi, but it was pretty interesting seeing how newbies to an environment struggle with things I take for granted that I know, like naming conventions &amp; reading logic. There were definitely some major gameplay-blocking mistakes, as well as simply typos &amp; weird sentences to be fixed. All-in-all, good progress though!</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>There was one single notable thing this week actually — I got Github Copilot. Copilot is actually, eerily good at writing stories. I have no idea why! It was trained on f*cking <code>typescript</code>! Why the hell would programmers be in the creative writing field <em>in their code</em>?? Well not my issue, it's free in the student pack, so I shall just enjoy the amusement of it:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282682702-Screenshot202022-06-2620170824.webp","id":2096} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282682702-Screenshot202022-06-2620170824.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282685728-Screenshot202022-06-2620170829.webp","id":2097} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282685728-Screenshot202022-06-2620170829.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282674214-Screenshot202022-06-2620171308.webp","id":2098} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282674214-Screenshot202022-06-2620171308.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282689966-Screenshot202022-06-2620171648.webp","id":2099} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282689966-Screenshot202022-06-2620171648.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282694251-Screenshot202022-06-2620172312.webp","id":2100} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282694251-Screenshot202022-06-2620172312.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282697964-Screenshot202022-06-2620172423.webp","id":2101} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282697964-Screenshot202022-06-2620172423.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282701990-Screenshot202022-06-2620172639.webp","id":2102} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282701990-Screenshot202022-06-2620172639.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282705883-Screenshot202022-06-2620173025.webp","id":2103} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282705883-Screenshot202022-06-2620173025.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282712009-Screenshot202022-06-2620173120.webp","id":2104} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282712009-Screenshot202022-06-2620173120.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282717505-Screenshot202022-06-2620182953.webp","id":2105} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282717505-Screenshot202022-06-2620182953.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282721753-Screenshot202022-06-2620202617.webp","id":2106} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282721753-Screenshot202022-06-2620202617.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282726618-Screenshot202022-06-3020182037.webp","id":2107} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282726618-Screenshot202022-06-3020182037.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282674217-Screenshot202022-06-3020182106.webp","id":2108} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282674217-Screenshot202022-06-3020182106.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1657282733907-Screenshot202022-06-3020182356.webp","id":2109} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1657282733907-Screenshot202022-06-3020182356.webp" alt="" /></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Collection of Github Copilot story suggestions, n.d</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>week[15]: Everything else!</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>todo:</h3><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Game design document</li> <li>QA</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":3} --><h3>process:</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Showing the prototype to Dr. Charles on campus, he seemed to enjoy it a lot, eagerly giving the LGTM. The main feedback received was the control scheme being a little awkward. However, I do kinda feel that's at least a little superficial, as if your thumb can't shift into a position that reaches from one to the other short end of your phone, you might need to focus on your baby formula instead. After being proper stubborn about that fact, I moved on to construct the base of the game design document that the rest of the group could work off of.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>The headings are based on the example given on TIMEs. On first glance they don't really seem like it though. That's because as I went through each section, some of them seemed more &amp; more stupid, &amp; thus more &amp; more reorganisations were made. I may be biased, but hey I'm happy with whatever atrocity I may have architected.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I kept a master copy of the word doc on my laptop, simply due to how Google Docs still lack a lot of Microsoft Word's features. A mirror was then kept on Google Docs, with my sections omitted (enabling quicker revisions, """aGiLE!!"""), which enabled the rest of my groupmates to contribute their parts:</p><!-- /wp:paragraph -->
+
+<!-- wp:table --><figure class="wp-block-table"><table>
+<thead>
+<tr>
+<th>Item (Cascading)</th><th>| Contributor</th></tr></thead> <tbody><tr>
+<td>Gameplay<br>.Inspiration</td><td>| @Hadi<br>|</td></tr><tr>
+<td>Art Direction.*</td><td>| @Ellis</td></tr><tr>
+<td>*</td><td>| @JS</td></tr></tbody></table></figure><!-- /wp:table -->

@@ -1,0 +1,71 @@
+<!-- wp:heading {"level":2} --><h2>todo:</h2><!-- /wp:heading -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>Create a filter in Spark AR Studio</li></ul><!-- /wp:list -->
+
+<!-- wp:heading {"level":2} --><h2>process:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>I really like AR effects that track the world around you. I'm still in my prime obsession of gyroscope-driven AR experiences, so I really wanted to do something like that. In thinking of an idea of what to make, I kinda imagined, what if I could just, draw something out in the background. What's the clearly superior program to do drawing in? <del>Photoshop</del> <del>Procreate</del> <del>Medibang</del> <del>Ibis</del> Microsoft Paint! What if I implemented an AR MS Paint?</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/tumblr_nonrq8GvO61tjy56ho1_500.png","id":1369} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/tumblr_nonrq8GvO61tjy56ho1_500.png" alt="" /><figcaption>Windows 2000&#039;s Microsoft Paint, n.d</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:heading {"level":3} --><h3>Why I used the API over patches</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Painting seemed deceivingly easy. I just needed to connect up a few patches to make a <code>ParticleSystem</code> move according to the user's touches, right? Unfortunately, I was forced into math. You see, the coordinates gotten from touches, are in screen space; I needed world space coordinates. Not only did I need world space coordinates though, I needed coords that were offset a distance away from the camera, &amp; which still corresponded to the user's touches when rendered on the screen.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>This meant trigonometry. God damn it.
+It also meant I had to use scripting instead of Spark's, surprisingly resilient, visual programming paradigm. <em>God damn it</em>.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Fortunately, it wasn't in Lua or some other forsaken scripting language (Roblox, looking at you). Natively, it seemed to run JavaScript, &amp; it even supported TypeScript. Things seemed to be up &amp; up. However, Looking into their docs, they seemed to be doing things, a little weirdly.</p><!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":false} --><ul>
+<li>They used default imports<ul>
+<li>Annoying as it breaks Intellisense auto-imports.</li></ul></li> <li>They used modules with Sentencecased lettered names<ul>
+<li>Convention is snake_case or kebab-case</li></ul></li> <li>They used a custom <code>tsconfig.json</code>, which is generated on first-script creation, that referenced <code>%temp%/Facebook/Spark/cache/Scripting</code> <ul>
+<li>Convention is just dumping types into the local node_modules directory, or even installing a global npm package</li> <li>Annoying as it overrides any custom config I'd want, like <code>strict: true</code></li></ul></li> <li>They only resolved files that were imported into Spark<ul>
+<li>Annoying as I had to manually add every file I created into spark, if I'd want to import them (which I probably did if I created them...)</li></ul></li> <li>They didn't support folders in the UI inspector<ul>
+<li>Annoying as I had no way to organise my scripts even if I wanted to.</li></ul></li></ul><!-- /wp:list -->
+
+<!-- wp:paragraph --><p>All that heavily influenced how I approached the scripts. First was having a clear separation of modules &amp; scripts with side effects (ones that actually controlled behaviour). I chose the <code>@</code> prefix for such files, with no reason other than it's a wide enough character &amp; that I chose it before for unrelated projects. Then, to separate them, I sorta implemented namespaces in Java/C#, by fully qualifying them in the filename. Not that effective, as I'd still have to sorta name the individual exports according to what they do, but eh. Also, if anyone asks, yes, I'm on an OO cleanse, that's why no native classes or TypeScript namespaces. Don't ask.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>With the general way of writing down, I started actually implementing the logic.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Painting logic</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Here's how I approached the problem:</p><!-- /wp:paragraph -->
+
+<!-- wp:image {"url":"https://localhost/wp-content/uploads/1669099590995-Untitled2C20cropped.webp","id":1370} --><figure class="wp-block-image"><img src="https://localhost/wp-content/uploads/1669099590995-Untitled2C20cropped.webp" alt="" /><figcaption>Crappy whiteboard sketch of math problem, 18/11/2022</figcaption></figure><!-- /wp:image -->
+
+<!-- wp:paragraph --><p>Since the camera has focal dimensions that can be arbitrary, based on the device's own hardware, I needed to use that in my problem. If I were to project a ray from (0,0), I could theoretically use <code>distance * sin(angleRadians)</code> to get the final coordinates of a plane with the distance of <code>distance</code> from (0,0). Getting <code>angleRadians</code> was an <code>atan</code> away too, since I had the dimensions of the focal plane through <code>Camera.focalPlane</code>. I know this all sounds obvious now, but this took VERY LONG at 3AM. Repeating that for both axes gave me <code>(x,y)</code>.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Sprites</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>In order to get the necessary sprites for the UI, I used a <a href="https://bellard.org/jslinux/vm.html?url=https://bellard.org/jslinux/win2k.cfg&amp;mem=192&amp;graphic=1&amp;w=1024&amp;h=768">Windows 2000 WASM emulator</a>. In there, I opened up MS Paint, resized it, &amp; took a high quality screenshot. For the dialog, I used VBScript's <code>MsgBox</code> subroutine to spawn a small dialog &amp; screenshotted that. After getting the raw sprites, I took them into Photoshop &amp; split them into 3-sliced sprites — top, mid, btm. For the dialog, the OK button was also separated, so it could be modular &amp; used as a touch target.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>In Spark, I would grab the texture programmatically, &amp; create materials there, so that I could instantiate """UI""" through script. This mainly enabled me to resize the panels with the correct aspect ratio, &amp; control whether they spanned, centred, or aligned to a side of the main canvas.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Colour</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Initially, I intended to just bundle 6 colours — RYGCBM — plus 3 shades — White, Grey, Black — as picker options. However, when implementing them, I stumbled upon the slider. This would actually enable me to have full HSV coverage, by implementing a picker for hue, saturation, &amp; lightness, then having the slider on each to control each attribute.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Dialog</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>Oh yeah, did I mention about the dialogs? The initial concept was to be able to create dialogs that floated around you, &amp; that you could edit by using <code>NativeUI.enterTextEditMode</code>. There were a few hurdles along the way. The first was that, whilst I could create text objects from script, I couldn't apply fonts programmatically on Instagram. Thus, I came up with a "textpool", created in the Spark UI, where there'd be text objects I'd <em>borrow</em> &amp; <em>return</em>, editing their transforms &amp; text content to match what I wanted. However, it was when I had completed everything, including a full programmatic layout system, the main blocker to the idea reared its ugly head. The blessed Instagram, again, did not support a capability. This time, entering text edit mode entirely. Did I mention again, I made a whole layout system to instantiate panels from textures, size the panels, apply transformations, &amp; offsets. I know it sounds like I'm complaining, because I am, I spent a lot of time on it... Eventually, after considering implementing my own keyboard, I just settled for pre-bundled messages that would be randomly chosen.</p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>final:</h2><!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} --><h3>Project</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p><a href="https://github.com/Sxxov/drawr-xd">Github</a></p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} --><h3>Filter</h3><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p><a href="https://www.instagram.com/ar/6019170958146601">Instagram</a></p><!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} --><h2>reflection:</h2><!-- /wp:heading -->
+
+<!-- wp:paragraph --><p>This was a ride. Initially, it was supposed to be a much smaller project, why was there a need to use scripting anyways? It was pretty painful at times too, as the documentation, &amp; even the TypeScript types themselves were incomplete (all callbacks were typed as <code>{}</code>, which effectively meant <code>any</code>). Somethings documented just straight up didn't work either (configurating the slider to be of <code>'COLOR'</code> type would just throw, even if it was documented to work). However, with everything done, I'd say the things that did eventually work out to the better — how I eventually picked up on how <code>Signal</code>s worked, how I could eventually write my own abstractions, how I knew to just keep the types open in another VSCode window to search through for something obscure.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>Besides just learning how to make a filter in Spark, &amp; how to make a filter in Spark using script, I also picked up on some more niche skills, like how this was the first time I used sliced sprites, as well as how to make clean pixel art through mosaic-ifying icons. Overall I don't think this was a project wasted, as much I want to feel like it, due to the time spent for not much in return.</p><!-- /wp:paragraph -->
+
+<!-- wp:paragraph --><p>I think I'll use a lot of the skills learnt here. Who knows, creating filters do seem fun, &amp; there are a lot of things I haven't touched, like shader programming. Okay maybe not the shader programming can of worms, but I'll probably revisit explore the rest of the canned foods.</p><!-- /wp:paragraph -->
