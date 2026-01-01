@@ -2,7 +2,7 @@
 set -euo pipefail
 
 function usage() {
-    echo "Usage: $0 pull|push|load <backup.sql>" >&2
+    echo "Usage: $0 pull|push|backup|load <backup.sql>" >&2
     exit 1
 }
 
@@ -138,6 +138,10 @@ function push() {
 	$local_script | ssh "$DEPLOY_USER@$DEPLOY_HOST" "$remote_script"
 }
 
+function backup() {
+	backup_local_db
+}
+
 function load() {
 	local backup_path="$1"
 	if [ ! -f "$backup_path" ] && [ -f "$BACKUP_DIR/$backup_path" ]; then
@@ -165,6 +169,12 @@ case "$COMMAND" in
 			usage
 		fi
 		push
+		;;
+    backup)
+		if [ "$#" -ne 0 ]; then
+			usage
+		fi
+		backup
 		;;
     load)
 		if [ "$#" -ne 1 ]; then
