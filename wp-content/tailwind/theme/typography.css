@@ -1,3 +1,4 @@
+/* stylelint-disable no-invalid-position-declaration */
 @theme static {
 	--font-display: o, sans-serif;
 	--font-pairing: 'Monsieur La Doulaise', serif;
@@ -87,6 +88,11 @@
 	--leading-pt: 72;
 	--tracking-pt: -4;
 
+	@media (width < 768px) {
+		--size-pt: 60;
+		--leading-pt: 40;
+	}
+
 	font-family: var(--font-display);
 	font-style: normal;
 }
@@ -99,6 +105,11 @@
 	--leading-pt: 40;
 	--tracking-pt: -2;
 
+	@media (width < 768px) {
+		--size-pt: 40;
+		--leading-pt: 28;
+	}
+
 	font-family: var(--font-display);
 	font-style: normal;
 }
@@ -110,6 +121,11 @@
 	--size-pt: 35;
 	--leading-pt: 24;
 	--tracking-pt: -1;
+
+	@media (width < 768px) {
+		--size-pt: 30;
+		--leading-pt: 20;
+	}
 
 	font-family: var(--font-display);
 	font-style: normal;
