@@ -27,5 +27,6 @@ module.exports = {
 		'custom-property-empty-line-before': null,
 		'hue-degree-notation': 'number',
 		'selector-class-pattern': null,
+		'block-no-redundant-nested-style-rules': null,
 	},
 };
