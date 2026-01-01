@@ -1,9 +1,9 @@
 import { OrchestratorChapterBehavior } from '../data-orchestrator-chapter/OrchestratorChapterBehavior.js';
-import { behavior, t } from '/+std/behavioral/behavior.js';
-import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
+import { OrchestratorBehavior } from '../data-orchestrator/OrchestratorBehavior.js';
 import { watchElementView } from '/+app/dom/watchElementView.js';
+import { behavior, t } from '/+std/behavioral/behavior.js';
 import { lerp } from '/+std/math/lerp.js';
-import { scrollY } from '/+std/human/scroll.js';
+import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
 /** @import { View } from "/+app/dom/watchElementView.js" */
 
 export const OrchestratorStanzaBehavior = behavior(
@@ -27,10 +27,14 @@ export const OrchestratorStanzaBehavior = behavior(
 	},
 	(element, { time, progress, view }, { getContext }) =>
 		subscribe(
-			{ orchestratorChapter: getContext(OrchestratorChapterBehavior) },
-			({ $orchestratorChapter }) => {
-				if (!$orchestratorChapter) return;
+			{
+				orchestrator: getContext(OrchestratorBehavior),
+				orchestratorChapter: getContext(OrchestratorChapterBehavior),
+			},
+			({ $orchestrator, $orchestratorChapter }) => {
+				if (!$orchestrator || !$orchestratorChapter) return;
 
+				const { render } = $orchestrator;
 				const { timeline } = $orchestratorChapter;
 
 				const _ = bin();
@@ -43,7 +47,7 @@ export const OrchestratorStanzaBehavior = behavior(
 
 				progress: {
 					_._ = progress.subscribeStart(({ set }) =>
-						subscribe({ view, scrollY }, ({ $view }) => {
+						subscribe({ view, render }, ({ $view }) => {
 							if (!$view) return;
 
 							set($view.y.progress.rightAligned ?? 0);
