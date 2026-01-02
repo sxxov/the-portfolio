@@ -5,5 +5,4 @@ export const VoxelSwipeSideBehavior = behavior(
 	class {
 		direction = t.number.choices(-1, 1).styling.default(1);
 	},
-	(element, {}, {}) => {},
 );

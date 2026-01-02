@@ -8,5 +8,4 @@ export const VoxelSwipeCellBehavior = behavior(
 		width = t.number.styling;
 		height = t.number.styling;
 	},
-	(element, {}, {}) => {},
 );

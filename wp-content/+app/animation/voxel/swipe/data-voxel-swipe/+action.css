@@ -30,4 +30,35 @@
 		grid-area: var(--this-area);
 		background: currentColor;
 	}
+
+	[data-voxel-swipe-global] {
+		pointer-events: none;
+	}
+
+	[data-voxel-swipe-global-container] {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+
+		border-radius: inherit;
+		overflow: clip;
+
+		&:not([data-voxel-swipe-global-container-visible]) {
+			display: none;
+		}
+
+		&[data-voxel-swipe-global-container-visible] {
+			animation: voxel-swipe-global-container-in 0.5s var(--ease-in-out);
+		}
+	}
+
+	@keyframes voxel-swipe-global-container-in {
+		0% {
+			opacity: 0;
+		}
+
+		100% {
+			opacity: 1;
+		}
+	}
 }
