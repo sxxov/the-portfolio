@@ -36,8 +36,8 @@
 @theme static {
 	--weight-pt: 500;
 	--size-pt: 16;
-	--leading-pt: 24;
-	--tracking-pt: 0;
+	--leading-pt: 28;
+	--tracking-pt: -0.1;
 
 	--text-base: calc(var(--size-pt) * var(--pt-px));
 	--leading-normal: calc(var(--leading-pt) / var(--size-pt));
