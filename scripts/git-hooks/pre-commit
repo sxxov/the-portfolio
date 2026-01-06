@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ -n "${SKIP_VIDEO_OPTIMISE:-}" ]; then
+	exit 0
+fi
+
+if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
+	echo "Skipping video optimisation (ffmpeg/ffprobe not found)."
+	exit 0
+fi
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root"
+
+videos=()
+shopt -s nocasematch
+while IFS= read -r -d '' f; do
+	case "$f" in
+		*.mov|*.mp4|*.m4v|*.mkv|*.webm|*.avi|*.wmv|*.flv|*.mpeg|*.mpg|*.m2v|*.ogv)
+			videos+=("$f")
+			;;
+	esac
+done < <(git diff --cached --name-only -z --diff-filter=ACM)
+shopt -u nocasematch
+
+if [ "${#videos[@]}" -eq 0 ]; then
+	exit 0
+fi
+
+VIDEO_THREADS=${VIDEO_THREADS:-1} "$repo_root/scripts/video.sh" "${videos[@]}"
+
+changed=()
+while IFS= read -r -d '' f; do
+	changed+=("$f")
+done < <(git diff --name-only -z -- "${videos[@]}")
+
+if [ "${#changed[@]}" -eq 0 ]; then
+	exit 0
+fi
+
+git add -- "${changed[@]}"
+
+names=()
+for f in "${changed[@]}"; do
+	names+=("$(basename "$f")")
+done
+
+IFS=', '
+message="Optimise videos: ${names[*]}"
+unset IFS
+
+SKIP_VIDEO_OPTIMISE=1 git commit --no-verify -m "$message" -- "${changed[@]}"
+echo "Video optimisation committed. Re-run your original commit."
+exit 1

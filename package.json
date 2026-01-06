@@ -8,7 +8,7 @@
 		"down": "docker compose down",
 		"db:pull": "./scripts/db.sh pull",
 		"db:push": "./scripts/db.sh push",
-		"demov": "./scripts/demov.sh",
+		"video": "./scripts/video.sh",
 		"preinstall": "npm run configure:origin",
 		"install": "npm run install:submodule && npm run install:bare",
 		"postinstall": "patch-package",
