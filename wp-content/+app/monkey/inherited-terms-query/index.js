@@ -106,7 +106,10 @@ addFilter(
 				const terms =
 					taxonomy ? (termsByTaxonomy.get(taxonomy) ?? []) : allTerms;
 				const termIds = terms.map((term) => term.id);
-				modifiedTermQuery = { ...termQuery, include: termIds };
+				modifiedTermQuery = {
+					...termQuery,
+					include: termIds.length > 0 ? termIds : [0],
+				};
 			}
 
 			return x(BlockEdit, {
