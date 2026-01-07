@@ -1,0 +1,16 @@
+@layer base {
+	.wp-block-term-name {
+		& .term-prefix-icon {
+			display: inline-flex;
+			align-items: center;
+			height: max(1lh, 1em);
+			vertical-align: text-bottom;
+			margin-right: 0.3rem;
+
+			& * {
+				width: 1em;
+				height: 1em;
+			}
+		}
+	}
+}
