@@ -32,3 +32,21 @@ add_action('init', function () {
 		'bottom'
 	);
 }, 10);
+
+add_filter('term_link', function ($link, $term, $taxonomy) {
+	if ($taxonomy !== 'category') return $link;
+
+	if (!$term instanceof \WP_Term) {
+		$term = get_term($term, 'category');
+		if (!$term || is_wp_error($term)) return $link;
+	}
+
+	$path = $term->slug;
+	if ($term->parent) {
+		$parents = get_category_parents($term->parent, false, '/', true);
+		if (is_wp_error($parents)) return $link;
+		$path = trim($parents, '/') . '/' . $term->slug;
+	}
+
+	return home_url(user_trailingslashit($path, 'category'));
+}, 10, 3);
