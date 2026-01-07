@@ -65,6 +65,8 @@ add_filter('render_block_context', function (
 	$q = $context['termQuery'] ?? null;
 	if (!$q) return $context;
 
+	$stack = use_block_stack();
+
 	/** @var ?string */
 	$taxonomy = $q['taxonomy'] ?? null;
 	/** @var bool */
@@ -74,9 +76,15 @@ add_filter('render_block_context', function (
 	/** @var bool */
 	$inherit = $q['inherit'] ?? false;
 
+	// only consider the `postId` context if we're inside a query loop block.
+	//
+	// otherwise, it's the global query's post ID, which would be the main
+	// loop's first post if we were in an archive. instead, we want to use
+	// what the main loop's queried object is in that case, which could be
+	// a term or post type.
 	$context_post_id = $context['postId'] ?? null;
 	$queried_object = (
-		!$inherit && $context_post_id
+		in_array('core/query', $stack) && $context_post_id
 		? get_post($context_post_id)
 		: null
 	) ?: get_queried_object();
@@ -196,3 +204,26 @@ add_filter('render_block_context', function (
 
 	return $context;
 }, 10, 3);
+
+function use_block_stack() {
+	/** @var ?array<int,string> */
+	static $stack = null;
+
+	if ($stack === null) {
+		$stack = [];
+		add_filter('render_block_data', function ($parsed_block) use (&$stack) {
+			array_push($stack, $parsed_block['blockName'] ?? '');
+
+			return $parsed_block;
+		}, 0);
+		add_filter('render_block', function ($content, $block) use (&$stack) {
+			if ($block['blockName'] ?? '' === end($stack))
+				array_pop($stack);
+
+			return $content;
+		}, PHP_INT_MAX, 2);
+	}
+
+
+	return $stack;
+}
