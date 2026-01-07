@@ -14,7 +14,7 @@ const variationAttributeName = 'inheritedTermsQueryVariant';
 
 // register variation
 registerBlockVariation('core/terms-query', {
-	name: 'app/monkey/terms-query/inherited',
+	name: 'app/terms/inherited-terms-query',
 	title: 'Inherited Terms Query',
 	description: 'Use the current loop to filter terms.',
 	attributes: { [variationAttributeName]: true },
@@ -25,7 +25,7 @@ registerBlockVariation('core/terms-query', {
 // variation controls
 addFilter(
 	'editor.BlockEdit',
-	'app/monkey/inherited-terms-query/controls',
+	'app/terms/inherited-terms-query/controls',
 	(BlockEdit) =>
 		(
 			/**
@@ -70,7 +70,7 @@ addFilter(
 // modify query based on context
 addFilter(
 	'editor.BlockEdit',
-	'app/monkey/inherited-terms-query/term-template',
+	'app/terms/inherited-terms-query/term-template',
 	(BlockEdit) =>
 		(
 			/**

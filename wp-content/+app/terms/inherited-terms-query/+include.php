@@ -1,6 +1,6 @@
 <?php
 
-namespace app\monkey\terms_query;
+namespace app\terms\inherited_terms_query;
 
 use function bare\module\client\enqueue_script_type_module;
 use function bare\utilities\url\get_uri;
@@ -49,6 +49,8 @@ add_filter('register_block_type_args', function ($args, $name) {
 	return $args;
 }, 10, 2);
 
+track_block_stack('core/query');
+
 add_filter('render_block_context', function (
 	array $context,
 	array $block,
@@ -65,8 +67,6 @@ add_filter('render_block_context', function (
 	$q = $context['termQuery'] ?? null;
 	if (!$q) return $context;
 
-	$stack = use_block_stack();
-
 	/** @var ?string */
 	$taxonomy = $q['taxonomy'] ?? null;
 	/** @var bool */
@@ -75,6 +75,8 @@ add_filter('render_block_context', function (
 	$hide_empty = $q['hideEmpty'] ?? false;
 	/** @var bool */
 	$inherit = $q['inherit'] ?? false;
+
+	$stack = track_block_stack();
 
 	// only consider the `postId` context if we're inside a query loop block.
 	//
@@ -140,16 +142,6 @@ add_filter('render_block_context', function (
 			}
 
 			array_push($include, ...$term_ids);
-			if ($inherit)
-				usort(
-					$include,
-					function ($a, $b) use ($term) {
-						if ($a === $b) return 0;
-						if ($a === $term->term_id) return -1;
-						if ($b === $term->term_id) return 1;
-						return 0;
-					}
-				);
 			break;
 		case $queried_object instanceof \WP_Post_Type:
 			$post_type = $queried_object;
@@ -205,25 +197,61 @@ add_filter('render_block_context', function (
 	return $context;
 }, 10, 3);
 
-function use_block_stack() {
+/** @param array<int,string> $tracked_block_names */
+function track_block_stack(string ...$tracked_block_names) {
 	/** @var ?array<int,string> */
 	static $stack = null;
+	/** @var array<string,true> */
+	static $tracked_block_name_set = [];
 
-	if ($stack === null) {
+	// remove already-tracked block names
+	foreach ($tracked_block_names as $i => $tracked_block_name)
+		if (isset($tracked_block_name_set[$tracked_block_name]))
+			unset($tracked_block_names[$i]);
+
+	// nothing to track after dedupe
+	if (!$tracked_block_names) return $stack;
+
+	// add new tracked block names
+	foreach ($tracked_block_names as $tracked_block_name)
+		$tracked_block_name_set[$tracked_block_name] = true;
+
+	// initialize stack tracking
+	if (!$stack) {
 		$stack = [];
-		add_filter('render_block_data', function ($parsed_block) use (&$stack) {
-			array_push($stack, $parsed_block['blockName'] ?? '');
+		add_filter('render_block_data', function ($block) use (
+			&$stack,
+			$tracked_block_name_set,
+		) {
+			$block_name = $block['blockName'] ?? null;
+			if (!$block_name) return $block;
 
-			return $parsed_block;
+			if (!isset($tracked_block_name_set[$block_name]))
+				return $block;
+
+			array_push($stack, $block_name);
+			// echo str_repeat('  ', count($stack) - 1) . end($stack) . PHP_EOL;
+
+			return $block;
 		}, 0);
-		add_filter('render_block', function ($content, $block) use (&$stack) {
-			if ($block['blockName'] ?? '' === end($stack))
-				array_pop($stack);
+		add_filter('render_block', function ($content, $block) use (
+			&$stack,
+			$tracked_block_name_set,
+		) {
+			$block_name = $block['blockName'] ?? null;
+			if (!$block_name) return $content;
+
+			if (!isset($tracked_block_name_set[$block_name]))
+				return $content;
+
+			if ($block_name !== end($stack)) return $content;
+
+			array_pop($stack);
+			// echo str_repeat('  ', count($stack)) . '/' . ($block_name) . PHP_EOL;
 
 			return $content;
 		}, PHP_INT_MAX, 2);
 	}
-
 
 	return $stack;
 }
