@@ -4,10 +4,7 @@ namespace app\monkey\inline_svg;
 
 use WP_HTML_Tag_Processor;
 
-add_filter('render_block', function (string $block_content, array $block) {
-	$block_name = $block['blockName'] ?? null;
-	if ($block_name !== 'core/image') return $block_content;
-
+add_filter('render_block_core/image', function (string $block_content, array $block) {
 	$attachment_id = $block['attrs']['id'] ?? null;
 	if (!$attachment_id) return $block_content;
 
@@ -22,7 +19,7 @@ add_filter('render_block', function (string $block_content, array $block) {
 
 	$processor = new WP_HTML_Tag_Processor($block_content);
 	$processor->next_tag('img');
-	$attribute_names = $processor->get_attribute_names_with_prefix('');
+	$attribute_names = $processor->get_attribute_names_with_prefix('') ?? [];
 	$attributes = [];
 	foreach ($attribute_names as $name)
 		$attributes[$name] = $processor->get_attribute($name);
