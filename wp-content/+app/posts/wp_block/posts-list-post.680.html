@@ -10,7 +10,7 @@
 
 <!-- wp:bare/weaver -->
 <div class="flex grow flex-col gap-4"><!-- wp:bare/weaver -->
-<div class="pointer-events-auto flex w-fit flex-wrap items-start gap-1"><!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
+<div class="pointer-events-auto flex w-fit flex-wrap gap-1"><!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
 <!-- wp:block {"ref":360,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill -->
@@ -42,9 +42,8 @@
 <!-- wp:block {"ref":1074,"lock":{"move":true,"remove":true}} /-->
 <!-- /wp:bare/composite-provider -->
 
-<!-- wp:terms-query {"termQuery":{"perPage":10,"taxonomy":"post_tag","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"inheritedTermsQueryVariant":true} -->
-<div class="wp-block-terms-query"><!-- wp:bare/weaver -->
-<div class="flex flex-wrap gap-1"><!-- wp:term-template {"className":"contents"} -->
+<!-- wp:terms-query {"termQuery":{"perPage":10,"taxonomy":"post_tag","order":"asc","orderBy":"name","include":[],"hideEmpty":true,"showNested":false,"inherit":false},"inheritedTermsQueryVariant":true,"className":"contents"} -->
+<div class="wp-block-terms-query contents"><!-- wp:term-template {"className":"contents"} -->
 <!-- wp:bare/composite-provider {"name":"post/term/chip"} -->
 <!-- wp:block {"ref":360,"lock":{"move":true,"remove":true}} /-->
 
@@ -53,7 +52,6 @@
 <!-- /wp:bare/composite-fill -->
 <!-- /wp:bare/composite-provider -->
 <!-- /wp:term-template --></div>
-<!-- /wp:bare/weaver --></div>
 <!-- /wp:terms-query --></div>
 <!-- /wp:bare/weaver -->
 
