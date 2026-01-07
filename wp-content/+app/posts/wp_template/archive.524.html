@@ -4,19 +4,49 @@
 <!-- wp:block {"ref":555,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill -->
-<!-- wp:terms-query {"termQuery":{"perPage":100,"taxonomy":"category","order":"asc","orderBy":"name","include":[],"hideEmpty":false,"showNested":false,"inherit":true},"inheritedTermsQueryVariant":true} -->
-<div class="wp-block-terms-query"><!-- wp:bare/weaver -->
-<div data-carousel="" data-carousel-loop="" data-carousel-align="start" data-carousel-selected-index="0" data-carousel-skip-snaps="" class="` -mx-4 cursor-grab overflow-x-clip overflow-y-visible *:*:-mr-4 *:*:flex *:flex *:*:shrink-0 *:*:grow-0 *:*:px-4 active:cursor-grabbing"><!-- wp:term-template -->
 <!-- wp:bare/weaver -->
-<div data-href-matches-page="" data-intersection="" class="group/term relative h1 transition-[all,opacity] duration-500 ease-[var(--ease-out),var(--ease-in-out)] not-data-[intersection-visible]:opacity-0 active:text-bg-2 [li:not(:first-child)&gt;&amp;]:text-bg-2"><!-- wp:term-name {"isLink":true} /-->
+<div class="flex flex-col gap-4"><!-- wp:bare/composite-provider {"name":"app/structure/header/actions"} -->
+<!-- wp:block {"ref":3835,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
 
 <!-- wp:bare/weaver -->
-<div class="absolute inset-0 text-fg-2 transition-[clip-path] [clip-path:inset(0)] not-group-hover/term:[clip-path:inset(100%_0_0_0)]"><!-- wp:term-name {"isLink":true} /--></div>
+<div class="h1"><!-- wp:query-title {"type":"archive","showPrefix":false} /--></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div class="group/categories"><!-- wp:bare/weaver -->
+<div class="group/all-categories not-[body.archive.category_&amp;]:hidden"><!-- wp:terms-query {"termQuery":{"perPage":100,"taxonomy":"category","order":"asc","orderBy":"name","include":[],"hideEmpty":false,"showNested":false,"inherit":true},"inheritedTermsQueryVariant":true} -->
+<div class="wp-block-terms-query"><!-- wp:bare/composite-provider {"name":"posts/categories/terms"} -->
+<!-- wp:block {"ref":3867,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:term-template {"className":"contents"} -->
+<!-- wp:bare/composite-provider {"name":"posts/categories/terms/term"} -->
+<!-- wp:block {"ref":3866,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+<!-- /wp:term-template -->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider --></div>
+<!-- /wp:terms-query --></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div class="group/inherited-categories [body.archive.category_&amp;]:hidden"><!-- wp:terms-query {"termQuery":{"perPage":100,"taxonomy":"category","order":"asc","orderBy":"name","include":[],"hideEmpty":false,"showNested":false,"inherit":false},"inheritedTermsQueryVariant":true} -->
+<div class="wp-block-terms-query"><!-- wp:bare/composite-provider {"name":"posts/categories/terms"} -->
+<!-- wp:block {"ref":3867,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:term-template {"className":"contents"} -->
+<!-- wp:bare/composite-provider {"name":"posts/categories/terms/term"} -->
+<!-- wp:block {"ref":3866,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+<!-- /wp:term-template -->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider --></div>
+<!-- /wp:terms-query --></div>
+<!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver -->
-<!-- /wp:term-template --></div>
-<!-- /wp:bare/weaver --></div>
-<!-- /wp:terms-query -->
 <!-- /wp:bare/composite-fill -->
 <!-- /wp:bare/composite-provider -->
 
@@ -29,7 +59,7 @@
 
 <!-- wp:bare/composite-fill -->
 <!-- wp:bare/weaver -->
-<div class="flex gap-[0.5em]"><!-- wp:term-name {"isLink":true} /-->
+<div class="flex items-center gap-[0.5em] [&amp;_.wp-block-term-count]:text-xs [&amp;_.wp-block-term-count]:text-fg-2/50"><!-- wp:term-name {"isLink":true} /-->
 
 <!-- wp:term-count /--></div>
 <!-- /wp:bare/weaver -->
@@ -61,13 +91,9 @@
 <!-- /wp:bare/composite-provider -->
 
 <!-- wp:query-no-results -->
-<!-- wp:bare/weaver -->
-<div class="my-2"><!-- wp:bare/weaver -->
-<div class="text-center h1 text-bg-2"><!-- wp:paragraph -->
-<p>((o))</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:bare/weaver --></div>
-<!-- /wp:bare/weaver -->
+<!-- wp:bare/composite-provider {"name":"app/placeholder/sigil"} -->
+<!-- wp:block {"ref":3874,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
 <!-- /wp:query-no-results -->
 
 <!-- wp:query-pagination {"loadMore":true,"infiniteScroll":true,"infiniteScrollColor":"#ffffff","loadMoreText":"More","className":"load-more infinite-scroll"} -->
