@@ -18,7 +18,7 @@ videos=()
 shopt -s nocasematch
 while IFS= read -r -d '' f; do
 	case "$f" in
-		*.mov|*.mp4|*.m4v|*.mkv|*.webm|*.avi|*.wmv|*.flv|*.mpeg|*.mpg|*.m2v|*.ogv)
+		*.mov|*.mp4|*.m4v|*.mkv|*.avi|*.wmv|*.flv|*.mpeg|*.mpg|*.m2v|*.ogv)
 			videos+=("$f")
 			;;
 	esac
@@ -29,7 +29,7 @@ if [ "${#videos[@]}" -eq 0 ]; then
 	exit 0
 fi
 
-VIDEO_THREADS=${VIDEO_THREADS:-1} "$repo_root/scripts/video.sh" "${videos[@]}"
+VIDEO_THREADS=${VIDEO_THREADS:-0} "$repo_root/scripts/video.sh" compress "${videos[@]}"
 
 changed=()
 while IFS= read -r -d '' f; do
