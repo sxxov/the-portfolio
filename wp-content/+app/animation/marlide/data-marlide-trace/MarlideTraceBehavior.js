@@ -1,5 +1,5 @@
 import { MarlideTraceCharacterBehavior } from './MarlideTraceCharacterBehavior.js';
-import { MarlideTraceWhitespaceBehavior } from './MarlideTraceWhitespaceBehavior copy.js';
+import { MarlideTraceWhitespaceBehavior } from './MarlideTraceWhitespaceBehavior.js';
 import { MarlideTraceWordBehavior } from './MarlideTraceWordBehavior.js';
 import { attachBehavior, behavior, t } from '/+std/behavioral/behavior.js';
 import { watchElementIntersecting } from '/+std/dom/watchElementIntersecting.js';
@@ -50,51 +50,7 @@ export const MarlideTraceBehavior = behavior(
 			),
 		);
 		obscured.in(revealed.derive((v) => !v));
-		const spans = (() => {
-			const wordStack = /** @type {HTMLElement[]} */ ([]);
-			const charStack = /** @type {HTMLElement[]} */ ([]);
-
-			for (let i = 0; i < initialInnerText.length; i++) {
-				const char = unwrap(initialInnerText[i]);
-
-				const isWhitespace = /^\s+$/.test(char);
-				if (isWhitespace) {
-					const wordElement = document.createElement('span');
-					wordElement.replaceChildren(...charStack);
-					attachBehavior(wordElement, MarlideTraceWordBehavior, {});
-					wordStack.push(wordElement);
-
-					const whitespaceElement = document.createElement('span');
-					whitespaceElement.replaceChildren(char);
-					attachBehavior(
-						whitespaceElement,
-						MarlideTraceWhitespaceBehavior,
-						{},
-					);
-					wordStack.push(whitespaceElement);
-
-					charStack.length = 0;
-					continue;
-				}
-
-				const charElement = document.createElement('span');
-				charElement.replaceChildren(char);
-				attachBehavior(charElement, MarlideTraceCharacterBehavior, {
-					'': char,
-					index: i,
-				});
-				charStack.push(charElement);
-			}
-			const hasRemaining = charStack.length > 0;
-			if (hasRemaining) {
-				const wordElement = document.createElement('span');
-				wordElement.replaceChildren(...charStack);
-				attachBehavior(wordElement, MarlideTraceWordBehavior, {});
-				wordStack.push(wordElement);
-			}
-
-			return wordStack;
-		})();
+		const spans = transformChildrenToWordSpans(element.childNodes);
 
 		add: { element.replaceChildren(...spans); }
 		remove: _._ = () => { element.replaceChildren(...initialChildren); };
@@ -102,3 +58,97 @@ export const MarlideTraceBehavior = behavior(
 		return _;
 	},
 );
+
+/** @typedef {{ index: number }} WordContext */
+
+function transformChildrenToWordSpans(
+	/** @type {NodeList} */ nodes,
+	/** @type {WordContext} */ context = { index: 0 },
+) {
+	return [...nodes].flatMap((node) => {
+		if (node instanceof HTMLElement) {
+			const clone = /** @type {typeof node} */ (node.cloneNode());
+			clone.replaceChildren(
+				...transformChildrenToWordSpans(node.childNodes, context),
+			);
+			return clone;
+		}
+
+		if (node instanceof Text) {
+			return getWordSpansByText(node.data, context);
+		}
+
+		return [];
+	});
+}
+
+function getWordSpansByText(
+	/** @type {string} */ text,
+	/** @type {WordContext} */ context,
+) {
+	const wordStack = /** @type {HTMLElement[]} */ ([]);
+	const charStack = /** @type {HTMLElement[]} */ ([]);
+
+	for (let i = 0; i < text.length; i++, context.index++) {
+		const char = unwrap(text[i]);
+
+		const isWhitespace = /^\s$/.test(char);
+		if (isWhitespace) {
+			// TODO: this doesn't really feel right, but gives the best result
+			// we discard any whitespace that isn't preceded with a word,
+			// instead of "stacking" these hanging whitespaces
+			if (charStack.length <= 0) continue;
+
+			const wordElement = (() => {
+				const it = document.createElement('span');
+				it.replaceChildren(...charStack);
+				attachBehavior(it, MarlideTraceWordBehavior, {});
+				return it;
+			})();
+			wordStack.push(wordElement);
+
+			const whitespaceElement = (() => {
+				switch (char) {
+					case '\n': {
+						const it = document.createElement('br');
+						return it;
+					}
+
+					default: {
+						const it = document.createElement('span');
+						it.replaceChildren(char);
+						attachBehavior(it, MarlideTraceWhitespaceBehavior, {});
+						return it;
+					}
+				}
+			})();
+			wordStack.push(whitespaceElement);
+
+			charStack.length = 0;
+			continue;
+		}
+
+		const charElement = (() => {
+			const it = document.createElement('span');
+			it.replaceChildren(char);
+			attachBehavior(it, MarlideTraceCharacterBehavior, {
+				'': char,
+				index: context.index,
+			});
+			return it;
+		})();
+		charStack.push(charElement);
+	}
+	const hasRemaining = charStack.length > 0;
+	if (hasRemaining) {
+		const wordElement = (() => {
+			const it = document.createElement('span');
+			it.replaceChildren(...charStack);
+			attachBehavior(it, MarlideTraceWordBehavior, {});
+			return it;
+		})();
+		wordStack.push(wordElement);
+	}
+
+	return wordStack;
+}
