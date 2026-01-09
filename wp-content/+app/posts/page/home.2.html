@@ -166,17 +166,17 @@
 <!-- wp:block {"ref":1206,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill -->
-<!-- wp:bare/composite-provider {"name":"home/story/stanza/paragraph"} -->
+<!-- wp:bare/weaver -->
+<slot class="[--clip-progress:calc(clamp(0,(var(--follow-scroll-relative-progress-y-out,0))*2*10,1))] [--disappear-progress:calc(clamp(0,(1-var(--follow-scroll-relative-progress-y-out,0))*1000-999,1))] *:translate-x-[calc(var(--disappear-progress)*-9999px)] *:py-[.2em] *:[clip-path:inset(calc((1-var(--clip-progress))*50%)_0_calc((1-var(--clip-progress))*50%)_0)]"><!-- wp:bare/composite-provider {"name":"home/story/stanza/paragraph"} -->
 <!-- wp:block {"ref":1211,"lock":{"move":true,"remove":true}} /-->
 
 <!-- wp:bare/composite-fill -->
-<!-- wp:bare/weaver -->
-<div class="[--progress:calc(clamp(0,(var(--follow-scroll-relative-progress-y-out,0))*2*10,1))] [clip-path:inset(calc((1-var(--progress))*50%)_0_calc((1-var(--progress))*50%)_0)]"><!-- wp:paragraph -->
-<p>"Hello, hey! Yeah, this is Jia Sheng, we met at ***.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:bare/weaver -->
+<!-- wp:paragraph -->
+<p>"Hello! Yeah, this is Jia Sheng, we met at—<a href="/work">Work</a>.</p>
+<!-- /wp:paragraph -->
 <!-- /wp:bare/composite-fill -->
-<!-- /wp:bare/composite-provider -->
+<!-- /wp:bare/composite-provider --></slot>
+<!-- /wp:bare/weaver -->
 <!-- /wp:bare/composite-fill -->
 <!-- /wp:bare/composite-provider --></div>
 <!-- /wp:bare/weaver -->
@@ -191,11 +191,11 @@
 
 <!-- wp:bare/composite-fill -->
 <!-- wp:paragraph -->
-<p>I was wondering if you'd like to get to know each other a little better,</p>
+<p>I was wondering if you'd like to get to know each other,</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>maybe over something casual like a movie?</p>
+<p>maybe—<a href="/laze">Laze</a>—around with a movie?</p>
 <!-- /wp:paragraph -->
 <!-- /wp:bare/composite-fill -->
 <!-- /wp:bare/composite-provider -->
@@ -213,7 +213,7 @@
 
 <!-- wp:bare/composite-fill -->
 <!-- wp:paragraph -->
-<p>Or maybe, we could do something crafty together?</p>
+<p>Or maybe, we could go see something—<a href="/beaut">Beaut</a>—iful together?</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -239,7 +239,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>I heard you've been looking to try out *** too.</p>
+<p>I heard you've been looking to—<a href="/experiment">Experiment</a>—with *** too.</p>
 <!-- /wp:paragraph -->
 <!-- /wp:bare/composite-fill -->
 <!-- /wp:bare/composite-provider -->
