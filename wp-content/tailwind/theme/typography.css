@@ -91,6 +91,7 @@
 	@media (width < 768px) {
 		--size-pt: 60;
 		--leading-pt: 40;
+		--tracking-pt: -2;
 	}
 
 	font-family: var(--font-display);
@@ -108,6 +109,7 @@
 	@media (width < 768px) {
 		--size-pt: 40;
 		--leading-pt: 28;
+		--tracking-pt: 0;
 	}
 
 	font-family: var(--font-display);
@@ -125,6 +127,7 @@
 	@media (width < 768px) {
 		--size-pt: 30;
 		--leading-pt: 20;
+		--tracking-pt: 0;
 	}
 
 	font-family: var(--font-display);
