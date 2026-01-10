@@ -2,22 +2,7 @@
 
 namespace app\terms\inherited_terms_query;
 
-use function bare\module\client\enqueue_script_type_module;
-use function bare\utilities\url\get_uri;
-
 const VARIATION_ATTRIBUTE = 'inheritedTermsQueryVariant';
-
-add_action('enqueue_block_editor_assets', function () {
-	$handle = __NAMESPACE__ . '/variation';
-	$path = __DIR__ . '/index.js';
-
-	wp_enqueue_script(
-		$handle,
-		get_uri($path),
-		ver: filemtime($path),
-	);
-	enqueue_script_type_module($handle);
-});
 
 add_filter('register_block_type_args', function ($args, $name) {
 	switch ($name) {
