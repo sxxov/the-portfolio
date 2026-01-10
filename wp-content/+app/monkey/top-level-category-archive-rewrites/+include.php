@@ -18,6 +18,13 @@ add_action('init', function () {
 		'top'
 	);
 
+	// post embed: /{cat}/{post}/embed/
+	add_rewrite_rule(
+		'^(.+?)/([^/]+)/embed/?$',
+		'index.php?category_name=$matches[1]&name=$matches[2]&embed=true',
+		'top'
+	);
+
 	// embed: /{cat}/embed/
 	add_rewrite_rule(
 		'^(.+?)/embed/?$',
