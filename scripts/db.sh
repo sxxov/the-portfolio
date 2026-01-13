@@ -96,7 +96,7 @@ function pull() {
 				--routines \
 				--triggers \
 		| sed \
-			"s/\/\/\$SITE_HOST/\/\/$SITE_HOST/"
+			"s#//\$SITE_HOST#//$SITE_HOST#g"
 		EOS
 	)"
 	local local_script="$(cat <<-EOS
@@ -127,7 +127,7 @@ function push() {
 		cd ~/$NAME || (echo 'App not found on server'; exit 1)
 		set -a; [ -f ".env" ] && source ".env"; set +a
 		sed \
-			"s/\/\/$SITE_HOST/\/\/\$SITE_HOST/" \
+			"s#//$SITE_HOST#//\$SITE_HOST#g" \
 		| docker compose exec -T db \
 			mariadb \
 				-u \$DB_USER \
