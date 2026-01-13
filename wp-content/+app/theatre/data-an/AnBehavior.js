@@ -368,11 +368,11 @@ export const AnBehavior = behavior(
 
 							appearance.opacity = opacity / 100;
 
-							if (
-								opacity <= 0 &&
-								appearance.visibility === 'visible'
-							)
-								appearance.visibility = 'hidden';
+							if (!visibilityEnabled) {
+								visibilityEnabled = true;
+								appearance.visibility =
+									opacity > 0 ? 'visible' : 'hidden';
+							}
 						}
 
 						blur: {
