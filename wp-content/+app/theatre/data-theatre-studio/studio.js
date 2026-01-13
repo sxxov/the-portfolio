@@ -11,14 +11,14 @@ studio.initialize();
 export const TheatreStudioBehavior = behavior(
 	'theatre-studio',
 	class {},
-	(element) => {
+	() => {
 		const _ = bin();
 
 		const controller = new AbortController();
 		_._ = () => { controller.abort(); };
 		const { signal } = controller;
 
-		element.addEventListener(
+		window.addEventListener(
 			'keydown',
 			(event) => {
 				if (event.ctrlKey || event.metaKey || event.altKey) return;
