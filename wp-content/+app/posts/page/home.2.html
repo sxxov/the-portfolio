@@ -1,7 +1,15 @@
 <!-- wp:bare/weaver -->
 <div data-theatre-studio="" data-orchestrator="" data-theatre-project="orchestrator" class=""><!-- wp:bare/weaver -->
-<div data-orchestrator-chapter="" data-park-chapter="" data-theatre-sheet="park" class="group/chapter"><!-- wp:bare/weaver -->
-<div data-orchestrator-stanza="" data-orchestrator-stanza-start="0" data-orchestrator-stanza-end="500" class="relative my-4 px-4"><!-- wp:bare/weaver -->
+<div data-orchestrator-chapter="" data-park-chapter="" data-theatre-sheet="park" data-park-chapter-orbit-layer="" data-park-chapter-fluid-displacement-layer="" data-park-chapter-park-layer="" data-park-chapter-overlay-layer="" data-park-chapter-aux-layer="" data-park-chapter-composite-layer="" class="group/chapter relative"><!-- wp:bare/weaver -->
+<div class="pointer-events-none absolute top-0 z-10 w-full p-4"><!-- wp:bare/weaver -->
+<div class="absolute inset-0 overflow-clip text-bg-1"><!-- wp:bare/weaver -->
+<div class="sticky top-0 bg-linear-to-b from-current via-transparent *:w-full"><!-- wp:bare/composite-provider {"name":"app/decoration/dithered-linear-gradient"} -->
+<!-- wp:block {"ref":3538,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider --></div>
+<!-- /wp:bare/weaver --></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
 <h1 data-follow-rect="" class="flex w-full [--container-width:var(--follow-rect-width,calc(100lvw-4*2*var(--sp)))]"><!-- wp:bare/weaver -->
 <div class="flex w-min flex-col h1 text-[calc(var(--container-width)*.2302)] leading-[0.57] [--1h:var(--1w)] [--1w:calc(var(--container-width)/100)]"><!-- wp:bare/weaver -->
 <span data-an="name/lim" data-an-transform="" class="inline-flex whitespace-nowrap"><!-- wp:bare/weaver -->
@@ -66,16 +74,26 @@
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="flex max-lg:my-4 max-lg:h-[calc(100lvh-2*4*var(--sp)-39lvw)] max-lg:w-full lg:absolute lg:top-0 lg:right-0 lg:h-[25.7lvw] lg:w-[58.2lvw] lg:bg-bg-1 lg:px-4 lg:pb-4"><!-- wp:bare/composite-provider {"name":"home/intro/posts"} -->
+<div class="pointer-events-auto my-4 flex max-lg:h-[calc(100lvh-2*4*var(--sp)-39lvw)] max-lg:w-full lg:absolute lg:top-0 lg:right-4 lg:h-[25.7lvw] lg:w-[58.2lvw]"><!-- wp:query {"queryId":0,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":false,"taxQuery":null,"parents":[],"format":[],"post_id":2},"className":"contents"} -->
+<div class="wp-block-query contents"><!-- wp:bare/composite-provider {"name":"home/intro/posts"} -->
 <!-- wp:block {"ref":374,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:post-template -->
+<!-- wp:bare/composite-provider {"name":"home/intro/posts/post"} -->
+<!-- wp:block {"ref":358,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+<!-- /wp:post-template -->
+<!-- /wp:bare/composite-fill -->
 <!-- /wp:bare/composite-provider --></div>
+<!-- /wp:query --></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="relative my-4 grid px-4 grid-areas-1x1"><!-- wp:bare/weaver -->
-<div class="sticky top-4 flex h-[calc(100lvh-2*4*var(--sp))] w-full grid-area-1x1"><!-- wp:bare/weaver -->
-<div data-orchestrator-events="" class="grid size-full overflow-clip rounded-lg grid-areas-1x1 relative"><!-- wp:bare/weaver -->
+<div class="relative grid grid-areas-1x1"><!-- wp:bare/weaver -->
+<div class="sticky top-0 flex h-lvh w-full grid-area-1x1"><!-- wp:bare/weaver -->
+<div data-orchestrator-events="" class="relative grid size-full overflow-clip grid-areas-1x1"><!-- wp:bare/weaver -->
 <div class="flex size-full grid-area-1x1"><!-- wp:bare/weaver -->
 <canvas data-orchestrator-canvas="" class="relative h-full! w-full! touch-manipulation"></canvas>
 <!-- /wp:bare/weaver --></div>
@@ -143,10 +161,6 @@
 <!-- /wp:bare/composite-provider --></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver --></div>
-<!-- /wp:bare/weaver -->
-
-<!-- wp:bare/weaver -->
-<div class="pointer-events-none absolute inset-0 rounded-[inherit] border border-white/20"></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver -->
@@ -154,6 +168,10 @@
 <!-- wp:bare/weaver -->
 <div class="pointer-events-none relative grid-area-1x1 [:where(&amp;_*)]:pointer-events-none"><!-- wp:bare/weaver -->
 <div class="relative text-[#ccc] mix-blend-color-dodge"><!-- wp:bare/weaver -->
+<div data-orchestrator-stanza="" data-orchestrator-stanza-start="0" data-orchestrator-stanza-end="500" class="h-full min-h-[50lvh]"></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
 <div data-orchestrator-stanza="" data-orchestrator-stanza-start="500" data-orchestrator-stanza-end="1000" class="h-full min-h-lvh"><!-- wp:bare/composite-provider {"name":"home/story/stanza/container"} -->
 <!-- wp:block {"ref":1206,"lock":{"move":true,"remove":true}} /-->
 
@@ -282,6 +300,64 @@
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver --></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div class="absolute inset-x-0 bottom-0 overflow-clip text-bg-1"><!-- wp:bare/weaver -->
+<div class="-scale-y-100 bg-linear-to-b from-current via-transparent *:w-full"><!-- wp:bare/composite-provider {"name":"app/decoration/dithered-linear-gradient"} -->
+<!-- wp:block {"ref":3538,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider --></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver --></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/composite-provider {"name":"app/section/frame"} -->
+<!-- wp:block {"ref":559,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:bare/weaver -->
+<div class="flex flex-col gap-4 overflow-clip rounded-lg p-4"><!-- wp:query {"queryId":0,"query":{"perPage":100,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"only","inherit":false,"taxQuery":{"category":[4],"post_tag":[]},"parents":[],"format":[],"post_id":2},"className":"contents"} -->
+<div class="wp-block-query contents"><!-- wp:bare/composite-provider {"name":"posts/posts"} -->
+<!-- wp:block {"ref":4416,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:post-template {"className":"contents"} -->
+<!-- wp:bare/composite-provider {"name":"posts/posts/post"} -->
+<!-- wp:block {"ref":680,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+<!-- /wp:post-template -->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider --></div>
+<!-- /wp:query -->
+
+<!-- wp:query {"queryId":0,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"ignore","inherit":false,"taxQuery":{"category":[4]},"parents":[],"format":[],"post_id":2},"className":"contents"} -->
+<div class="wp-block-query contents"><!-- wp:bare/composite-provider {"name":"posts/posts"} -->
+<!-- wp:block {"ref":4416,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill -->
+<!-- wp:post-template {"className":"contents"} -->
+<!-- wp:bare/composite-provider {"name":"posts/posts/post"} -->
+<!-- wp:block {"ref":680,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+<!-- /wp:post-template -->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider -->
+
+<!-- wp:query-no-results -->
+<!-- wp:bare/composite-provider {"name":"app/placeholder/sigil"} -->
+<!-- wp:block {"ref":3874,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider -->
+<!-- /wp:query-no-results -->
+
+<!-- wp:query-pagination {"loadMore":true,"infiniteScroll":true,"infiniteScrollColor":"#ffffff","loadMoreText":"More","className":"load-more infinite-scroll"} -->
+<!-- wp:query-pagination-previous /-->
+
+<!-- wp:query-pagination-numbers /-->
+
+<!-- wp:query-pagination-next /-->
+<!-- /wp:query-pagination --></div>
+<!-- /wp:query --></div>
+<!-- /wp:bare/weaver -->
+<!-- /wp:bare/composite-fill -->
+<!-- /wp:bare/composite-provider --></div>
 <!-- /wp:bare/weaver -->
