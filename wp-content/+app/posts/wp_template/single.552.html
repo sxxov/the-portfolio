@@ -90,7 +90,7 @@
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="h4"><!-- wp:paragraph -->
+<div class="h4 font-display"><!-- wp:paragraph -->
 <p>↣</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:bare/weaver --></div>
@@ -135,48 +135,60 @@
 <!-- /wp:bare/composite-provider -->
 
 <!-- wp:bare/weaver -->
-<div data-ripple="" class="relative mt-16 flex min-h-[max(40em,50lvh)] flex-col overflow-clip rounded rounded-b-lg has-[[href='']]:hidden"><!-- wp:bare/weaver -->
+<div data-ripple="" class="relative mt-16 flex min-h-[max(40em,50lvh)] flex-col not-in-[.editor-styles-wrapper]:has-[[href='']]:hidden"><!-- wp:bare/weaver -->
+<div class="relative grow"><!-- wp:bare/weaver -->
 <div class="absolute inset-0"><!-- wp:bare/weaver -->
-<a href="${field:post.external_link.url}" target="${field:post.external_link.target}" class="absolute inset-0 **:size-full"><!-- wp:post-featured-image /--></a>
+<a href="${field:post.external_link.url}" target="${field:post.external_link.target}" class="absolute inset-0 transition-all **:size-full not-hover:saturate-0"><!-- wp:post-featured-image /--></a>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="pointer-events-none absolute inset-0 mask-[linear-gradient(to_top,#fff_40%,#fff0_100%)] **:size-full [&amp;_img]:blur-sm [&amp;_img]:brightness-110"><!-- wp:post-featured-image /--></div>
+<div class="pointer-events-none absolute inset-0 mask-[linear-gradient(to_top,#fff_0%,#fff0_100%)] backdrop-blur-xs backdrop-brightness-100"></div>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="pointer-events-none absolute inset-0 mask-[linear-gradient(to_top,#fff_30%,#fff0_70%)] **:size-full [&amp;_img]:blur-md [&amp;_img]:brightness-150"><!-- wp:post-featured-image /--></div>
+<div class="pointer-events-none absolute inset-0 mask-[linear-gradient(to_top,#fff_50%,#fff0_100%)] backdrop-blur-sm backdrop-brightness-110"></div>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="pointer-events-none absolute inset-0 mask-[linear-gradient(to_top,#fff_10%,#fff0_60%)] **:size-full [&amp;_img]:blur-xl [&amp;_img]:brightness-200"><!-- wp:post-featured-image /--></div>
+<div class="pointer-events-none absolute inset-0 mask-[linear-gradient(to_top,#fff_20%,#fff0_70%)] backdrop-blur-md backdrop-brightness-150"></div>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="pointer-events-none absolute inset-0 mask-[linear-gradient(to_top,#fff_0%,#fff0_40%)] **:size-full [&amp;_img]:blur-2xl [&amp;_img]:brightness-300"><!-- wp:post-featured-image /--></div>
+<div class="pointer-events-none absolute inset-0 mask-[linear-gradient(to_top,#fff_10%,#fff0_60%)] backdrop-blur-xl backdrop-brightness-150"></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div class="pointer-events-none absolute inset-0 mask-[linear-gradient(to_top,#fff_0%,#fff0_40%)] backdrop-blur-2xl backdrop-brightness-150"></div>
 <!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="pointer-events-none absolute inset-0 bg-fg-1 mask-[linear-gradient(to_top,#fff_0%,#fff0_30%)]"></div>
+<div class="pointer-events-none absolute inset-0 hidden bg-linear-to-t from-white via-transparent via-30%"></div>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
 <div class="pointer-events-none absolute inset-x-0 top-0 text-bg-1"><!-- wp:bare/composite-provider {"name":"post/content/thumbnail/gradient"} -->
 <!-- wp:block {"ref":3536,"lock":{"move":true,"remove":true}} /-->
 <!-- /wp:bare/composite-provider --></div>
+<!-- /wp:bare/weaver --></div>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="pointer-events-none relative flex grow items-end gap-4 py-4"><!-- wp:bare/weaver -->
-<div data-marquee="" data-marquee-direction="-1" data-marquee-duration="2000" data-marquee-amplitude="-2" class="grow"><!-- wp:bare/weaver -->
+<div class="pointer-events-none relative flex flex-col"><!-- wp:bare/weaver -->
+<div class="absolute inset-x-0 top-0 -translate-y-full -scale-y-100"><!-- wp:bare/composite-provider {"name":"post/content/thumbnail/gradient"} -->
+<!-- wp:block {"ref":3536,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider --></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div data-marquee="" data-marquee-direction="-1" data-marquee-duration="2000" data-marquee-amplitude="-2" class="overflow-clip rounded-b-lg bg-white py-4"><!-- wp:bare/weaver -->
 <a href="${field:post.external_link.url}" target="${field:post.external_link.target}" class="pointer-events-auto w-fit"><!-- wp:bare/weaver -->
-<div class="flex items-center gap-3 pr-3 h4 text-bg-1"><!-- wp:bare/weaver -->
+<div class="flex items-center gap-3 pr-3 h2 text-bg-1"><!-- wp:bare/weaver -->
 <slot text="${field:post.external_link.title}" class="before:content-[attr(text)]"></slot>
 <!-- /wp:bare/weaver -->
 
 <!-- wp:bare/weaver -->
-<div class="h4"><!-- wp:paragraph -->
+<div class="hidden h4 font-display"><!-- wp:paragraph -->
 <p>↣</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:bare/weaver --></div>
