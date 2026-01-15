@@ -3,10 +3,11 @@
 /**
  * Plugin Name:       Enable Classic Pattern Editor
  * Description:       Adds a menu item to redirect to the classic post-list of patterns (<code>edit.php</code>) instead of the fancy new one (<code>site-editor.php</code>).
- * Version:           20250319-7db4891
+ * Version:           20260115-db162e6
  * Author:            jiaSheng
  */
 
+// menu item
 add_filter('register_post_type_args', function (
 	array $args,
 	string $post_type
@@ -55,6 +56,26 @@ add_action('admin_menu', function () {
 	];
 }, 10, 0);
 
+// quick edit
+add_filter('post_row_actions', function (array $actions, \WP_Post $post) {
+	if ($post->post_type !== 'wp_block') return $actions;
+
+	$class_name = 'inline hide-if-no-js';
+	if (isset($actions[$class_name])) return $actions;
+
+	$action_class_name = 'editinline';
+	$action_text = __('Quick Edit');
+	$action_html = <<<HTML
+		<a href="#" class="$action_class_name">$action_text</a>
+		HTML;
+
+	return array_merge(
+		[$action_html],
+		$actions
+	);
+}, 10, 2);
+
+// columns
 add_filter('manage_wp_block_posts_columns', function (array $posts_columns) {
 	$cb = $posts_columns['cb'];
 	unset($posts_columns['cb']);
