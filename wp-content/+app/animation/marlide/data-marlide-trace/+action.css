@@ -4,13 +4,11 @@
 		font-family: m, serif;
 		font-weight: 300;
 
-		transition-property: opacity, filter;
-		transition-duration: 0.5s, 1s;
-		transition-timing-function: var(--ease-in-out);
-
 		&:not(.editor-styles-wrapper *, :has([data-marlide-trace-word])) {
 			opacity: 0;
-			filter: blur(10px);
+		}
+		&:not(.editor-styles-wrapper *):has([data-marlide-trace-word]) {
+			animation: marlide-trace-fade-in 0.3s;
 		}
 
 		& [data-marlide-trace-word] {
