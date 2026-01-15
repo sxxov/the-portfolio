@@ -1,8 +1,8 @@
 /* stylelint-disable no-invalid-position-declaration */
 @theme static {
 	--font-display: o, sans-serif;
-	--font-pairing: 'Monsieur La Doulaise', serif;
-	--font-sans: 'Space Grotesk', sans-serif;
+	--font-pairing: m, serif;
+	--font-sans: 'Outfit', 'Space Grotesk', sans-serif;
 	--font-mono: 'Space Mono', monospace;
 
 	--vw-pt: 1440;
@@ -103,8 +103,8 @@
 
 	--weight-pt: 600;
 	--size-pt: 60;
-	--leading-pt: 40;
-	--tracking-pt: -2;
+	--leading-pt: 60;
+	--tracking-pt: -1;
 
 	@media (width < 768px) {
 		--size-pt: 40;
@@ -112,7 +112,7 @@
 		--tracking-pt: 0;
 	}
 
-	font-family: var(--font-display);
+	font-family: var(--font-pairing);
 	font-style: normal;
 }
 
@@ -121,8 +121,8 @@
 
 	--weight-pt: 600;
 	--size-pt: 35;
-	--leading-pt: 24;
-	--tracking-pt: -1;
+	--leading-pt: 35;
+	--tracking-pt: 0;
 
 	@media (width < 768px) {
 		--size-pt: 30;
@@ -130,7 +130,7 @@
 		--tracking-pt: 0;
 	}
 
-	font-family: var(--font-display);
+	font-family: var(--font-pairing);
 	font-style: normal;
 }
 
@@ -139,10 +139,10 @@
 
 	--weight-pt: 500;
 	--size-pt: 20;
-	--leading-pt: 14;
+	--leading-pt: 20;
 	--tracking-pt: 0;
 
-	font-family: var(--font-display);
+	font-family: var(--font-pairing);
 	font-style: normal;
 }
 
@@ -151,10 +151,10 @@
 
 	--weight-pt: 600;
 	--size-pt: 16;
-	--leading-pt: 12;
+	--leading-pt: 16;
 	--tracking-pt: 0;
 
-	font-family: var(--font-display);
+	font-family: var(--font-pairing);
 	font-style: normal;
 }
 
@@ -163,10 +163,10 @@
 
 	--weight-pt: 600;
 	--size-pt: 16;
-	--leading-pt: 12;
+	--leading-pt: 16;
 	--tracking-pt: 0;
 
-	font-family: var(--font-display);
+	font-family: var(--font-pairing);
 	font-style: normal;
 }
 
