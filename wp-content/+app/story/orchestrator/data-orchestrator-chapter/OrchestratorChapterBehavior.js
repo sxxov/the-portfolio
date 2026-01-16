@@ -29,8 +29,8 @@ export const OrchestratorChapterBehavior = behavior(
 		timeline = new Signal(
 			/** @type {ReadableSignal<Ranged<0 | 1> | undefined>[]} */ ([]),
 		);
-		duration = t.number.transient.styling.default(0);
-		progress = t.number.transient.styling.default(0);
+		duration = new Signal(0);
+		progress = new Signal(0);
 	},
 	(
 		element,
