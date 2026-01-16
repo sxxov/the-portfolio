@@ -5,7 +5,8 @@ import { pointers } from '/+app/human/pointers.js';
 import { subscribeFrame } from '/+std/animation/subscribeFrame.js';
 import { behavior, t } from '/+std/behavioral/behavior.js';
 import { setStyles } from '/+std/dom/setStyles.js';
-import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
+import { watchElementIntersecting } from '/+std/dom/watchElementIntersecting.js';
+import { bin, derive, Signal } from '/+std/signal/Signal.js';
 import { viewportSize } from '/+std/viewport/viewportSize.js';
 /** @import { Point } from "/+std/unit/Point.js" */
 
@@ -25,6 +26,7 @@ export const ApproachPointerBehavior = behavior(
 			{ radius, vmax },
 			({ $radius, $vmax }) => ($radius / 100) * $vmax,
 		);
+		const intersecting = watchElementIntersecting(element);
 		const hovering = watchElementHovering(element);
 		const time = new Signal(0, ({ update }) =>
 			subscribeFrame((deltaTime) => {
@@ -32,9 +34,30 @@ export const ApproachPointerBehavior = behavior(
 			}),
 		);
 		const movement = derive(
-			{ pointers, radiusPx, amplitude, hovering, hasMouse, time },
-			({ $pointers, $radiusPx, $amplitude, $hasMouse, $hovering }) => {
-				if ($pointers.size <= 0 || $hovering || !$hasMouse) return;
+			{
+				pointers,
+				radiusPx,
+				amplitude,
+				hovering,
+				intersecting,
+				hasMouse,
+				time,
+			},
+			({
+				$pointers,
+				$radiusPx,
+				$amplitude,
+				$hovering,
+				$intersecting,
+				$hasMouse,
+			}) => {
+				if (
+					$pointers.size <= 0 ||
+					$hovering ||
+					!$intersecting ||
+					!$hasMouse
+				)
+					return;
 
 				const { translate } = element.style;
 				setStyles(element, { translate: '' });
