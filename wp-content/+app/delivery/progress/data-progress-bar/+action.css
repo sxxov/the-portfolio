@@ -1,67 +1,227 @@
-[data-progress-bar] {
-	pointer-events: none;
-	user-select: none;
+@layer utilities {
+	[data-progress-bar] {
+		pointer-events: none;
+		user-select: none;
 
-	position: fixed;
-	z-index: 6969;
-	top: 0;
-	left: 0;
-	width: calc(var(--progress-bar-progress, 0) * 100%);
-	height: 1px;
+		position: fixed;
+		z-index: 6969;
 
-	mix-blend-mode: difference;
+		mix-blend-mode: difference;
 
-	background: linear-gradient(
-		to right,
-		#fff 0%,
-		#fff8 10%,
-		#fffa 60%,
-		#fff 80%
-	);
-	background-size: 80% auto;
-
-	animation: progress-bar-shine 2s linear infinite;
-
-	transition-property: opacity;
-	transition-duration: 0s, 1s;
-	transition-timing-function: var(--ease-out), var(--ease-out);
-
-	&::after {
-		content: '';
-		display: inline-block;
-
-		position: absolute;
-		right: -2px;
-		top: 0;
-		width: 100%;
-		height: 10px;
-
-		border-bottom-right-radius: 9999px;
-		background: linear-gradient(-120deg, #fff 5px, #fff8 120px, #fff0);
-		mask-image: linear-gradient(to bottom, #fff 10%, #fff0);
-		filter: blur(1px) brightness(10);
-
-		transition-property: opacity;
+		transition-property: opacity, width, height;
 		transition-duration: 0s;
-		transition-timing-function: var(--ease-in-out);
-	}
-
-	&:not([data-progress-bar-visible]) {
-		opacity: 0;
-
-		transition-duration: 0.5s, 0.5s;
-		transition-timing-function: var(--ease-in), var(--ease-out);
+		transition-timing-function:
+			var(--ease-out), var(--ease-out), var(--ease-out);
 
 		&::after {
+			content: '';
+			display: inline-block;
+
+			position: absolute;
+			filter: blur(1px) brightness(10);
+
+			transition-property: opacity;
+			transition-duration: 0s;
+			transition-timing-function: var(--ease-in-out);
+		}
+
+		&[data-progress-bar-axis='x'] {
+			width: calc(var(--progress-interpolated, 0) * 100%);
+			height: 1px;
+
+			scale: var(--progress-bar-direction, 1) 1;
+
+			background: linear-gradient(
+				to right,
+				#fff 0%,
+				#fff8 10%,
+				#fffa 60%,
+				#fff 80%
+			);
+			background-size: 80% auto;
+
+			animation: progress-bar-shine-x 2s linear infinite;
+
+			&::after {
+				right: -2px;
+				width: 100%;
+			}
+
+			& {
+				left: 0;
+			}
+
+			&[data-progress-bar-direction^='-'] {
+				right: 0;
+			}
+
+			&[data-progress-bar-align='start'] {
+				top: 0;
+
+				&::after {
+					top: 0;
+					height: 10px;
+
+					border-bottom-right-radius: 9999px;
+					background: linear-gradient(
+						-120deg,
+						#fff 5px,
+						#fff8 120px,
+						#fff0
+					);
+					mask-image: linear-gradient(to bottom, #fff 10%, #fff0);
+				}
+			}
+
+			&[data-progress-bar-align='center'] {
+				top: 50%;
+				translate: 0 -50%;
+
+				&::after {
+					top: 50%;
+					translate: 0 -50%;
+					height: 10px;
+
+					border-top-left-radius: 9999px;
+					border-top-right-radius: 9999px;
+					background: linear-gradient(
+						to right,
+						#fff 5px,
+						#fff8 120px,
+						#fff0
+					);
+					mask-image: linear-gradient(to bottom, #fff0, #fff, #fff0);
+				}
+			}
+
+			&[data-progress-bar-align='end'] {
+				bottom: 0;
+
+				&::after {
+					bottom: 0;
+					height: 10px;
+
+					border-top-right-radius: 9999px;
+					background: linear-gradient(
+						120deg,
+						#fff 5px,
+						#fff8 120px,
+						#fff0
+					);
+					mask-image: linear-gradient(to top, #fff 10%, #fff0);
+				}
+			}
+		}
+
+		&[data-progress-bar-axis='y'] {
+			width: 1px;
+			height: calc(var(--progress-interpolated, 0) * 100%);
+
+			scale: 1 var(--progress-bar-direction, 1);
+
+			background: linear-gradient(
+				to bottom,
+				#fff 0%,
+				#fff8 10%,
+				#fffa 60%,
+				#fff 80%
+			);
+			background-size: auto 80%;
+
+			animation: progress-bar-shine-y 2s linear infinite;
+
+			&::after {
+				bottom: -2px;
+				width: 10px;
+				height: 100%;
+			}
+
+			& {
+				bottom: 0;
+			}
+
+			&[data-progress-bar-direction^='-'] {
+				top: 0;
+			}
+
+			&[data-progress-bar-align='start'] {
+				left: 0;
+
+				&::after {
+					left: 0;
+					border-top-right-radius: 9999px;
+					background: linear-gradient(
+						30deg,
+						#fff 5px,
+						#fff8 120px,
+						#fff0
+					);
+					mask-image: linear-gradient(to right, #fff 10%, #fff0);
+				}
+			}
+
+			&[data-progress-bar-align='center'] {
+				left: 50%;
+				translate: -50% 0;
+
+				&::after {
+					left: 50%;
+					translate: -50% 0;
+
+					border-top-left-radius: 9999px;
+					border-top-right-radius: 9999px;
+					background: linear-gradient(
+						to bottom,
+						#fff 5px,
+						#fff8 120px,
+						#fff0
+					);
+					mask-image: linear-gradient(to right, #fff0, #fff, #fff0);
+				}
+			}
+
+			&[data-progress-bar-align='end'] {
+				right: 0;
+
+				&::after {
+					right: 0;
+					border-top-left-radius: 9999px;
+					background: linear-gradient(
+						-30deg,
+						#fff 5px,
+						#fff8 120px,
+						#fff0
+					);
+					mask-image: linear-gradient(to left, #fff 10%, #fff0);
+				}
+			}
+		}
+
+		&[data-progress-bar-align='center'][data-progress='1'],
+		&:not([data-progress-interpolated-visible]) {
 			opacity: 0;
-			transition-duration: 0.5s;
-			transition-timing-function: var(--ease-in);
+
+			transition-duration: 1s, 0.5s, 0.5s;
+			transition-timing-function:
+				var(--ease-in), var(--ease-out), var(--ease-out);
+
+			&::after {
+				opacity: 0;
+				transition-duration: 0.75s;
+				transition-timing-function: var(--ease-in);
+			}
 		}
 	}
-}
 
-@keyframes progress-bar-shine {
-	to {
-		background-position: 400% center;
+	@keyframes progress-bar-shine-x {
+		to {
+			background-position: 400% center;
+		}
+	}
+
+	@keyframes progress-bar-shine-y {
+		to {
+			background-position: center -400%;
+		}
 	}
 }
