@@ -19,7 +19,6 @@ import {
 	Scene,
 	WebGLRenderTarget,
 } from 'three';
-import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
 import djangoCube from '../../assets/luts/django.cube.js';
 import sceneSog from '../../assets/models/scene.sog.js';
 import soul0Glb from '../../assets/models/souls/soul-0.glb.js';
@@ -48,12 +47,8 @@ import { some } from '/+std/functional/some.js';
 import { PromiseSignal } from '/+std/signal/PromiseSignal.js';
 import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
 import { viewportSize } from '/+std/viewport/viewportSize.js';
-/** @import { MeshPhysicalMaterial, Object3D, Texture } from "three" */
-/** @import { Effect, EffectMaterial, Pass } from "postprocessing" */
-/** @import { ArrayOfLength } from "/+std/type/array/ArrayOfLength.js" */
-/** @import { Point } from "/+std/unit/Point.js" */
-/** @import { ReadableSignal, Starter } from "/+std/signal/Signal.js" */
-/** @import { BehaviorInstance } from "/+std/behavioral/factory/BehaviorInstance.js" */
+/** @import { EffectMaterial, Pass } from "postprocessing" */
+/** @import { Starter } from "/+std/signal/Signal.js" */
 /** @import { ParkChapterParkContext } from "./ParkChapterParkContext.js" */
 
 // rendering park with 100% quality messes up the colour encoding for some reason
@@ -66,8 +61,6 @@ const splatEnabled = new Signal(true).readonly;
 const soulsEnabled = hasMouse;
 const skyboxEnabled = new Signal(true).readonly;
 const screenEnabled = new Signal(true).readonly;
-
-RectAreaLightUniformsLib.init();
 
 const { asset: sceneAsset } = requestAsset(sceneSog, pipeChunksIntoUint8Array, {
 	priority: AssetPriority.High,
@@ -142,13 +135,18 @@ export const ParkChapterParkLayerBehavior = behavior(
 						if (!fileBytes) return;
 
 						const mesh = new SplatMesh({
-							fileBytes,
+							// clone it here since `SplatMesh` will transfer/neuter it
+							// causing subsequent reuses of `sceneAsset` to error
+							fileBytes: fileBytes.slice(),
 							fileName: sceneSog,
 							fileType: SplatFileType.PCSOGSZIP,
 							onLoad: () => { meshLoaded.resolve(true); },
 						});
 						add: { scene.add(mesh); }
-						remove: _._ = () => { mesh.removeFromParent(); };
+						remove: _._ = () => {
+							mesh.removeFromParent();
+							mesh.dispose();
+						};
 
 						const splatRenderer = derive(
 							{ renderer },
