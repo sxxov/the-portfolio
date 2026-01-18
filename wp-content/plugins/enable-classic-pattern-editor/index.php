@@ -1,13 +1,15 @@
 <?php
 
+namespace enable_classic_pattern_editor;
+
 /**
  * Plugin Name:       Enable Classic Pattern Editor
  * Description:       Adds a menu item to redirect to the classic post-list of patterns (<code>edit.php</code>) instead of the fancy new one (<code>site-editor.php</code>).
- * Version:           20260115-db162e6
+ * Version:           20260117-34cc00d
  * Author:            jiaSheng
  */
 
-// menu item
+// #region menu item
 add_filter('register_post_type_args', function (
 	array $args,
 	string $post_type
@@ -55,27 +57,76 @@ add_action('admin_menu', function () {
 		'edit-tags.php?taxonomy=wp_pattern_category&post_type=wp_block'
 	];
 }, 10, 0);
+// #endregion
 
-// quick edit
+// #region quick edit
+const QUICK_EDIT_ACTION_NAME = 'inline';
 add_filter('post_row_actions', function (array $actions, \WP_Post $post) {
 	if ($post->post_type !== 'wp_block') return $actions;
 
-	$class_name = 'inline hide-if-no-js';
-	if (isset($actions[$class_name])) return $actions;
+	$action_name = QUICK_EDIT_ACTION_NAME;
+	$action_keys = array_keys($actions);
+	if (
+		array_find(
+			$action_keys,
+			fn($key) => in_array(
+				$action_name,
+				preg_split('/\s+/', $key),
+			)
+		)
+	)
+		return $actions;
 
-	$action_class_name = 'editinline';
-	$action_text = __('Quick Edit');
-	$action_html = <<<HTML
-		<a href="#" class="$action_class_name">$action_text</a>
-		HTML;
+	$action_class_name = implode(' ', [QUICK_EDIT_ACTION_NAME, 'hide-if-no-js']);
+	$action_html = capture(fn() => EditInlineAction());
 
 	return array_merge(
-		[$action_html],
+		[$action_class_name => $action_html],
 		$actions
 	);
 }, 10, 2);
+function EditInlineAction() {
+?>
+	<a href="#" class="editinline"><?= __('Quick Edit') ?></a>
+<?php
+}
 
-// columns
+// show slug field in quick edit
+// make `wp_block` "viewable" *for admin only* so core shows the built-in Slug field in Quick Edit.
+add_filter('is_post_type_viewable', function (bool $is_viewable, \WP_Post_Type $post_type) {
+	if (!is_admin() || $post_type->name !== 'wp_block') return $is_viewable;
+
+	if (!function_exists('get_current_screen')) return $is_viewable;
+	$screen = get_current_screen();
+
+	if (
+		!$screen ||
+		$screen->base !== 'edit' ||
+		$screen->post_type !== 'wp_block'
+	)
+		return $is_viewable;
+
+	return true;
+}, 10, 2);
+
+// remove view action
+const VIEW_ACTION_CLASS_NAME = 'view';
+add_filter('post_row_actions', function (array $actions, \WP_Post $post) {
+	if ($post->post_type !== 'wp_block') return $actions;
+
+	$action_name = VIEW_ACTION_CLASS_NAME;
+	return array_filter(
+		$actions,
+		fn($key) => !in_array(
+			$action_name,
+			preg_split('/\s+/', $key),
+		),
+		ARRAY_FILTER_USE_KEY
+	);
+}, 10, 2);
+// #endregion
+
+// #region columns
 add_filter('manage_wp_block_posts_columns', function (array $posts_columns) {
 	$cb = $posts_columns['cb'];
 	unset($posts_columns['cb']);
@@ -133,3 +184,10 @@ add_action('admin_enqueue_scripts', function ($hook) {
 		default:
 	}
 });
+// #endregion
+
+function capture(callable $fn) {
+	ob_start();
+	$fn();
+	return ob_get_clean();
+}
