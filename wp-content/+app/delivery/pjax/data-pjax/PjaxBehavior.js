@@ -60,7 +60,6 @@ export const PjaxBehavior = behavior(
 			Map
 		)();
 		replaceMemoisedElements = (/** @type {ParentNode} */ node) => {
-			console.log(this.memoisedElements);
 			for (const [name, element] of this.memoisedElements) {
 				const selector = `[${getBehaviorAttributeName(PjaxKeyBehavior.name)}="${name}"]`;
 				const target = node.querySelector(selector);
@@ -320,6 +319,8 @@ async function goto(
 			document.head.append(script);
 			continue;
 		}
+
+		document.head.append(child);
 	}
 	if (pendingHeadCount.get() <= 0) headProgress.resolve(1);
 
