@@ -20,9 +20,7 @@
 	"editor.colorDecorators": true,
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.formatOnSave": true,
-	"editor.codeActionsOnSave": {
-		"source.fixAll": "explicit"
-	},
+	"eslint.format.enable": true,
 	"typescript.preferences.importModuleSpecifierEnding": "js",
 	"typescript.preferences.importModuleSpecifier": "shortest",
 	"javascript.preferences.importModuleSpecifierEnding": "js",
