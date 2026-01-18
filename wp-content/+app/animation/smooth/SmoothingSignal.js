@@ -58,6 +58,12 @@ export class SmoothingSignal extends Signal {
 		} else super.set(value);
 	}
 
+	seek(/** @type {number} */ value) {
+		this.intrinsicValue = value;
+		this.smoothedValue = value;
+		super.set(value);
+	}
+
 	/** @override */
 	destroy() {
 		if (windowed)
