@@ -13,7 +13,4 @@ export const ProgressBehavior = behavior(
 			progress.derive((v) => v >= 1),
 		);
 	},
-	() => {
-		//
-	},
 );
