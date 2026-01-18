@@ -1,17 +1,10 @@
-import {
-	createPool,
-	createProgress,
-	createBar,
-	createLoad,
-	monitorDOM,
-} from 'pawe/api';
+import { createPool, createProgress, createBar, createLoad } from 'pawe/api';
 import { bin, Signal, subscribe } from '/+std/signal/Signal.js';
 /** @import { ReadableSignal } from "/+std/signal/Signal.js" */
 /** @import { Ranged } from "/+std/unit/Ranged.js" */
 /** @import { LoadSignal } from "pawe/api" */
 
 const pool = createPool();
-monitorDOM(document.body, pool);
 
 const paweProgress = createProgress(pool);
 export const progress = new Signal(paweProgress.get(), ({ set }) =>
