@@ -27,7 +27,6 @@ export const MarlideTraceBehavior = behavior(
 		);
 
 		const _ = bin();
-		const { innerText: initialInnerText } = element;
 		const initialChildren = [...element.childNodes];
 
 		const intersecting = watchElementIntersecting(element);
