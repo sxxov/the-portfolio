@@ -4,7 +4,7 @@ import { PointersSignal } from '/+app/human/pointers.js';
 import { watchElementRect } from '/+std/dom/watchElementRect.js';
 import { some } from '/+std/functional/some.js';
 import { degToRad } from '/+std/math/degToRad.js';
-import { bin, derive } from '/+std/signal/Signal.js';
+import { bin, derive, Signal, subscribe } from '/+std/signal/Signal.js';
 /** @import { Camera } from "three" */
 /** @import { ReadableSignal } from "/+std/signal/Signal.js" */
 /** @import { Point } from "/+std/unit/Point.js" */
@@ -16,8 +16,12 @@ export class HoverOrbitControls extends Controls {
 	/** @private @readonly */
 	_ = bin();
 
+	/** @private @readonly */
+	radiusSignal = new Signal(degToRad(45));
 	/** Rotation radius in radians */
-	radius = degToRad(45);
+	get radius() { return this.radiusSignal.get(); }
+	set radius(v) { this.radiusSignal.set(v); }
+
 	/** Local target position relative to the object's parent */
 	target = new Vector3(0, 0, 0);
 
@@ -45,33 +49,50 @@ export class HoverOrbitControls extends Controls {
 		const sizeMax = rect.derive(({ width, height }) =>
 			some(width) && some(height) ? Math.max(width, height) : undefined,
 		);
-		this.ndc = derive({
-			x: new SmoothingSignal(0, {
-				smoothingFactor: 0.03,
-				speedPerSecond: 3000,
-			}).in(
-				derive(
-					{ pointers, rect, sizeMax },
-					({ $pointers: [$pointer], $rect: { width }, $sizeMax }) =>
-						some($pointer) && some($sizeMax) && some(width) ?
-							($pointer.x - width / 2) / ($sizeMax / 2)
-						:	0,
-				),
+		const ndc = derive(
+			{ pointers, rect, sizeMax },
+			({ $pointers: [$pointer], $rect: { width, height }, $sizeMax }) => {
+				if (
+					!some($pointer) ||
+					!some($sizeMax) ||
+					!some(width) ||
+					!some(height)
+				)
+					return { x: 0, y: 0 };
+
+				return {
+					x: ($pointer.x - width / 2) / ($sizeMax / 2),
+					y: ($pointer.y - height / 2) / ($sizeMax / 2),
+				};
+			},
+		);
+		const angles = derive({
+			azimuth: new SmoothingSignal(
+				0,
+				{
+					smoothingFactor: 0.03,
+					speedPerSecond: 1000,
+				},
+				({ set }) =>
+					subscribe(
+						{ ndc, radius: this.radiusSignal },
+						({ $ndc: { x }, $radius }) => { set(x * $radius); },
+					),
 			),
-			y: new SmoothingSignal(0, {
-				smoothingFactor: 0.03,
-				speedPerSecond: 3000,
-			}).in(
-				derive(
-					{ pointers, rect, sizeMax },
-					({ $pointers: [$pointer], $rect: { height }, $sizeMax }) =>
-						some($pointer) && some($sizeMax) && some(height) ?
-							($pointer.y - height / 2) / ($sizeMax / 2)
-						:	0,
-				),
+			polar: new SmoothingSignal(
+				0,
+				{
+					smoothingFactor: 0.03,
+					speedPerSecond: 1000,
+				},
+				({ set }) =>
+					subscribe(
+						{ ndc, radius: this.radiusSignal },
+						({ $ndc: { y }, $radius }) => { set(y * $radius); },
+					),
 			),
 		});
-		_._ = () => { this.ndc.destroy(); };
+		_._ = angles.subscribe((it) => { this.angles = it; });
 	}
 
 	/** @override */
@@ -84,12 +105,7 @@ export class HoverOrbitControls extends Controls {
 	update(/** @type {number} */ delta) {
 		super.update(delta);
 
-		const { ndc } = this;
-		const { x, y } = ndc.get();
-
-		const { radius } = this;
-		const polarAngle = y * radius;
-		const azimuthAngle = x * radius;
+		const { polar: polarAngle, azimuth: azimuthAngle } = this.angles;
 
 		const {
 			target,
