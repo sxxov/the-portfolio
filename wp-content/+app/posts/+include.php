@@ -389,5 +389,12 @@ function set_posts_metadata(array $metadata) {
 }
 
 function is_excluded_post(\WP_Post $post) {
-	return !should_build_post_dependencies($post);
+	$post_type = $post->post_type;
+
+	return match ($post_type) {
+		'wp_block',
+		'wp_template_part',
+		'wp_template' => false,
+		default => !should_build_post_dependencies($post),
+	};
 }
