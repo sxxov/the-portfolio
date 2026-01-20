@@ -277,7 +277,7 @@ async function goto(
 	);
 	trackProgress01(headProgress);
 
-	const trackHeadLink = (/** @type {HTMLLinkElement} */ child) => {
+	const trackLink = (/** @type {HTMLLinkElement} */ child) => {
 		const controller = new AbortController();
 		const { signal } = controller;
 
@@ -298,7 +298,7 @@ async function goto(
 		});
 	};
 
-	const trackHeadScript = (/** @type {HTMLScriptElement} */ script) => {
+	const trackScript = (/** @type {HTMLScriptElement} */ script) => {
 		if (!script.src || loadedScriptSources.has(script.src)) return;
 
 		const controller = new AbortController();
@@ -324,20 +324,14 @@ async function goto(
 	for (const child of addedHeadChildren) {
 		if (child instanceof HTMLLinkElement) {
 			if (child.rel !== 'stylesheet' || !child.href) continue;
-			trackHeadLink(child);
+			trackLink(child);
 			document.head.append(child);
 			continue;
 		}
 
 		if (child instanceof HTMLScriptElement) {
-			const script = document.createElement('script');
-			script.src = child.src;
-			script.type = child.type;
-			script.async = child.async;
-			script.defer = child.defer;
-			script.crossOrigin = child.crossOrigin;
-			script.referrerPolicy = child.referrerPolicy;
-			trackHeadScript(script);
+			const script = createRunnableScript(child);
+			trackScript(script);
 			document.head.append(script);
 			continue;
 		}
@@ -358,7 +352,18 @@ async function goto(
 	for (const { name, value } of doc.body.attributes)
 		document.body.setAttribute(name, value);
 	const previousBodyChildren = [...document.body.children];
-	const nextBodyChildren = [...doc.body.children];
+	const nextBodyChildren = [...doc.body.children].map((child) => {
+		if (child instanceof HTMLScriptElement)
+			return createRunnableScript(child);
+
+		const scripts = child.querySelectorAll('script');
+		for (const script of scripts) {
+			const runnable = createRunnableScript(script);
+			script.replaceWith(runnable);
+		}
+
+		return child;
+	});
 	document.body.append(...nextBodyChildren);
 	onBetweenReplace?.({
 		previous: previousBodyChildren,
@@ -389,4 +394,19 @@ function memoiseScrollPosition(/** @type {string} */ url) {
 function restoreScrollPosition(/** @type {string} */ url) {
 	const newScrollPosition = scrollPositions.get(url) ?? { x: 0, y: 0 };
 	window.scrollTo(newScrollPosition.x, newScrollPosition.y);
+}
+
+/**
+ * Scripts from `DOMParser` are inert by default. Cloning them here enables them
+ * to be run when inserted into the live DOM
+ */
+function createRunnableScript(/** @type {HTMLScriptElement} */ child) {
+	const script = document.createElement('script');
+	script.src = child.src;
+	script.type = child.type;
+	script.async = child.async;
+	script.defer = child.defer;
+	script.crossOrigin = child.crossOrigin;
+	script.referrerPolicy = child.referrerPolicy;
+	return script;
 }
