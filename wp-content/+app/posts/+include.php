@@ -3,6 +3,7 @@
 namespace app\posts;
 
 use function bare\module\runtime\get_post_dependencies;
+use function bare\module\runtime\should_build_post_dependencies;
 use function bare\utilities\editor\sniff_post_id;
 
 const POSTS_DIRECTORY = __DIR__;
@@ -18,11 +19,7 @@ add_action('admin_init', function () {
 	$post = get_post($post_id);
 	if (
 		!$post ||
-		is_excluded_post(
-			$post->post_type,
-			$post->post_name,
-			$post_id,
-		)
+		is_excluded_post($post)
 	) return;
 
 	$disk_post = find_disk_post(
@@ -59,13 +56,7 @@ add_action('save_post', function (
 	\WP_Post $post,
 	bool $update,
 ) {
-	if (
-		is_excluded_post(
-			$post->post_type,
-			$post->post_name,
-			$post_id,
-		)
-	)
+	if (is_excluded_post($post))
 		return;
 
 	$disk_post = find_disk_post($post->post_type, $post_id);
@@ -119,11 +110,7 @@ add_filter('the_content', function (string $content) {
 	if (!$post) return $content;
 
 	// write the post & all its dependencies to disk
-	$is_excluded = is_excluded_post(
-		$post->post_type,
-		$post->post_name,
-		$post_id
-	);
+	$is_excluded = is_excluded_post($post);
 	$dependency_ids = [
 		...$is_excluded ? [] : [$post_id],
 		...get_post_dependencies($post_id) ?: [],
@@ -135,11 +122,7 @@ add_filter('the_content', function (string $content) {
 		$dependency_post = get_post($dependency_id);
 		if (!$dependency_post) continue;
 
-		$is_dependency_excluded = is_excluded_post(
-			$dependency_post->post_type,
-			$dependency_post->post_name,
-			$dependency_id,
-		);
+		$is_dependency_excluded = is_excluded_post($dependency_post);
 		if ($is_dependency_excluded) continue;
 
 		$disk_post = find_disk_post(
@@ -405,37 +388,6 @@ function set_posts_metadata(array $metadata) {
 	);
 }
 
-function is_excluded_post(
-	string $post_type,
-	string $post_name,
-	int $post_id,
-) {
-	$is_component_block = $post_type === 'wp_block' ||
-		$post_type === 'wp_template_part' ||
-		$post_type === 'wp_template';
-	if ($is_component_block) return false;
-
-	$post_type_object = get_post_type_object($post_type);
-	$private = $post_type_object
-		? !$post_type_object->public
-		: false;
-	if ($private) return true;
-
-	$excluded_from_search = $post_type_object
-		? $post_type_object->exclude_from_search
-		: false;
-	if ($excluded_from_search) return true;
-
-	$has_empty_post_name = $post_name === '';
-	if ($has_empty_post_name) return true;
-
-	$is_trash_post_type = (
-		wp_is_post_revision($post_id) ||
-		wp_is_post_autosave($post_id) ||
-		$post_type === 'attachment' ||
-		str_starts_with($post_type, 'acf-')
-	);
-	if ($is_trash_post_type) return true;
-
-	return false;
+function is_excluded_post(\WP_Post $post) {
+	return !should_build_post_dependencies($post);
 }
