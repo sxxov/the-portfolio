@@ -178,8 +178,8 @@ export const PjaxBehavior = behavior(
 	},
 );
 
-/** @type {Map<string, Point>} */
-const scrollPositions = new Map();
+const scrollPositions = new /** @type {typeof Map<string, Point>} */ (Map)();
+const loadedScriptSources = new /** @type {typeof Set<string>} */ (Set)();
 async function goto(
 	/** @type {string} */ url,
 	/**
@@ -278,25 +278,46 @@ async function goto(
 	trackProgress01(headProgress);
 
 	const trackHeadLink = (/** @type {HTMLLinkElement} */ child) => {
-		let done = false;
-		const finish = () => {
-			if (done) return;
-			done = true;
-			loadedHeadCount.update((it) => it + 1);
-		};
+		const controller = new AbortController();
+		const { signal } = controller;
 
 		pendingHeadCount.update((it) => it + 1);
-		child.addEventListener('load', finish, { once: true });
-		child.addEventListener('error', finish, { once: true });
+		const finish = () => {
+			if (signal.aborted) return;
 
-		// Some browsers can skip dispatching `load` for cached styles; treat it as loaded
-		// if a CSSStyleSheet is already attached.
+			loadedHeadCount.update((it) => it + 1);
+			controller.abort();
+		};
+		child.addEventListener('load', finish, { signal });
+		child.addEventListener('error', finish, { signal });
+
+		// some browsers can skip dispatching `load` for cached styles; treat it as loaded
+		// if a CSSStyleSheet is already attached
 		queueMicrotask(() => {
-			if (done) return;
+			if (child.sheet) finish();
+		});
+	};
 
-			if (child instanceof HTMLLinkElement) {
-				if (child.rel === 'stylesheet' && child.sheet) finish();
-			}
+	const trackHeadScript = (/** @type {HTMLScriptElement} */ script) => {
+		if (!script.src || loadedScriptSources.has(script.src)) return;
+
+		const controller = new AbortController();
+		const { signal } = controller;
+
+		pendingHeadCount.update((it) => it + 1);
+		const finish = () => {
+			if (signal.aborted) return;
+
+			loadedScriptSources.add(script.src);
+			loadedHeadCount.update((it) => it + 1);
+			controller.abort();
+		};
+		script.addEventListener('load', finish, { signal });
+		script.addEventListener('error', finish, { signal });
+
+		// assume if a script has been fetched once, it's loaded
+		queueMicrotask(() => {
+			if (performance.getEntriesByName(script.src)) finish();
 		});
 	};
 
@@ -316,6 +337,7 @@ async function goto(
 			script.defer = child.defer;
 			script.crossOrigin = child.crossOrigin;
 			script.referrerPolicy = child.referrerPolicy;
+			trackHeadScript(script);
 			document.head.append(script);
 			continue;
 		}
