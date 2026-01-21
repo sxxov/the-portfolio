@@ -92,7 +92,9 @@ export const PjaxBehavior = behavior(
 					anchor.hasAttribute('download') ||
 					anchor.href.startsWith('mailto:') ||
 					anchor.href.startsWith('tel:') ||
-					anchor.origin !== location.origin
+					anchor.origin !== location.origin ||
+					(anchor.pathname === location.pathname &&
+						anchor.search === location.search)
 				)
 					return;
 
@@ -102,10 +104,11 @@ export const PjaxBehavior = behavior(
 				if (signal.aborted) return;
 
 				const previousUrl = location.href;
-				await goto(anchor.href, {
+				const nextUrl = anchor.href;
+				await goto(nextUrl, {
 					signal,
 					pushState: true,
-					memoiseScrollPosition: location.href,
+					memoiseScrollPosition: previousUrl,
 					restoreScrollPosition: false,
 					onBeforeReplace: async ({ url, document }) => {
 						await dispatchNavigation(
@@ -128,10 +131,13 @@ export const PjaxBehavior = behavior(
 			() => {
 				const previousUrl = location.href;
 				queueMicrotask(async () => {
+					const nextUrl = location.href;
+					if (previousUrl === nextUrl) return;
+
 					const signal = acquireNavigationSignal();
 					if (signal.aborted) return;
 
-					await goto(location.href, {
+					await goto(nextUrl, {
 						signal,
 						pushState: false,
 						memoiseScrollPosition: previousUrl,
