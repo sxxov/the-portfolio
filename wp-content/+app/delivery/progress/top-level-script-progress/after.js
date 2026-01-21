@@ -1,16 +1,22 @@
 import { loaded } from './loaded.js';
 import { trackScriptResource } from '/+app/delivery/resource/resource.js';
-
-// FIXME: not sure why we need to force depend on `asset.js` here, but without this it
-// the tracks seem to complete too early (before `asset.js` comes in & begins `request*` calls)
-import '/+app/delivery/asset/asset.js';
+import { queueTask } from '/+std/dom/queueTask.js';
 
 const scripts = /** @type {NodeListOf<HTMLScriptElement>} */ (
 	document.querySelectorAll('script[type="module"]')
 );
+// track but don't await
+for (const script of scripts) void trackScriptResource(script);
 
-await Promise.allSettled(
-	Array.from(scripts, (script) => trackScriptResource(script)),
-);
+await new /** @type {typeof Promise<void>} */ (Promise)((resolve) => {
+	window.addEventListener('DOMContentLoaded', () => { resolve(); });
+});
 
-loaded.resolve(true);
+// just, give the browser (safari, ugh) a little while
+requestAnimationFrame(() => {
+	requestAnimationFrame(() => {
+		queueTask(() => {
+			loaded.resolve(true);
+		});
+	});
+});
