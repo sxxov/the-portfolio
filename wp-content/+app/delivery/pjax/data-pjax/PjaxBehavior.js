@@ -10,7 +10,9 @@ import {
 	performResourceCleanup,
 	trackScriptResource,
 	trackStylesheetResource,
-} from '../../resource/resource.js';
+} from '/+app/delivery/resource/resource.js';
+import { cast } from '/+std/type/utilities/cast.js';
+import { some } from '/+std/functional/some.js';
 /** @import { Point } from "/+std/unit/Point.js" */
 /** @import { Subscriber } from "/+std/signal/Signal.js" */
 /** @import { PjaxNavigation } from "./PjaxNavigation.js" */
@@ -60,29 +62,8 @@ export const PjaxBehavior = behavior(
 				await subscriber(navigation);
 			}
 		};
-
-		memoisedElements = new /** @type {typeof Map<string, HTMLElement>} */ (
-			Map
-		)();
-		replaceMemoisedElements = (/** @type {ParentNode} */ node) => {
-			for (const [name, element] of this.memoisedElements) {
-				const selector = `[${getBehaviorAttributeName(PjaxKeyBehavior.name)}="${name}"]`;
-				const target = node.querySelector(selector);
-				if (!target) continue;
-
-				target.replaceWith(element);
-			}
-		};
 	},
-	(
-		element,
-		{
-			acquireNavigationSignal,
-			dispatchNavigation,
-			replaceMemoisedElements,
-		},
-		{},
-	) => {
+	(element, { acquireNavigationSignal, dispatchNavigation }, {}) => {
 		const _ = bin();
 		const controller = new AbortController();
 		_._ = () => { controller.abort(); };
@@ -137,9 +118,6 @@ export const PjaxBehavior = behavior(
 							{ signal },
 						);
 					},
-					onBetweenReplace: ({ next }) => {
-						for (const node of next) replaceMemoisedElements(node);
-					},
 				});
 			},
 			{ signal },
@@ -169,10 +147,6 @@ export const PjaxBehavior = behavior(
 								{ signal },
 							);
 						},
-						onBetweenReplace: ({ next }) => {
-							for (const node of next)
-								replaceMemoisedElements(node);
-						},
 					});
 				});
 			},
@@ -196,10 +170,6 @@ async function goto(
 	 * 		url: string;
 	 * 		document: Document;
 	 * 	}) => void | Promise<void>;
-	 * 	onBetweenReplace?: (context: {
-	 * 		previous: Element[];
-	 * 		next: Element[];
-	 * 	}) => void;
 	 * 	onAfterReplace?: (context: {
 	 * 		url: string;
 	 * 		document: Document;
@@ -211,7 +181,6 @@ async function goto(
 		memoiseScrollPosition: memoiseScrollPositionUrl,
 		restoreScrollPosition: shouldRestoreScrollPosition = true,
 		onBeforeReplace,
-		onBetweenReplace,
 		onAfterReplace,
 	} = {},
 ) {
@@ -248,98 +217,17 @@ async function goto(
 	})();
 	if (!doc) return;
 
-	// diff head & replace
-	const newHead = doc.head;
-	const oldHead = document.head;
-	const newHeadChildren = new Map(
-		Array.from(newHead.children, (child) => [child.outerHTML, child]),
-	);
-	const oldHeadChildren = new Map(
-		Array.from(oldHead.children, (child) => [child.outerHTML, child]),
-	);
-	const addedHeadChildren = [...newHeadChildren.entries()]
-		.filter(([key]) => !oldHeadChildren.has(key))
-		.map(([, child]) => child);
-	const removedHeadChildren = [...oldHeadChildren.entries()]
-		.filter(([key]) => !newHeadChildren.has(key))
-		.map(([, child]) => child);
-
-	const pendingHeadCount = new Signal(0);
-	const loadedHeadCount = new Signal(0);
-	const headProgress = new PromiseSignal(0, ({ set, resolve }) =>
-		subscribe(
-			{ pendingHeadCount, loadedHeadCount },
-			({ $pendingHeadCount, $loadedHeadCount }) => {
-				if ($pendingHeadCount <= 0) return;
-
-				const progress = $loadedHeadCount / $pendingHeadCount;
-				set(progress);
-
-				if (progress >= 1) resolve(1);
-			},
-		),
-	);
-	trackProgress01(headProgress);
-
 	// prepare for loading head resources
 	performResourceCleanup();
 
-	for (const child of addedHeadChildren) {
-		if (child instanceof HTMLLinkElement) {
-			if (child.rel !== 'stylesheet' || !child.href) continue;
-			void (async () => {
-				pendingHeadCount.update((it) => it + 1);
-				await trackStylesheetResource(child);
-				loadedHeadCount.update((it) => it + 1);
-			})();
-			document.head.append(child);
-			continue;
-		}
-
-		if (child instanceof HTMLScriptElement) {
-			const script = cloneReifiedNode(child);
-			void (async () => {
-				pendingHeadCount.update((it) => it + 1);
-				await trackScriptResource(script);
-				loadedHeadCount.update((it) => it + 1);
-			})();
-			document.head.append(script);
-			continue;
-		}
-
-		document.head.append(child);
-	}
-	if (pendingHeadCount.get() <= 0) headProgress.resolve(1);
-
-	await Promise.allSettled([
-		headProgress,
-		onBeforeReplace?.({ url, document: doc }),
-	]);
-
-	// remove stale
-	for (const child of removedHeadChildren) child.remove();
+	await reconcileHead(document.head, doc.head, {
+		onTransition: () => onBeforeReplace?.({ url, document: doc }),
+	});
 
 	// replace body
 	for (const { name, value } of doc.body.attributes)
 		document.body.setAttribute(name, value);
-	const previousBodyChildren = [...document.body.children];
-	const nextBodyChildren = [...doc.body.children].map((child) => {
-		if (child instanceof HTMLScriptElement) return cloneReifiedNode(child);
-
-		const scripts = child.querySelectorAll('script');
-		for (const script of scripts) {
-			const runnable = cloneReifiedNode(script);
-			script.replaceWith(runnable);
-		}
-
-		return child;
-	});
-	document.body.append(...nextBodyChildren);
-	onBetweenReplace?.({
-		previous: previousBodyChildren,
-		next: nextBodyChildren,
-	});
-	for (const child of previousBodyChildren) child.remove();
+	reconcileChildren(document.body, doc.body);
 
 	// restore scroll position
 	if (shouldRestoreScrollPosition) restoreScrollPosition(url);
@@ -367,13 +255,192 @@ function restoreScrollPosition(/** @type {string} */ url) {
 }
 
 /**
- * Import a node into the current document to reify it. Fixes `<script>`
+ * Import/clone a node into the current document to reify it. Fixes `<script>`
  * elements not executing after being added from a `DOMParser`-created
  * document.
  *
  * @template {Node} T
  * @returns {T}
  */
-function cloneReifiedNode(/** @type {T} */ node) {
+function reifyNode(/** @type {T} */ node) {
+	if (node instanceof HTMLScriptElement) {
+		const script = document.createElement('script');
+		for (const { name, value } of node.attributes)
+			script.setAttribute(name, value);
+		script.textContent = node.textContent;
+		return /** @type {T} */ (/** @type {unknown} */ (script));
+	}
+
 	return document.importNode(node, true);
+}
+
+async function reconcileHead(
+	/** @type {HTMLHeadElement} */ previous,
+	/** @type {HTMLHeadElement} */ next,
+	/** @type {{ onTransition?: () => void | Promise<void> }} */ {
+		onTransition,
+	} = {},
+) {
+	// diff head & replace
+	const newHeadChildren = new Map(
+		Array.from(next.children, (child) => [child.outerHTML, child]),
+	);
+	const oldHeadChildren = new Map(
+		Array.from(previous.children, (child) => [child.outerHTML, child]),
+	);
+	const addedHeadChildren = [...newHeadChildren.entries()]
+		.filter(([key]) => !oldHeadChildren.has(key))
+		.map(([, child]) => child);
+	const removedHeadChildren = [...oldHeadChildren.entries()]
+		.filter(([key]) => !newHeadChildren.has(key))
+		.map(([, child]) => child);
+
+	const pendingHeadCount = new Signal(0);
+	const loadedHeadCount = new Signal(0);
+	const headProgress = new PromiseSignal(0, ({ set, resolve }) =>
+		subscribe(
+			{ pendingHeadCount, loadedHeadCount },
+			({ $pendingHeadCount, $loadedHeadCount }) => {
+				if ($pendingHeadCount <= 0) return;
+
+				const progress = $loadedHeadCount / $pendingHeadCount;
+				set(progress);
+
+				if (progress >= 1) resolve(1);
+			},
+		),
+	);
+	trackProgress01(headProgress);
+
+	for (const child of addedHeadChildren) {
+		if (child instanceof HTMLLinkElement) {
+			if (child.rel !== 'stylesheet' || !child.href) continue;
+			void (async () => {
+				pendingHeadCount.update((it) => it + 1);
+				await trackStylesheetResource(child);
+				loadedHeadCount.update((it) => it + 1);
+			})();
+			document.head.append(child);
+			continue;
+		}
+
+		if (child instanceof HTMLScriptElement) {
+			const script = reifyNode(child);
+			void (async () => {
+				pendingHeadCount.update((it) => it + 1);
+				await trackScriptResource(script);
+				loadedHeadCount.update((it) => it + 1);
+			})();
+			document.head.append(script);
+			continue;
+		}
+
+		document.head.append(child);
+	}
+	if (pendingHeadCount.get() <= 0) headProgress.resolve(1);
+
+	await Promise.allSettled([headProgress, onTransition?.()]);
+
+	// remove stale
+	for (const child of removedHeadChildren) child.remove();
+}
+
+/** @type {ReadonlySet<string>} */
+const alwaysReplaceTags = new Set(['SCRIPT']);
+/** @type {ReadonlySet<string>} */
+const neverReplaceTags = new Set(['BODY']);
+/** @type {ReadonlySet<string>} */
+const reifyReplaceTags = new Set(['SCRIPT']);
+// eslint-disable-next-line complexity
+function reconcileChildren(
+	/** @type {Node} */ previous,
+	/** @type {Node} */ next,
+) {
+	const replace = (/** @type {Node} */ node) => {
+		if (!('replaceWith' in previous)) return node;
+		/** @type {typeof cast<ChildNode>} */ (cast)(previous);
+
+		const replacement =
+			reifyReplaceTags.has(node.nodeName) ? reifyNode(node) : node;
+		previous.replaceWith(replacement);
+
+		return node;
+	};
+	const recurse = (
+		/** @type {Element} */ previous,
+		/** @type {Element} */ next,
+	) => {
+		const previousChildren = [...previous.childNodes];
+		const nextChildren = [...next.childNodes];
+
+		// 1. remove outgoing children
+		if (previousChildren.length > nextChildren.length)
+			for (const child of previousChildren.slice(nextChildren.length))
+				child.remove();
+
+		// 2. reconcile existing children
+		for (let i = 0; i < previousChildren.length; i++) {
+			const prevChild = previousChildren[i];
+			const nextChild = nextChildren[i];
+			if (!prevChild || !nextChild) continue;
+
+			reconcileChildren(prevChild, nextChild);
+		}
+
+		// 3. add incoming children
+		if (nextChildren.length > previousChildren.length)
+			previous.append(...nextChildren.slice(previousChildren.length));
+
+		return previous;
+	};
+
+	if (
+		(previous instanceof Text && next instanceof Text) ||
+		(previous instanceof Comment && next instanceof Comment)
+	) {
+		// if text content matches, retain previous
+		if (previous.textContent === next.textContent) return previous;
+
+		// else, replace text with incoming
+		return replace(next);
+	}
+
+	if (previous instanceof Element && next instanceof Element) {
+		// if tag names mismatch, replace
+		if (previous.tagName !== next.tagName) return replace(next);
+
+		// if is a "always replace" tag, replace
+		if (alwaysReplaceTags.has(previous.tagName)) return replace(next);
+		// else, if it has a "never replace" tag, reconcile attributes
+		if (neverReplaceTags.has(previous.tagName)) {
+			// 1. remove old attributes
+			for (const { name } of previous.attributes)
+				if (!next.hasAttribute(name)) previous.removeAttribute(name);
+
+			// 2. set new & updated attributes
+			for (const { name, value } of next.attributes)
+				previous.setAttribute(name, value);
+
+			// 3. reconcile children
+			return recurse(previous, next);
+		}
+
+		// else, if it has a matching key, retain & reconcile children
+		const keyAttributeName = getBehaviorAttributeName(PjaxKeyBehavior.name);
+		const previousKey = previous.getAttribute(keyAttributeName);
+		const nextKey = next.getAttribute(keyAttributeName);
+		if (some(previousKey) && some(nextKey) && previousKey === nextKey)
+			return recurse(previous, next);
+
+		// else, if attributes mismatch, replace
+		for (const { name, value } of next.attributes)
+			if (previous.getAttribute(name) !== value) return replace(next);
+		for (const { name } of previous.attributes)
+			if (!next.hasAttribute(name)) return replace(next);
+
+		// else, retain & reconcile children
+		return recurse(previous, next);
+	}
+
+	return replace(next);
 }
