@@ -73,15 +73,25 @@ export async function trackScriptResource(
 				controller.abort();
 			};
 			cancellation?.addEventListener('abort', finish);
-			node.addEventListener('load', finish, { signal });
-			node.addEventListener('error', finish, { signal });
 
-			// assume if a script has been fetched once, it's loaded
-			queueMicrotask(() => {
-				if (signal.aborted) return;
+			if (node.type === 'module')
+				// just dynamically import a script if it's a module
+				void (async () => {
+					try { await import(source); } catch {}
+					if (signal.aborted) return;
+					finish();
+				})();
+			else {
+				node.addEventListener('load', finish, { signal });
+				node.addEventListener('error', finish, { signal });
 
-				if (performance.getEntriesByName(source)) finish();
-			});
+				// assume if a script has been fetched once, it's loaded
+				queueMicrotask(() => {
+					if (signal.aborted) return;
+
+					if (performance.getEntriesByName(source)) finish();
+				});
+			}
 		}),
 		waitTimeout(resourceLoadTimeout, {
 			signal: cancellation,
