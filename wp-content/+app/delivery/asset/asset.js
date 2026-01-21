@@ -71,7 +71,7 @@ subscribe({ assetQueue }, ({ $assetQueue }) => {
 	}
 });
 
-const assetProgresses = new TaskSignal(
+const assetProgresses = new Signal(
 	new /** @type {typeof Map<AssetTicket, number>} */ (Map)(),
 	({ update, trigger }) =>
 		subscribe({ assetQueue }, ({ $assetQueue }) => {
@@ -136,8 +136,8 @@ const assetProgresses = new TaskSignal(
 			return _;
 		}),
 );
-export const assetProgress = new TaskSignal(
-	/** @type {Ranged<0 | 1>} */ (1),
+export const assetProgress = new Signal(
+	/** @type {Ranged<0 | 1>} */ (0),
 	({ set }) =>
 		subscribe({ assetProgresses }, ({ $assetProgresses }) => {
 			const amount =
@@ -147,7 +147,7 @@ export const assetProgress = new TaskSignal(
 					.reduce((cum = 0, it = 0) => cum + it, 0) ?? 0;
 			const length = $assetProgresses.values().filter(some).count();
 
-			if (length <= 0) set(1);
+			if (length <= 0) set(0);
 			else set(amount / length);
 		}),
 );
