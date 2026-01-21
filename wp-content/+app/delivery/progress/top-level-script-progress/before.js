@@ -1,4 +1,4 @@
-import { trackProgressBoolean } from '../progress.js';
 import { loaded } from './loaded.js';
+import { trackProgressBoolean } from '../progress.js';
 
 trackProgressBoolean(loaded);

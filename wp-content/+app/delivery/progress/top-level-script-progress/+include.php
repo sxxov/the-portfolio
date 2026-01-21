@@ -1,6 +1,6 @@
 <?php
 
-namespace app\delivery\progress\track_dom_module_graph;
+namespace app\delivery\progress\top_level_script_progress;
 
 use function bare\module\client\enqueue_script_type_module;
 use function bare\utilities\url\get_uri;

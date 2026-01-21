@@ -6,6 +6,11 @@ import { PromiseSignal } from '/+std/signal/PromiseSignal.js';
 import { bin, Signal, subscribe } from '/+std/signal/Signal.js';
 import { PjaxKeyBehavior } from '../data-pjax-key/PjaxKeyBehavior.js';
 import { getBehaviorAttributeName } from '/+std/behavioral/serialization/getBehaviorAttributeName.js';
+import {
+	performResourceCleanup,
+	trackScriptResource,
+	trackStylesheetResource,
+} from '../../resource/resource.js';
 /** @import { Point } from "/+std/unit/Point.js" */
 /** @import { Subscriber } from "/+std/signal/Signal.js" */
 /** @import { PjaxNavigation } from "./PjaxNavigation.js" */
@@ -179,7 +184,6 @@ export const PjaxBehavior = behavior(
 );
 
 const scrollPositions = new /** @type {typeof Map<string, Point>} */ (Map)();
-const loadedScriptSources = new /** @type {typeof Set<string>} */ (Set)();
 async function goto(
 	/** @type {string} */ url,
 	/**
@@ -277,61 +281,28 @@ async function goto(
 	);
 	trackProgress01(headProgress);
 
-	const trackLink = (/** @type {HTMLLinkElement} */ child) => {
-		const controller = new AbortController();
-		const { signal } = controller;
-
-		pendingHeadCount.update((it) => it + 1);
-		const finish = () => {
-			if (signal.aborted) return;
-
-			loadedHeadCount.update((it) => it + 1);
-			controller.abort();
-		};
-		child.addEventListener('load', finish, { signal });
-		child.addEventListener('error', finish, { signal });
-
-		// some browsers can skip dispatching `load` for cached styles; treat it as loaded
-		// if a CSSStyleSheet is already attached
-		queueMicrotask(() => {
-			if (child.sheet) finish();
-		});
-	};
-
-	const trackScript = (/** @type {HTMLScriptElement} */ script) => {
-		if (!script.src || loadedScriptSources.has(script.src)) return;
-
-		const controller = new AbortController();
-		const { signal } = controller;
-
-		pendingHeadCount.update((it) => it + 1);
-		const finish = () => {
-			if (signal.aborted) return;
-
-			loadedScriptSources.add(script.src);
-			loadedHeadCount.update((it) => it + 1);
-			controller.abort();
-		};
-		script.addEventListener('load', finish, { signal });
-		script.addEventListener('error', finish, { signal });
-
-		// assume if a script has been fetched once, it's loaded
-		queueMicrotask(() => {
-			if (performance.getEntriesByName(script.src)) finish();
-		});
-	};
+	// prepare for loading head resources
+	performResourceCleanup();
 
 	for (const child of addedHeadChildren) {
 		if (child instanceof HTMLLinkElement) {
 			if (child.rel !== 'stylesheet' || !child.href) continue;
-			trackLink(child);
+			void (async () => {
+				pendingHeadCount.update((it) => it + 1);
+				await trackStylesheetResource(child);
+				loadedHeadCount.update((it) => it + 1);
+			})();
 			document.head.append(child);
 			continue;
 		}
 
 		if (child instanceof HTMLScriptElement) {
-			const script = createRunnableScript(child);
-			trackScript(script);
+			const script = cloneReifiedNode(child);
+			void (async () => {
+				pendingHeadCount.update((it) => it + 1);
+				await trackScriptResource(script);
+				loadedHeadCount.update((it) => it + 1);
+			})();
 			document.head.append(script);
 			continue;
 		}
@@ -353,12 +324,11 @@ async function goto(
 		document.body.setAttribute(name, value);
 	const previousBodyChildren = [...document.body.children];
 	const nextBodyChildren = [...doc.body.children].map((child) => {
-		if (child instanceof HTMLScriptElement)
-			return createRunnableScript(child);
+		if (child instanceof HTMLScriptElement) return cloneReifiedNode(child);
 
 		const scripts = child.querySelectorAll('script');
 		for (const script of scripts) {
-			const runnable = createRunnableScript(script);
+			const runnable = cloneReifiedNode(script);
 			script.replaceWith(runnable);
 		}
 
@@ -397,16 +367,13 @@ function restoreScrollPosition(/** @type {string} */ url) {
 }
 
 /**
- * Scripts from `DOMParser` are inert by default. Cloning them here enables them
- * to be run when inserted into the live DOM
+ * Import a node into the current document to reify it. Fixes `<script>`
+ * elements not executing after being added from a `DOMParser`-created
+ * document.
+ *
+ * @template {Node} T
+ * @returns {T}
  */
-function createRunnableScript(/** @type {HTMLScriptElement} */ child) {
-	const script = document.createElement('script');
-	script.src = child.src;
-	script.type = child.type;
-	script.async = child.async;
-	script.defer = child.defer;
-	script.crossOrigin = child.crossOrigin;
-	script.referrerPolicy = child.referrerPolicy;
-	return script;
+function cloneReifiedNode(/** @type {T} */ node) {
+	return document.importNode(node, true);
 }
