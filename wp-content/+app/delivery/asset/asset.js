@@ -137,7 +137,7 @@ const assetProgresses = new TaskSignal(
 		}),
 );
 export const assetProgress = new TaskSignal(
-	/** @type {Ranged<0 | 1>} */ (0),
+	/** @type {Ranged<0 | 1>} */ (1),
 	({ set }) =>
 		subscribe({ assetProgresses }, ({ $assetProgresses }) => {
 			const amount =
@@ -147,7 +147,7 @@ export const assetProgress = new TaskSignal(
 					.reduce((cum = 0, it = 0) => cum + it, 0) ?? 0;
 			const length = $assetProgresses.values().filter(some).count();
 
-			if (length <= 0) set(0);
+			if (length <= 0) set(1);
 			else set(amount / length);
 		}),
 );
