@@ -94,13 +94,8 @@ const assetProgresses = new Signal(
 					});
 				};
 
-				const { flying, state } = flight;
-				_._ = subscribe({ flying, state }, ({ $flying, $state }) => {
-					if (!$flying) {
-						set(undefined);
-						return;
-					}
-
+				const { state } = flight;
+				_._ = subscribe({ state }, ({ $state }) => {
 					const _ = bin();
 					const { step } = $state;
 
