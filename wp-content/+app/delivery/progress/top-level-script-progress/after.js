@@ -5,12 +5,10 @@ import { queueTask } from '/+std/dom/queueTask.js';
 const scripts = /** @type {NodeListOf<HTMLScriptElement>} */ (
 	document.querySelectorAll('script[type="module"]')
 );
-// track but don't await
-for (const script of scripts) void trackScriptResource(script);
 
-await new /** @type {typeof Promise<void>} */ (Promise)((resolve) => {
-	window.addEventListener('DOMContentLoaded', () => { resolve(); });
-});
+await Promise.allSettled(
+	Array.from(scripts, (script) => trackScriptResource(script)),
+);
 
 // just, give the browser (safari, ugh) a little while
 requestAnimationFrame(() => {
