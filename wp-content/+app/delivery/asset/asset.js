@@ -135,15 +135,17 @@ export const assetProgress = new Signal(
 	/** @type {Ranged<0 | 1>} */ (0),
 	({ set }) =>
 		subscribe({ assetProgresses }, ({ $assetProgresses }) => {
-			const amount =
-				$assetProgresses
-					.values()
-					.filter(some)
-					.reduce((cum = 0, it = 0) => cum + it, 0) ?? 0;
-			const length = $assetProgresses.values().filter(some).count();
+			const progresses = [...$assetProgresses.values().filter(some)];
 
-			if (length <= 0) set(0);
-			else set(amount / length);
+			const { length } = progresses;
+			if (length <= 0) {
+				set(0);
+				return;
+			}
+
+			const amount =
+				progresses.reduce((cum = 0, it = 0) => cum + it, 0) ?? 0;
+			set(amount / length);
 		}),
 );
 trackProgress01(assetProgress);
