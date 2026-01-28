@@ -316,7 +316,13 @@
 
 <!-- wp:bare/composite-fill -->
 <!-- wp:bare/weaver -->
-<div class="flex flex-col gap-4 overflow-clip rounded-lg p-4"><!-- wp:query {"queryId":0,"query":{"perPage":100,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"only","inherit":false,"taxQuery":{"category":[4],"post_tag":[]},"parents":[],"format":[],"post_id":2},"className":"contents"} -->
+<div class="text-bg-2"><!-- wp:bare/composite-provider {"name":"app/decoration/background/4-columns"} -->
+<!-- wp:block {"ref":4548,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider --></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div class="flex flex-col gap-4 overflow-clip rounded-lg p-4"><!-- wp:query {"queryId":0,"query":{"perPage":100,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"only","inherit":false,"parents":[],"format":[],"post_id":2,"taxQuery":{"include":{"category":[4],"post_tag":[]}}},"className":"contents"} -->
 <div class="wp-block-query contents"><!-- wp:bare/composite-provider {"name":"posts/posts"} -->
 <!-- wp:block {"ref":4416,"lock":{"move":true,"remove":true}} /-->
 
@@ -330,7 +336,7 @@
 <!-- /wp:bare/composite-provider --></div>
 <!-- /wp:query -->
 
-<!-- wp:query {"queryId":0,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"ignore","inherit":false,"taxQuery":{"category":[4]},"parents":[],"format":[],"post_id":2},"className":"contents"} -->
+<!-- wp:query {"queryId":0,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"ignore","inherit":false,"parents":[],"format":[],"post_id":2,"taxQuery":{"include":{"category":[4]}}},"className":"contents"} -->
 <div class="wp-block-query contents"><!-- wp:bare/composite-provider {"name":"posts/posts"} -->
 <!-- wp:block {"ref":4416,"lock":{"move":true,"remove":true}} /-->
 
