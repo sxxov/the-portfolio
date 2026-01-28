@@ -165,7 +165,15 @@ export function requestAsset(
 	if (!container) {
 		const rush = () => {
 			assetQueue.update((it) => {
-				ticket.priority = AssetPriority.High;
+				ticket.priority = (() => {
+					switch (ticket.priority) {
+						case AssetPriority.Deferred:
+							return AssetPriority.Normal;
+						case AssetPriority.Normal:
+						case AssetPriority.High:
+							return AssetPriority.High;
+					}
+				})();
 				assetQueue.trigger();
 				return it;
 			});
