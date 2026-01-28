@@ -1,18 +1,20 @@
-import { trackProgress01 } from '/+app/delivery/progress/progress.js';
-import { PjaxNavigationCause } from './PjaxNavigationCause.js';
-import { behavior } from '/+std/behavioral/behavior.js';
-import { queueMicrotask } from '/+std/dom/queueMicrotask.js';
-import { PromiseSignal } from '/+std/signal/PromiseSignal.js';
-import { bin, Signal, subscribe } from '/+std/signal/Signal.js';
 import { PjaxKeyBehavior } from '../data-pjax-key/PjaxKeyBehavior.js';
-import { getBehaviorAttributeName } from '/+std/behavioral/serialization/getBehaviorAttributeName.js';
+import { PjaxNavigationCause } from './PjaxNavigationCause.js';
+import {
+	clearProgress,
+	trackProgress01,
+} from '/+app/delivery/progress/progress.js';
 import {
 	performResourceCleanup,
 	trackScriptResource,
 	trackStylesheetResource,
 } from '/+app/delivery/resource/resource.js';
-import { cast } from '/+std/type/utilities/cast.js';
+import { behavior } from '/+std/behavioral/behavior.js';
+import { getBehaviorAttributeName } from '/+std/behavioral/serialization/getBehaviorAttributeName.js';
 import { some } from '/+std/functional/some.js';
+import { PromiseSignal } from '/+std/signal/PromiseSignal.js';
+import { bin, Signal, subscribe } from '/+std/signal/Signal.js';
+import { cast } from '/+std/type/utilities/cast.js';
 /** @import { Point } from "/+std/unit/Point.js" */
 /** @import { Subscriber } from "/+std/signal/Signal.js" */
 /** @import { PjaxNavigation } from "./PjaxNavigation.js" */
@@ -126,34 +128,34 @@ export const PjaxBehavior = behavior(
 			{ signal },
 		);
 
+		let currentUrl = '';
 		window.addEventListener(
 			'popstate',
-			() => {
-				const previousUrl = location.href;
-				queueMicrotask(async () => {
-					const nextUrl = location.href;
-					if (previousUrl === nextUrl) return;
+			async () => {
+				const previousUrl = currentUrl;
+				const nextUrl = location.href;
+				if (previousUrl === nextUrl) return;
 
-					const signal = acquireNavigationSignal();
-					if (signal.aborted) return;
+				const signal = acquireNavigationSignal();
+				if (signal.aborted) return;
 
-					await goto(nextUrl, {
-						signal,
-						pushState: false,
-						memoiseScrollPosition: previousUrl,
-						restoreScrollPosition: true,
-						onBeforeReplace: async ({ url, document }) => {
-							await dispatchNavigation(
-								{
-									from: previousUrl,
-									to: url,
-									document,
-									cause: PjaxNavigationCause.History,
-								},
-								{ signal },
-							);
-						},
-					});
+				currentUrl = nextUrl;
+				await goto(nextUrl, {
+					signal,
+					pushState: false,
+					memoiseScrollPosition: previousUrl,
+					restoreScrollPosition: true,
+					onBeforeReplace: async ({ url, document }) => {
+						await dispatchNavigation(
+							{
+								from: previousUrl,
+								to: url,
+								document,
+								cause: PjaxNavigationCause.History,
+							},
+							{ signal },
+						);
+					},
 				});
 			},
 			{ signal },
@@ -164,6 +166,7 @@ export const PjaxBehavior = behavior(
 );
 
 const scrollPositions = new /** @type {typeof Map<string, Point>} */ (Map)();
+const htmlContents = new /** @type {typeof Map<string, string>} */ (Map)();
 async function goto(
 	/** @type {string} */ url,
 	/**
@@ -190,6 +193,8 @@ async function goto(
 		onAfterReplace,
 	} = {},
 ) {
+	clearProgress();
+
 	const gotoProgress = new PromiseSignal(0);
 	trackProgress01(gotoProgress);
 
@@ -202,16 +207,20 @@ async function goto(
 
 	const doc = await (async () => {
 		try {
-			const resp = await fetch(url, {
-				headers: { 'x-pjax-referrer': location.href },
-				signal: signal ?? null,
-			});
-			if (!resp.ok) throw new Error('Failed to fetch PJAX content');
+			let html = htmlContents.get(url);
+			if (!html) {
+				const resp = await fetch(url, {
+					headers: { 'x-pjax-referrer': location.href },
+					signal: signal ?? null,
+				});
+				if (!resp.ok) throw new Error('Failed to fetch PJAX content');
 
-			const text = await resp.text();
+				html = await resp.text();
+				htmlContents.set(url, html);
+			}
 
 			const parser = new DOMParser();
-			return parser.parseFromString(text, 'text/html');
+			return parser.parseFromString(html, 'text/html');
 		} catch (error) {
 			if (signal?.aborted) return;
 
