@@ -23,6 +23,7 @@ export const progress = new Signal(0, ({ set, subscribe: sub }) => {
 		const _ = bin();
 		for (const load of $loads)
 			_._ = load.subscribe(() => {
+				const { size } = $loads;
 				const cum = $loads
 					.values()
 					.reduce((cum, it) => cum + it.get(), 0);
@@ -34,14 +35,7 @@ export const progress = new Signal(0, ({ set, subscribe: sub }) => {
 	});
 
 	_._ = sub(($progress) => {
-		if ($progress >= 1)
-			pool.update((it) => {
-				if (it.size <= 0) return it;
-
-				it.clear();
-				pool.trigger();
-				return it;
-			});
+		if ($progress >= 1) clearProgress();
 	});
 
 	return _;
@@ -64,6 +58,16 @@ export const progressBar = new SmoothingSignal(
 			set(lerp($progress, 0.3, 1));
 		}),
 );
+
+export function clearProgress() {
+	pool.update((it) => {
+		if (it.size <= 0) return it;
+
+		it.clear();
+		pool.trigger();
+		return it;
+	});
+}
 
 export function trackProgress01(
 	/** @type {ReadableSignal<Ranged<0 | 1>>} */ load,
