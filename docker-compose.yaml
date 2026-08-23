@@ -30,7 +30,7 @@ services:
             - ./php.ini:/usr/local/etc/php/conf.d/user.ini:ro
         environment:
             VIRTUAL_HOST: ${SITE_HOST}
-            WORDPRESS_DEBUG: true
+            WORDPRESS_DEBUG: ${SITE_DEBUG}
             WORDPRESS_DB_HOST: db:3306
             WORDPRESS_DB_NAME: ${DB_NAME}
             WORDPRESS_DB_USER: ${DB_USER}
