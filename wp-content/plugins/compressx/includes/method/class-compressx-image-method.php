@@ -190,113 +190,6 @@ class CompressX_Image_Method
         return $converter_method;
     }
 
-    public static function scan_unoptimized_image($limit,$offset,$convert_to_webp,$convert_to_avif,$exclude_regex_folder,$force=false)
-    {
-        global $wpdb;
-
-        $supported_mime_types = array(
-            "image/jpg",
-            "image/jpeg",
-            "image/png",
-            "image/webp",
-            "image/avif");
-
-        $args  = $supported_mime_types;
-
-        $query="SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_mime_type IN (%s,%s,%s,%s,%s) ";
-
-        if($limit>0)
-        {
-            $query.=" LIMIT %d";
-            $args[]=$limit;
-        }
-
-        if($offset>0)
-        {
-            $query.=" OFFSET %d";
-            $args[]=$offset;
-        }
-
-        //$query = "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_mime_type IN (".$mime_types.") ".$limit.$offset;
-
-        $need_optimize_images=array();
-
-        if(!$convert_to_webp&&!$convert_to_avif)
-        {
-            return $need_optimize_images;
-        }
-
-        $result=$wpdb->get_results( $wpdb->prepare( $query, $args ), OBJECT_K );
-        if(!empty($result))
-        {
-            foreach ( $result as $image )
-            {
-                $need_opt=false;
-                if($force)
-                {
-                    $sub_task['id']=$image->ID;
-                    $sub_task['finished']=0;
-                    $need_optimize_images[$image->ID]=$sub_task;
-                    wp_cache_delete( $image->ID, 'post_meta' );
-                    continue;
-                }
-
-                wp_cache_delete( $image->ID, 'post_meta' );
-
-                $file_path = get_attached_file($image->ID);
-                $type=pathinfo($file_path, PATHINFO_EXTENSION);
-
-                if($convert_to_webp)
-                {
-                    if($type!='webp'&&$type!='avif')
-                    {
-                        if(CompressX_Image_Method::need_convert_to_webp($image->ID,$exclude_regex_folder))
-                        {
-                            $need_opt=true;
-                        }
-                    }
-                    else if($type=='webp')
-                    {
-                        if(CompressX_Image_Meta::get_image_meta_compressed($image->ID)==0)
-                        {
-                            $need_opt=true;
-                        }
-                    }
-                }
-
-                if($convert_to_avif)
-                {
-                    if($type!='avif')
-                    {
-                        if(CompressX_Image_Method::need_convert_to_avif($image->ID,$exclude_regex_folder))
-                        {
-                            $need_opt=true;
-                        }
-                    }
-                    else
-                    {
-                        if(CompressX_Image_Meta::get_image_meta_compressed($image->ID)==0)
-                        {
-                            $need_opt=true;
-                        }
-                    }
-
-                }
-
-                if($need_opt)
-                {
-                    $sub_task['id']=$image->ID;
-                    $sub_task['finished']=0;
-                    $need_optimize_images[$image->ID]=$sub_task;
-                }
-
-                wp_cache_delete( $image->ID, 'post_meta' );
-            }
-        }
-
-        return $need_optimize_images;
-    }
-
     public static function get_max_webp_image_count()
     {
         global $wpdb;
@@ -506,7 +399,7 @@ class CompressX_Image_Method
 
     public static function need_convert_to_webp($post_id,$exclude_regex_folder)
     {
-        if(!CompressX_Image_Meta::get_image_meta_webp_converted($post_id))
+        if(!CompressX_Image_Meta_V2::get_image_meta_webp_converted($post_id))
         {
             if(!CompressX_Image_Method::exclude_path($post_id,$exclude_regex_folder))
             {
@@ -525,7 +418,7 @@ class CompressX_Image_Method
 
     public static function need_convert_to_avif($post_id,$exclude_regex_folder)
     {
-        if(!CompressX_Image_Meta::get_image_meta_avif_converted($post_id))
+        if(!CompressX_Image_Meta_V2::get_image_meta_avif_converted($post_id))
         {
             if(!CompressX_Image_Method::exclude_path($post_id,$exclude_regex_folder))
             {
@@ -655,6 +548,7 @@ class CompressX_Image_Method
         }
 
         delete_transient('compressx_set_global_stats');
+        CompressX_Image_Meta_V2::delete_image_meta($image_id);
     }
 
     public static function get_output_path($og_path)
@@ -684,9 +578,28 @@ class CompressX_Image_Method
 
         if(!file_exists($real_path))
         {
-            @mkdir($real_path,0777,true);
+            wp_mkdir_p($real_path);
         }
 
         return $real_path.'/'.basename($og_path);
+    }
+
+    //exclude_path_ex
+    public static function exclude_path_ex($file_path,$exclude_regex_folder)
+    {
+        if(empty($exclude_regex_folder))
+        {
+            return false;
+        }
+
+        $file_path = CompressX_Image_Method::transfer_path($file_path);
+        if (CompressX_Image_Method::regex_match($exclude_regex_folder, $file_path))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

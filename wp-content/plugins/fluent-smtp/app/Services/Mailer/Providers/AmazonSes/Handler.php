@@ -28,7 +28,11 @@ class Handler extends BaseHandler
 
     public function postSend()
     {
-        $mime = chunk_split(base64_encode($this->phpMailer->getSentMIMEMessage()), 76, "\n");
+        $rawMessage = $this->normalizeListHeaders(
+            $this->phpMailer->getSentMIMEMessage()
+        );
+
+        $mime = chunk_split(base64_encode($rawMessage), 76, "\n");
 
         $connectionSettings = $this->filterConnectionVars($this->getSetting());
 
@@ -102,15 +106,21 @@ class Handler extends BaseHandler
 
         foreach ($this->getParam('attachments') as $attachment) {
             $file = false;
+            $fileName = null;
+            $filetype = null;
 
             try {
-                if (is_file($attachment[0]) && is_readable($attachment[0])) {
-                    $fileName = basename($attachment[0]);
-                    $file = file_get_contents($attachment[0]);
-                    $mimeType = mime_content_type($attachment[0]);
-                    $filetype = str_replace(';', '', trim($mimeType));
-                }
+                // Use secure file reading with path traversal protection
+                $file = $this->secureFileRead($attachment[0]);
+                $fileName = basename($attachment[0]);
+
+                // Get MIME type from the validated real path
+                $realPath = realpath($attachment[0]);
+                $mimeType = mime_content_type($realPath);
+                $filetype = str_replace(';', '', trim($mimeType));
             } catch (\Exception $e) {
+                // Log error and skip this attachment
+                $this->logAttachmentFailure('AmazonSes', $e);
                 $file = false;
             }
 
@@ -142,11 +152,6 @@ class Handler extends BaseHandler
         return $headers;
     }
 
-    protected function getRegion()
-    {
-        return 'email.' . $this->getSetting('region') . '.amazonaws.com';
-    }
-
     public function getValidSenders($config)
     {
         $config = $this->filterConnectionVars($config);
@@ -159,7 +164,7 @@ class Handler extends BaseHandler
     public function getValidSendingIdentities($config)
     {
         $config = $this->filterConnectionVars($config);
-        $region = 'email.' . $config['region'] . '.amazonaws.com';
+        $region = SimpleEmailService::regionToHost($config['region']);
 
         $ses = new SimpleEmailService(
             $config['access_key'],
@@ -298,7 +303,7 @@ class Handler extends BaseHandler
 
     private function getStats($config)
     {
-        $region = 'email.' . $config['region'] . '.amazonaws.com';
+        $region = SimpleEmailService::regionToHost($config['region']);
 
         $ses = new SimpleEmailService(
             $config['access_key'],

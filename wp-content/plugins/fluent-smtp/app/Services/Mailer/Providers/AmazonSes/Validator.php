@@ -31,7 +31,7 @@ class Validator
         $ses = new SimpleEmailService(
             $inputs['access_key'],
             $inputs['secret_key'],
-            'email.' . $inputs['region'] . '.amazonaws.com',
+            SimpleEmailService::regionToHost($inputs['region']),
             false
         );
 

@@ -1,3 +1,4 @@
+(function() {
 "use strict";
 var wp;
 (wp ||= {}).element = (() => {
@@ -46,34 +47,10 @@ var wp;
     }
   });
 
-  // node_modules/react-dom/client.js
+  // vendor-external:react-dom/client
   var require_client = __commonJS({
-    "node_modules/react-dom/client.js"(exports) {
-      "use strict";
-      var m = require_react_dom();
-      if (false) {
-        exports.createRoot = m.createRoot;
-        exports.hydrateRoot = m.hydrateRoot;
-      } else {
-        i = m.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-        exports.createRoot = function(c, o) {
-          i.usingClientEntryPoint = true;
-          try {
-            return m.createRoot(c, o);
-          } finally {
-            i.usingClientEntryPoint = false;
-          }
-        };
-        exports.hydrateRoot = function(c, h, o) {
-          i.usingClientEntryPoint = true;
-          try {
-            return m.hydrateRoot(c, h, o);
-          } finally {
-            i.usingClientEntryPoint = false;
-          }
-        };
-      }
-      var i;
+    "vendor-external:react-dom/client"(exports, module) {
+      module.exports = window.ReactDOM;
     }
   });
 
@@ -100,23 +77,23 @@ var wp;
     createContext: () => import_react.createContext,
     createElement: () => import_react.createElement,
     createInterpolateElement: () => create_interpolate_element_default,
-    createPortal: () => import_react_dom.createPortal,
+    createPortal: () => createPortal,
     createRef: () => import_react.createRef,
     createRoot: () => import_client.createRoot,
-    findDOMNode: () => import_react_dom.findDOMNode,
-    flushSync: () => import_react_dom.flushSync,
+    findDOMNode: () => findDOMNode,
+    flushSync: () => flushSync,
     forwardRef: () => import_react.forwardRef,
-    hydrate: () => import_react_dom.hydrate,
+    hydrate: () => hydrate,
     hydrateRoot: () => import_client.hydrateRoot,
     isEmptyElement: () => isEmptyElement,
     isValidElement: () => import_react.isValidElement,
     lazy: () => import_react.lazy,
     memo: () => import_react.memo,
-    render: () => import_react_dom.render,
+    render: () => render,
     renderToString: () => serialize_default,
     startTransition: () => import_react.startTransition,
     switchChildrenNodeName: () => switchChildrenNodeName,
-    unmountComponentAtNode: () => import_react_dom.unmountComponentAtNode,
+    unmountComponentAtNode: () => unmountComponentAtNode,
     useCallback: () => import_react.useCallback,
     useContext: () => import_react.useContext,
     useDebugValue: () => import_react.useDebugValue,
@@ -185,7 +162,7 @@ var wp;
       children: []
     };
   }
-  var createInterpolateElement = (interpolatedString, conversionMap) => {
+  function createInterpolateElement(interpolatedString, conversionMap) {
     indoc = interpolatedString;
     offset = 0;
     output = [];
@@ -199,7 +176,7 @@ var wp;
     do {
     } while (proceed(conversionMap));
     return (0, import_react.createElement)(import_react.Fragment, null, ...output);
-  };
+  }
   var isValidConversionMap = (conversionMap) => {
     const isObject2 = typeof conversionMap === "object" && conversionMap !== null;
     const values = isObject2 && Object.values(conversionMap);
@@ -254,6 +231,15 @@ var wp;
         offset = startOffset + tokenLength;
         return true;
       case "closer":
+        if (0 === stackDepth) {
+          if (true) {
+            console.warn(
+              `Unmatched closing tag '</${name}>' in createInterpolateElement. The rest of the string was not interpolated.`
+            );
+          }
+          addText();
+          return false;
+        }
         if (1 === stackDepth) {
           closeOuterElement(startOffset);
           offset = startOffset + tokenLength;
@@ -333,8 +319,18 @@ var wp;
   var create_interpolate_element_default = createInterpolateElement;
 
   // packages/element/build-module/react-platform.mjs
-  var import_react_dom = __toESM(require_react_dom(), 1);
+  var ReactDOM = __toESM(require_react_dom(), 1);
   var import_client = __toESM(require_client(), 1);
+  var {
+    createPortal,
+    flushSync,
+    /* eslint-disable react/no-deprecated */
+    findDOMNode,
+    render,
+    hydrate,
+    unmountComponentAtNode
+    /* eslint-enable react/no-deprecated */
+  } = ReactDOM;
 
   // packages/element/build-module/utils.mjs
   var isEmptyElement = (element) => {
@@ -445,10 +441,7 @@ var wp;
   var import_escape_html = __toESM(require_escape_html(), 1);
 
   // packages/element/build-module/raw-html.mjs
-  function RawHTML({
-    children,
-    ...props
-  }) {
+  function RawHTML({ children, ...props }) {
     let rawHtml = "";
     import_react.Children.toArray(children).forEach((child) => {
       if (typeof child === "string" && child.trim() !== "") {
@@ -967,4 +960,6 @@ is-plain-object/dist/is-plain-object.mjs:
    * Released under the MIT License.
    *)
 */
+(window.wp ||= {}).element = wp.element;
+})();
 //# sourceMappingURL=index.js.map

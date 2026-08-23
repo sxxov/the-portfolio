@@ -4,26 +4,31 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit6920875b887fae168dd2d2b99d7913ec
+class ComposerStaticInit652899b34da171aac8f751a6c639281f
 {
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
+            'SCF\\Site_Health\\' => 16,
             'SCF\\Meta\\' => 9,
             'SCF\\Forms\\' => 10,
             'SCF\\Fields\\FlexibleContent\\' => 27,
+            'SCF\\Datastore\\' => 14,
+            'SCF\\CLI\\' => 8,
+            'SCF\\Blocks\\' => 11,
+            'SCF\\AI\\' => 7,
         ),
         'J' => 
         array (
             'JsonSchema\\' => 11,
-        ),
-        'A' => 
-        array (
-            'ACF\\Blocks\\' => 11,
         )
     );
 
     public static $prefixDirsPsr4 = array (
+        'SCF\\Site_Health\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/Site_Health',
+        ),
         'SCF\\Meta\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes/Meta',
@@ -36,18 +41,29 @@ class ComposerStaticInit6920875b887fae168dd2d2b99d7913ec
         array (
             0 => __DIR__ . '/../..' . '/includes/fields/FlexibleContent',
         ),
+        'SCF\\Datastore\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/includes/Datastore',
+        ),
+        'SCF\\CLI\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/CLI',
+        ),
+        'SCF\\Blocks\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/includes/Blocks',
+        ),
+        'SCF\\AI\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/AI',
+        ),
         'JsonSchema\\' => 
         array (
             0 => __DIR__ . '/..' . '/justinrainbow/json-schema/src/JsonSchema',
-        ),
-        'ACF\\Blocks\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/includes/Blocks',
         )
     );
 
     public static $classMap = array (
-        'ACF\\Blocks\\Bindings' => __DIR__ . '/../..' . '/includes/Blocks/Bindings.php',
         'JsonSchema\\Constraints\\BaseConstraint' => __DIR__ . '/..' . '/justinrainbow/json-schema/src/JsonSchema/Constraints/BaseConstraint.php',
         'JsonSchema\\Constraints\\CollectionConstraint' => __DIR__ . '/..' . '/justinrainbow/json-schema/src/JsonSchema/Constraints/CollectionConstraint.php',
         'JsonSchema\\Constraints\\Constraint' => __DIR__ . '/..' . '/justinrainbow/json-schema/src/JsonSchema/Constraints/Constraint.php',
@@ -91,6 +107,27 @@ class ComposerStaticInit6920875b887fae168dd2d2b99d7913ec
         'JsonSchema\\Uri\\UriResolver' => __DIR__ . '/..' . '/justinrainbow/json-schema/src/JsonSchema/Uri/UriResolver.php',
         'JsonSchema\\Uri\\UriRetriever' => __DIR__ . '/..' . '/justinrainbow/json-schema/src/JsonSchema/Uri/UriRetriever.php',
         'JsonSchema\\Validator' => __DIR__ . '/..' . '/justinrainbow/json-schema/src/JsonSchema/Validator.php',
+        'SCF\\AI\\AI' => __DIR__ . '/../..' . '/src/AI/AI.php',
+        'SCF\\AI\\Abilities\\Abilities' => __DIR__ . '/../..' . '/src/AI/Abilities/Abilities.php',
+        'SCF\\AI\\Abilities\\AbstractAbilityGroup' => __DIR__ . '/../..' . '/src/AI/Abilities/AbstractAbilityGroup.php',
+        'SCF\\AI\\Abilities\\FieldGroup' => __DIR__ . '/../..' . '/src/AI/Abilities/FieldGroup.php',
+        'SCF\\AI\\Abilities\\PostType' => __DIR__ . '/../..' . '/src/AI/Abilities/PostType.php',
+        'SCF\\AI\\Abilities\\SCF_REST_Ability' => __DIR__ . '/../..' . '/src/AI/Abilities/SCF_REST_Ability.php',
+        'SCF\\AI\\Abilities\\Taxonomy' => __DIR__ . '/../..' . '/src/AI/Abilities/Taxonomy.php',
+        'SCF\\AI\\GEO\\FieldSettings' => __DIR__ . '/../..' . '/src/AI/GEO/FieldSettings.php',
+        'SCF\\AI\\GEO\\GEO' => __DIR__ . '/../..' . '/src/AI/GEO/GEO.php',
+        'SCF\\AI\\GEO\\Outputs\\Blocks' => __DIR__ . '/../..' . '/src/AI/GEO/Outputs/Blocks.php',
+        'SCF\\AI\\GEO\\Outputs\\Posts' => __DIR__ . '/../..' . '/src/AI/GEO/Outputs/Posts.php',
+        'SCF\\AI\\GEO\\Schema' => __DIR__ . '/../..' . '/src/AI/GEO/Schema.php',
+        'SCF\\AI\\GEO\\SchemaData' => __DIR__ . '/../..' . '/src/AI/GEO/SchemaData.php',
+        'SCF\\Blocks\\Bindings' => __DIR__ . '/../..' . '/includes/Blocks/Bindings.php',
+        'SCF\\Blocks\\Bindings_Editor' => __DIR__ . '/../..' . '/includes/Blocks/Bindings_Editor.php',
+        'SCF\\CLI\\CLI' => __DIR__ . '/../..' . '/src/CLI/CLI.php',
+        'SCF\\CLI\\JsonCommand' => __DIR__ . '/../..' . '/src/CLI/JsonCommand.php',
+        'SCF\\Datastore\\Check_Screen' => __DIR__ . '/../..' . '/includes/Datastore/Check_Screen.php',
+        'SCF\\Datastore\\Localization' => __DIR__ . '/../..' . '/includes/Datastore/Localization.php',
+        'SCF\\Datastore\\REST_Save' => __DIR__ . '/../..' . '/includes/Datastore/REST_Save.php',
+        'SCF\\Datastore\\Revisions' => __DIR__ . '/../..' . '/includes/Datastore/Revisions.php',
         'SCF\\Fields\\FlexibleContent\\Layout' => __DIR__ . '/../..' . '/includes/fields/FlexibleContent/Layout.php',
         'SCF\\Fields\\FlexibleContent\\Render' => __DIR__ . '/../..' . '/includes/fields/FlexibleContent/Render.php',
         'SCF\\Forms\\WC_Order' => __DIR__ . '/../..' . '/includes/forms/WC_Order.php',
@@ -100,15 +137,17 @@ class ComposerStaticInit6920875b887fae168dd2d2b99d7913ec
         'SCF\\Meta\\Post' => __DIR__ . '/../..' . '/includes/Meta/Post.php',
         'SCF\\Meta\\Term' => __DIR__ . '/../..' . '/includes/Meta/Term.php',
         'SCF\\Meta\\User' => __DIR__ . '/../..' . '/includes/Meta/User.php',
-        'SCF\\Meta\\WooOrder' => __DIR__ . '/../..' . '/includes/Meta/WooOrder.php'
+        'SCF\\Meta\\WooOrder' => __DIR__ . '/../..' . '/includes/Meta/WooOrder.php',
+        'SCF\\Site_Health\\AI_Usage' => __DIR__ . '/../..' . '/src/Site_Health/AI_Usage.php',
+        'SCF\\Site_Health\\Site_Health' => __DIR__ . '/../..' . '/src/Site_Health/Site_Health.php'
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit6920875b887fae168dd2d2b99d7913ec::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit6920875b887fae168dd2d2b99d7913ec::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit6920875b887fae168dd2d2b99d7913ec::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit652899b34da171aac8f751a6c639281f::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit652899b34da171aac8f751a6c639281f::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit652899b34da171aac8f751a6c639281f::$classMap;
 
         }, null, ClassLoader::class);
     }

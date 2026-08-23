@@ -42,16 +42,16 @@ class CompressX_Image_Meta
 
     public static function update_images_meta_value($image_id,$key,$value)
     {
-        $image_optimize_meta =CompressX_Image_Meta::get_image_meta($image_id);
+        $image_optimize_meta =self::get_image_meta($image_id);
         $image_optimize_meta[$key]=$value;
-        CompressX_Image_Meta::update_images_meta($image_id,$image_optimize_meta);
+        self::update_images_meta($image_id,$image_optimize_meta);
     }
 
     public static function update_image_meta_size($image_id,$size_key,$size_meta)
     {
-        $image_optimize_meta =CompressX_Image_Meta::get_image_meta($image_id);
+        $image_optimize_meta =self::get_image_meta($image_id);
         $image_optimize_meta['size'][$size_key]=$size_meta;
-        CompressX_Image_Meta::update_images_meta($image_id,$image_optimize_meta);
+        self::update_images_meta($image_id,$image_optimize_meta);
     }
 
     public static function update_images_meta($image_id,$meta)
@@ -169,7 +169,7 @@ class CompressX_Image_Meta
 
     public static function update_image_meta_status($image_id,$status)
     {
-        if(CompressX_Image_Meta::has_image_meta($image_id))
+        if(self::has_image_meta($image_id))
         {
             $meta=get_post_meta( $image_id, 'compressx_image_meta', true );
             $meta['status']=$status;
@@ -567,7 +567,7 @@ class CompressX_Image_Meta
 
     public static function is_image_optimized($image_id)
     {
-        if(CompressX_Image_Meta::get_image_meta_status($image_id)==='optimized')
+        if(self::get_image_meta_status($image_id)==='optimized')
         {
             return true;
         }
@@ -615,7 +615,7 @@ class CompressX_Image_Meta
         $image_optimize_meta['size']['og']['status']='failed';
         $image_optimize_meta['size']['og']['error']=$error;
 
-        CompressX_Image_Meta::update_image_meta_status($image_id,'failed');
-        CompressX_Image_Meta::update_images_meta($image_id,$image_optimize_meta);
+        self::update_image_meta_status($image_id,'failed');
+        self::update_images_meta($image_id,$image_optimize_meta);
     }
 }

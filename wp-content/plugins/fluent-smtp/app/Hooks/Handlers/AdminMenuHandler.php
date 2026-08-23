@@ -77,20 +77,19 @@ class AdminMenuHandler
             <div
                 style="background-color: #fff;border: 1px solid #dcdcde;box-sizing: border-box;padding: 20px;margin: 15px 0;"
                 class="fluent_smtp_box">
-                <h3 style="margin: 0;"><?php __('For SMTP, you already have FluentSMTP Installed', 'fluent-smtp'); ?></h3>
-                <p><?php __('You seem to be looking for an SMTP plugin, but there\'s no need for another one — FluentSMTP is already installed on your site. FluentSMTP is a comprehensive, free, and open-source plugin with full features available without any upsell', 'fluent-smtp'); ?>
-                    (<a href="https://fluentsmtp.com/why-we-built-fluentsmtp-plugin/"><?php __('learn why it\'s free', 'fluent-smtp'); ?></a>)<?php __('. It\'s compatible with various SMTP services, including Amazon SES, SendGrid, MailGun, ElasticEmail, SendInBlue, Google, Microsoft, and others, providing you with a wide range of options for your email needs.', 'fluent-smtp'); ?>
+                <h3 style="margin: 0;"><?php esc_html_e('For SMTP, you already have FluentSMTP Installed', 'fluent-smtp'); ?></h3>
+                <p><?php esc_html_e('You seem to be looking for an SMTP plugin, but there\'s no need for another one — FluentSMTP is already installed on your site. FluentSMTP is a comprehensive, free, and open-source plugin with full features available without any upsell', 'fluent-smtp'); ?>
+                    (<a href="https://fluentsmtp.com/articles/why-we-built-fluentsmtp-plugin/"><?php esc_html_e('learn why it\'s free', 'fluent-smtp'); ?></a>)<?php esc_html_e('. It\'s compatible with various SMTP services, including Amazon SES, SendGrid, MailGun, ElasticEmail, SendInBlue, Google, Microsoft, and others, providing you with a wide range of options for your email needs.', 'fluent-smtp'); ?>
                 </p><a href="<?php echo esc_url(admin_url('options-general.php?page=fluent-mail#/')); ?>"
-                       class="wp-core-ui button button-primary"><?php __('Go To FluentSMTP Settings', 'fluent-smtp'); ?></a>
-                <p style="font-size: 80%; margin: 15px 0 0;"><?php __('This notice is from FluentSMTP plugin to prevent plugin
-                    conflict.', 'fluent-smtp') ?></p>
+                       class="wp-core-ui button button-primary"><?php esc_html_e('Go To FluentSMTP Settings', 'fluent-smtp'); ?></a>
+                <p style="font-size: 80%; margin: 15px 0 0;"><?php esc_html_e('This notice is from FluentSMTP plugin to prevent plugin conflict.', 'fluent-smtp'); ?></p>
             </div>
             <?php
         }, 1);
 
         add_action('wp_ajax_fluent_smtp_get_dashboard_html', function () {
             // This widget should be displayed for certain high-level users only.
-            if (!current_user_can('manage_options') || apply_filters('fluent_mail_disable_dashboard_widget', false)) {
+            if (!fluentMailCurrentUserCanManage() || apply_filters('fluent_mail_disable_dashboard_widget', false)) {
                 wp_send_json([
                     'html' => __('You do not have permission to see this data', 'fluent-smtp')
                 ]);
@@ -111,7 +110,7 @@ class AdminMenuHandler
             'options-general.php',
             $title,
             $title,
-            'manage_options',
+            fluentMailManageCapability(),
             'fluent-mail',
             [$this, 'renderApp'],
             16
@@ -183,7 +182,9 @@ class AdminMenuHandler
 
         $user = get_user_by('ID', get_current_user_id());
 
-        $disable_recommendation = wp_is_file_mod_allowed('install_plugins');
+        // wp_is_file_mod_allowed() answers "are mods ALLOWED"; this flag is the
+        // inverse — it hides the one-click install button — so it must be negated.
+        $disable_installation = !wp_is_file_mod_allowed('install_plugins');
 
         $settings = $this->getMailerSettings();
 
@@ -210,7 +211,7 @@ class AdminMenuHandler
             'require_optin'          => $this->isRequireOptin(),
             'has_ninja_tables'       => defined('NINJA_TABLES_VERSION'),
             'disable_recommendation' => apply_filters('fluentmail_disable_recommendation', false),
-            'disable_installation'   => $disable_recommendation,
+            'disable_installation'   => $disable_installation,
             'plugin_url'             => 'https://fluentsmtp.com/?utm_source=wp&utm_medium=install&utm_campaign=dashboard',
             'trans'                  => $this->getTrans(),
             'recommended'            => $recommendedSettings,
@@ -231,7 +232,7 @@ class AdminMenuHandler
             return sprintf(
                 __('%1$s is a free plugin & it will be always free %2$s. %3$s', 'fluent-smtp'),
                 '<b>FluentSMTP</b>',
-                '<a href="https://fluentsmtp.com/why-we-built-fluentsmtp-plugin/" target="_blank" rel="noopener noreferrer">'. esc_html__('(Learn why it\'s free)', 'fluent-smtp') .'</a>',
+                '<a href="https://fluentsmtp.com/articles/why-we-built-fluentsmtp-plugin/" target="_blank" rel="noopener noreferrer">'. esc_html__('(Learn why it\'s free)', 'fluent-smtp') .'</a>',
                 '<a href="https://wordpress.org/support/plugin/fluent-smtp/reviews/?filter=5" target="_blank" rel="noopener noreferrer">'. esc_html__('Write a review ★★★★★', 'fluent-smtp') .'</a>'
             );
         });
@@ -263,7 +264,7 @@ class AdminMenuHandler
 
     public function maybeAdminNotice()
     {
-        if (!current_user_can('manage_options')) {
+        if (!fluentMailCurrentUserCanManage()) {
             return;
         }
 
@@ -298,7 +299,7 @@ class AdminMenuHandler
 
     public function addSimulationBar($adminBar)
     {
-        if (!current_user_can('manage_options')) {
+        if (!fluentMailCurrentUserCanManage()) {
             return;
         }
 
@@ -337,7 +338,7 @@ class AdminMenuHandler
     public function initAdminWidget()
     {
         // This widget should be displayed for certain high-level users only.
-        if (!current_user_can('manage_options') || apply_filters('fluent_mail_disable_dashboard_widget', false)) {
+        if (!fluentMailCurrentUserCanManage() || apply_filters('fluent_mail_disable_dashboard_widget', false)) {
             return;
         }
 
@@ -434,9 +435,9 @@ class AdminMenuHandler
             <tbody>
             <?php foreach ($stats as $stat): ?>
                 <tr>
-                    <td><?php echo $stat['title']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-                    <td><?php echo $stat['sent']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-                    <td class="<?php echo ($stat['failed']) ? 'fstmp_failed' : ''; ?>"><?php echo $stat['failed']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+                    <td><?php echo esc_html($stat['title']); ?></td>
+                    <td><?php echo absint($stat['sent']); ?></td>
+                    <td class="<?php echo absint($stat['failed']) ? 'fstmp_failed' : ''; ?>"><?php echo absint($stat['failed']); ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

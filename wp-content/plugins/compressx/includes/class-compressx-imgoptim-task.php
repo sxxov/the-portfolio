@@ -200,73 +200,6 @@ class CompressX_ImgOptim_Task
         $ret['result']='success';
         $ret['finished']=$finished;
         return $ret;
-
-        /*
-        $max_image_count=CompressX_Image_Method::get_max_image_count();
-
-        $page=100;
-        $max_count=5000;
-
-        $force=$this->task['options']['force'];
-
-        $start_row=$this->task['offset'];
-
-        $need_optimized_images=array();
-
-        $convert_to_webp=$this->task['options']['convert_to_webp'];
-        $convert_to_avif=$this->task['options']['convert_to_avif'];
-
-        $exclude_regex_folder=CompressX_Options::get_excludes();
-
-        $time_start=time();
-        $max_timeout_limit=21;
-        $count=0;
-        $finished=true;
-
-        for ($current_row=$start_row; $current_row <= $max_image_count; $current_row += $page)
-        {
-            $images=CompressX_Image_Method::scan_unoptimized_image($page,$current_row,$convert_to_webp,$convert_to_avif,$exclude_regex_folder,$force);
-            $need_optimized_images=array_merge($images,$need_optimized_images);
-
-            $count=$count+$page;
-            $time_spend=time()-$time_start;
-
-            if(sizeof($need_optimized_images)>=100)
-            {
-                $current_row+= $page;
-                $finished=false;
-                break;
-            }
-
-            if($time_spend>$max_timeout_limit)
-            {
-                $current_row+=$page;
-                $finished=false;
-                break;
-            }
-            else if($count>$max_count)
-            {
-                $current_row+=$page;
-                $finished=false;
-                break;
-            }
-        }
-
-        if(!empty($need_optimized_images))
-        {
-            foreach ($need_optimized_images as $image)
-            {
-                $this->task['images'][$image['id']]=$image;
-            }
-        }
-
-        $this->task['offset']=$current_row;
-
-        $this->update_task();
-
-        $ret['result']='success';
-        $ret['finished']=$finished;
-        return $ret;*/
     }
 
     public function get_need_optimize_image()
@@ -382,6 +315,7 @@ class CompressX_ImgOptim_Task
 
             if(CompressX_Image_Method::exclude_path($image_id,$this->task['options']['exclude']))
             {
+                CompressX_Image_Meta_V2::update_image_meta_status($image_id,'skip');
                 $this->WriteLog('Exclude images: id:'.$image_id,'notice');
                 $this->task['images'][$image_id]['finished']=1;
                 $this->task['last_update_time']=time();
@@ -394,7 +328,7 @@ class CompressX_ImgOptim_Task
             {
                 if($this->task['options']['force'])
                 {
-                    CompressX_Image_Meta::generate_images_meta($image_id,$this->task['options']);
+                    CompressX_Image_Meta_V2::generate_images_meta($image_id,$this->task['options']);
                 }
 
                 $this->WriteLog('Start optimizing images: id:'.$image_id,'notice');
@@ -455,7 +389,7 @@ class CompressX_ImgOptim_Task
             $this->task['last_update_time']=time();
             $this->task['failed_images']++;
 
-            CompressX_Image_Meta::update_image_meta_status($image_id,'failed');
+            CompressX_Image_Meta_V2::update_image_meta_status($image_id,'failed');
 
             $this->update_task();
 
@@ -487,7 +421,7 @@ class CompressX_ImgOptim_Task
             $this->update_task();
 
             $error='Image:'.$image_id.' failed. Error: failed to get get_attached_file';
-            CompressX_Image_Meta::update_image_failed($image_id,$error);
+            CompressX_Image_Meta_V2::update_image_failed($image_id,$error);
 
             $ret['result']='success';
             return $ret;
@@ -501,7 +435,7 @@ class CompressX_ImgOptim_Task
             $this->update_task();
 
             $error='Image:'.$image_id.' failed. Error: file not exists '.$file_path;
-            CompressX_Image_Meta::update_image_failed($image_id,$error);
+            CompressX_Image_Meta_V2::update_image_failed($image_id,$error);
 
             $ret['result']='success';
             return $ret;
@@ -515,13 +449,13 @@ class CompressX_ImgOptim_Task
 
             $this->task['failed_images']++;
             $this->update_task();
-            CompressX_Image_Meta::update_image_failed($image_id,$error);
+            CompressX_Image_Meta_V2::update_image_failed($image_id,$error);
 
             $ret['result']='success';
             return $ret;
         }
 
-        CompressX_Image_Meta::update_image_progressing($image_id);
+        CompressX_Image_Meta_V2::update_image_progressing($image_id);
 
         $image->resize();
 
@@ -529,15 +463,15 @@ class CompressX_ImgOptim_Task
         {
             $this->task['opt_images']++;
             $this->update_task();
-            CompressX_Image_Meta::update_image_meta_status($image_id,'optimized');
+            CompressX_Image_Meta_V2::update_image_meta_status($image_id,'optimized');
         }
         else
         {
             $this->task['failed_images']++;
             $this->update_task();
-            CompressX_Image_Meta::update_image_meta_status($image_id,'failed');
+            CompressX_Image_Meta_V2::update_image_meta_status($image_id,'failed');
         }
-        CompressX_Image_Meta::delete_image_progressing($image_id);
+        CompressX_Image_Meta_V2::delete_image_progressing($image_id);
 
         $ret['result']='success';
         return $ret;
@@ -602,8 +536,7 @@ class CompressX_ImgOptim_Task
         }
 
         $ret['log']=sprintf(
-        /* translators: %1$d: total images, %2$d: processed images, %3$d: total images, %4$d: Processed percent */
-            __('%1$d images found | Processed:%2$d/%3$d (%4$d%%)' ,'compressx'),
+            '%1$d images found | Processed:%2$d/%3$d (%4$d%%)',
             $ret['total_images'],$this->task['optimized_images'],$ret['total_images'],$percent);
 
         $sub_total=sizeof($this->task['images']);
@@ -629,20 +562,18 @@ class CompressX_ImgOptim_Task
         if(!empty($this->task['current_file']))
         {
             $ret['sub_log']=sprintf(
-            //translators: %1$d: $sub task processed images, %2$d: $sub task total images
-                __('Current Subtask: %1$d/%2$d | Processing:%3$s' ,'compressx'),
+                'Current Subtask: %1$d/%2$d | Processing:%3$s',
                 $sub_optimized_images,$sub_total,basename($this->task['current_file']));
         }
         else
         {
             $ret['sub_log']=sprintf(
-                __('Current Subtask: %1$d/%2$d ' ,'compressx'),
+                'Current Subtask: %1$d/%2$d ',
                 $sub_optimized_images,$sub_total);
         }
 
         $ret['sub_log_ex']=sprintf(
-        /* translators: %1$d: $sub task processed images, %2$d: $sub task total images*/
-            __('%1$d / %2$d' ,'compressx'),
+            '%1$d / %2$d',
             $sub_optimized_images,$sub_total);
 
         $ret['percent']= $sub_percent;
@@ -667,8 +598,7 @@ class CompressX_ImgOptim_Task
                 $ret['percent']= 100;
 
                 $ret['message']=sprintf(
-                /* translators: %1$d: total images, %2$d: Succeeded images, %3$d: failed images*/
-                    __('Total optimized images:%1$d Succeeded:%2$d Failed:%3$d' ,'compressx'),
+                    'Total optimized images:%1$d Succeeded:%2$d Failed:%3$d',
                     $ret['total_images'],$this->task['opt_images'],$this->task['failed_images']);
 
                 //$ret['message']='Total optimized images:'.$ret['total_images'].' Succeeded:'.$this->task['opt_images'].' Failed:'.$this->task['failed_images'];
@@ -707,8 +637,7 @@ class CompressX_ImgOptim_Task
                 $ret['finished']=0;
                 $ret['timeout']=0;
                 $ret['message']=sprintf(
-                /* translators: %1$d: total images, %2$d: Succeeded images, %3$d: failed images*/
-                    __('Total optimized images:%1$d Succeeded:%2$d Failed:%3$d' ,'compressx'),
+                    'Total optimized images:%1$d Succeeded:%2$d Failed:%3$d',
                     $ret['total_images'],$this->task['opt_images'],$this->task['failed_images']);
             }
             else
@@ -781,7 +710,7 @@ class CompressX_ImgOptim_Task
         $remaining = max(0, $total - $optimized - $failed - $skipped);
 
         $ret["progress_text"] = sprintf(
-            __('%1$d / %2$d images optimized', 'compressx'),
+            '%1$d / %2$d images optimized',
             $optimized,
             $total
         );

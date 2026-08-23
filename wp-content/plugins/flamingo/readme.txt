@@ -2,8 +2,8 @@
 Contributors: rocklobsterinc, takayukister, megumithemes, itpixelz
 Tags: bird, contact, mail, crm
 Requires at least: 6.7
-Tested up to: 6.9
-Stable tag: 2.6.1
+Tested up to: 7.1
+Stable tag: 2.6.4
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -33,6 +33,20 @@ This plugin stores submission data collected through contact forms, which may in
 == Screenshots ==
 
 == Changelog ==
+
+= 2.6.4 =
+
+* Confirmed WordPress 7.1 compatibility.
+
+= 2.6.3 =
+
+* Security enhancement: Assigns specific capabilities to the custom post types and taxonomies.
+
+= 2.6.2 =
+
+* Security enhancement: Blocks a potential bypass of a known spreadsheet vulnerability.
+* Updates Node modules.
+* Confirmed WordPress 7.0 compatibility.
 
 = 2.6.1 =
 

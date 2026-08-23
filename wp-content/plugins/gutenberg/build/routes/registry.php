@@ -8,9 +8,23 @@
 
 return array(
 	array(
-		'name'        => 'font-list',
-		'path'        => '/font-list',
-		'page'        => 'site-editor',
+		'name'        => 'connectors-home',
+		'path'        => '/',
+		'page'        => 'options-connectors',
+		'has_route'   => true,
+		'has_content' => true,
+	),
+	array(
+		'name'        => 'dashboard',
+		'path'        => '/',
+		'page'        => 'dashboard',
+		'has_route'   => false,
+		'has_content' => true,
+	),
+	array(
+		'name'        => 'experiments-home',
+		'path'        => '/',
+		'page'        => 'experiments',
 		'has_route'   => true,
 		'has_content' => true,
 	),
@@ -29,11 +43,32 @@ return array(
 		'has_content' => false,
 	),
 	array(
+		'name'        => 'guidelines',
+		'path'        => '/',
+		'page'        => 'guidelines',
+		'has_route'   => true,
+		'has_content' => true,
+	),
+	array(
 		'name'        => 'home',
 		'path'        => '/',
 		'page'        => 'site-editor-v2',
 		'has_route'   => true,
 		'has_content' => false,
+	),
+	array(
+		'name'        => 'media-editor',
+		'path'        => '/media-editor/$id',
+		'page'        => 'site-editor-v2',
+		'has_route'   => true,
+		'has_content' => true,
+	),
+	array(
+		'name'        => 'media-editor',
+		'path'        => '/media-editor/$id',
+		'page'        => 'media-editor',
+		'has_route'   => true,
+		'has_content' => true,
 	),
 	array(
 		'name'        => 'navigation',
@@ -79,7 +114,7 @@ return array(
 	),
 	array(
 		'name'        => 'post-edit',
-		'path'        => '/types/$type/edit/$id',
+		'path'        => '/types/$type/edit/$',
 		'page'        => 'site-editor-v2',
 		'has_route'   => true,
 		'has_content' => false,

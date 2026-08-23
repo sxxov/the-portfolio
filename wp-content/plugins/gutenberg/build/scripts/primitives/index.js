@@ -1,3 +1,4 @@
+(function() {
 "use strict";
 var wp;
 (wp ||= {}).primitives = (() => {
@@ -96,11 +97,11 @@ var wp;
   var Stop = (props) => (0, import_element.createElement)("stop", props);
   var SVG = (0, import_element.forwardRef)(
     /**
-     * @param {SVGProps}                                    props isPressed indicates whether the SVG should appear as pressed.
-     *                                                            Other props will be passed through to svg component.
-     * @param {import('react').ForwardedRef<SVGSVGElement>} ref   The forwarded ref to the SVG element.
+     * @param {SVGProps}                          props isPressed indicates whether the SVG should appear as pressed.
+     *                                                  Other props will be passed through to svg component.
+     * @param {React.ForwardedRef<SVGSVGElement>} ref   The forwarded ref to the SVG element.
      *
-     * @return {JSX.Element} Stop component
+     * @return {React.JSX.Element} Stop component
      */
     ({ className, isPressed, ...props }, ref) => {
       const appliedProps = {
@@ -123,5 +124,7 @@ var wp;
   // packages/primitives/build-module/view/index.mjs
   var View = "div";
   return __toCommonJS(index_exports);
+})();
+(window.wp ||= {}).primitives = wp.primitives;
 })();
 //# sourceMappingURL=index.js.map

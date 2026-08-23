@@ -68,7 +68,7 @@ class CompressX_Image_Opt_Method
 
                 if(filesize($out)==0)
                 {
-                    @unlink($out);
+                    @wp_delete_file($out);
                     $ret['result']='failed';
                     $ret['error']='imagewebp failed';
                     return $ret;
@@ -100,7 +100,7 @@ class CompressX_Image_Opt_Method
 
                 if(filesize($out)==0)
                 {
-                    @unlink($out);
+                    @wp_delete_file($out);
                     $ret['result']='failed';
                     $ret['error']='Converted image is 0 KB and has been deleted. This usually happens because your AVIF library is not working properly. Please check the AVIF library.';
                     return $ret;
@@ -305,7 +305,7 @@ class CompressX_Image_Opt_Method
                 {
                     if (filesize($out)==0)
                     {
-                        @unlink($out);
+                        @wp_delete_file($out);
                         $ret['result']='failed';
                         $ret['error']='imagewebp failed';
                         return $ret;
@@ -348,7 +348,7 @@ class CompressX_Image_Opt_Method
                             {
                                 if (filesize($out)==0)
                                 {
-                                    @unlink($out);
+                                    @wp_delete_file($out);
                                     $ret['result']='failed';
                                     $ret['error']='imagewebp failed';
                                     return $ret;
@@ -378,6 +378,38 @@ class CompressX_Image_Opt_Method
                     $ret['error']='imagepalettetotruecolor failed';
                     return $ret;
                 }
+            }
+        }
+        elseif($type=='webp')
+        {
+            $image = imagecreatefromwebp($in);
+            if(imagewebp($image, $out, $quality))
+            {
+                if (PHP_VERSION_ID < 80000)
+                {
+                    imagedestroy($image);
+                }
+
+                if(filesize($out)==0)
+                {
+                    @wp_delete_file($out);
+                    $ret['result']='failed';
+                    $ret['error']='imagewebp failed';
+                    return $ret;
+                }
+
+                $ret['result']='success';
+                return $ret;
+            }
+            else
+            {
+                if (PHP_VERSION_ID < 80000)
+                {
+                    imagedestroy($image);
+                }
+                $ret['result']='failed';
+                $ret['error']='imagewebp failed';
+                return $ret;
             }
         }
         else
@@ -550,7 +582,7 @@ class CompressX_Image_Opt_Method
                 {
                     if (filesize($out)==0)
                     {
-                        @unlink($out);
+                        @wp_delete_file($out);
                         $ret['result']='failed';
                         $ret['error']='Converted image is 0 KB and has been deleted. This usually happens because your AVIF library is not working properly. Please check the AVIF library.';
                         return $ret;
@@ -593,7 +625,7 @@ class CompressX_Image_Opt_Method
                             {
                                 if (filesize($out)==0)
                                 {
-                                    @unlink($out);
+                                    @wp_delete_file($out);
                                     $ret['result']='failed';
                                     $ret['error']='Converted image is 0 KB and has been deleted. This usually happens because your AVIF library is not working properly. Please check the AVIF library.';
                                     return $ret;
@@ -651,7 +683,7 @@ class CompressX_Image_Opt_Method
                 {
                     if (filesize($out)==0)
                     {
-                        @unlink($out);
+                        @wp_delete_file($out);
                         $ret['result']='failed';
                         $ret['error']='Converted image is 0 KB and has been deleted. This usually happens because your AVIF library is not working properly. Please check the AVIF library.';
                         return $ret;
@@ -660,6 +692,38 @@ class CompressX_Image_Opt_Method
                     $ret['result']='success';
                     return $ret;
                 }
+            }
+        }
+        else if($type=='avif')
+        {
+            $image = imagecreatefromavif($in);
+            if(imageavif($image, $out, $quality))
+            {
+                if (PHP_VERSION_ID < 80000)
+                {
+                    imagedestroy($image);
+                }
+
+                if(filesize($out)==0)
+                {
+                    @wp_delete_file($out);
+                    $ret['result']='failed';
+                    $ret['error']='Converted image is 0 KB and has been deleted. This usually happens because your AVIF library is not working properly. Please check the AVIF library.';
+                    return $ret;
+                }
+
+                $ret['result']='success';
+                return $ret;
+            }
+            else
+            {
+                if (PHP_VERSION_ID < 80000)
+                {
+                    imagedestroy($image);
+                }
+                $ret['result']='failed';
+                $ret['error']='imageavif failed';
+                return $ret;
             }
         }
         else
@@ -811,11 +875,11 @@ class CompressX_Image_Opt_Method
     {
         $success=true;
         $has_compress=true;
-        $image_optimize_meta =CompressX_Image_Meta::get_image_meta($image_id);
+        $image_optimize_meta =CompressX_Image_Meta_V2::get_image_meta($image_id);
         $uploads=wp_get_upload_dir();
         if(CompressX_Image_Opt_Method::need_compress($image_id,$options))
         {
-            if(CompressX_Image_Meta::get_image_meta_compressed($image_id)==0)
+            if(CompressX_Image_Meta_V2::get_image_meta_compressed($image_id)==0)
             {
                 $file_path = get_attached_file($image_id);
 
@@ -880,14 +944,14 @@ class CompressX_Image_Opt_Method
                                     @wp_delete_file($output_path);
                                     if($size_key=="og")
                                     {
-                                        CompressX_Image_Meta::update_compressed_size($image_id,filesize($filename));
+                                        CompressX_Image_Meta_V2::update_compressed_size($image_id,filesize($filename));
                                     }
                                 }
                                 else
                                 {
                                     if($size_key=="og")
                                     {
-                                        CompressX_Image_Meta::update_compressed_size($image_id,filesize($output_path));
+                                        CompressX_Image_Meta_V2::update_compressed_size($image_id,filesize($output_path));
                                     }
                                 }
                             }
@@ -895,12 +959,12 @@ class CompressX_Image_Opt_Method
                             {
                                 if($size_key=="og")
                                 {
-                                    CompressX_Image_Meta::update_compressed_size($image_id,filesize($output_path));
+                                    CompressX_Image_Meta_V2::update_compressed_size($image_id,filesize($output_path));
                                 }
                             }
 
 
-                            CompressX_Image_Meta::update_images_meta($image_id,$image_optimize_meta);
+                            CompressX_Image_Meta_V2::update_images_meta($image_id,$image_optimize_meta);
                         }
                         else
                         {
@@ -908,7 +972,7 @@ class CompressX_Image_Opt_Method
                             $image_optimize_meta['size'][$size_key]['compress_status']=0;
                             $image_optimize_meta['size'][$size_key]['status']='failed';
                             $image_optimize_meta['size'][$size_key]['error']=$ret['error'];
-                            CompressX_Image_Meta::update_images_meta($image_id,$image_optimize_meta);
+                            CompressX_Image_Meta_V2::update_images_meta($image_id,$image_optimize_meta);
 
                             $success=false;
                             $has_compress=false;
@@ -918,7 +982,7 @@ class CompressX_Image_Opt_Method
                 }
 
                 if($has_compress)
-                    CompressX_Image_Meta::update_image_meta_compressed($image_id,1);
+                    CompressX_Image_Meta_V2::update_image_meta_compressed($image_id,1);
             }
         }
 
@@ -929,11 +993,11 @@ class CompressX_Image_Opt_Method
     {
         $success=true;
         $has_convert=true;
-        $image_optimize_meta =CompressX_Image_Meta::get_image_meta($image_id);
+        $image_optimize_meta =CompressX_Image_Meta_V2::get_image_meta($image_id);
         $uploads=wp_get_upload_dir();
         if(CompressX_Image_Opt_Method::need_convert_to_webp_ex($image_id,$options))
         {
-            if(CompressX_Image_Meta::get_image_meta_webp_converted($image_id)==0)
+            if(CompressX_Image_Meta_V2::get_image_meta_webp_converted($image_id)==0)
             {
                 $file_path = get_attached_file( $image_id );
 
@@ -999,14 +1063,14 @@ class CompressX_Image_Opt_Method
                                     @wp_delete_file($output_path);
                                     if($size_key=="og")
                                     {
-                                        CompressX_Image_Meta::update_webp_converted_size($image_id,filesize($filename));
+                                        CompressX_Image_Meta_V2::update_webp_converted_size($image_id,filesize($filename));
                                     }
                                 }
                                 else
                                 {
                                     if($size_key=="og")
                                     {
-                                        CompressX_Image_Meta::update_webp_converted_size($image_id,filesize($output_path));
+                                        CompressX_Image_Meta_V2::update_webp_converted_size($image_id,filesize($output_path));
                                     }
                                 }
                             }
@@ -1014,12 +1078,12 @@ class CompressX_Image_Opt_Method
                             {
                                 if($size_key=="og")
                                 {
-                                    CompressX_Image_Meta::update_webp_converted_size($image_id,filesize($output_path));
+                                    CompressX_Image_Meta_V2::update_webp_converted_size($image_id,filesize($output_path));
                                 }
                             }
 
 
-                            CompressX_Image_Meta::update_images_meta($image_id,$image_optimize_meta);
+                            CompressX_Image_Meta_V2::update_images_meta($image_id,$image_optimize_meta);
                         }
                         else
                         {
@@ -1027,7 +1091,7 @@ class CompressX_Image_Opt_Method
                             $image_optimize_meta['size'][$size_key]['convert_webp_status']=0;
                             $image_optimize_meta['size'][$size_key]['status']='failed';
                             $image_optimize_meta['size'][$size_key]['error']=$ret['error'];
-                            CompressX_Image_Meta::update_images_meta($image_id,$image_optimize_meta);
+                            CompressX_Image_Meta_V2::update_images_meta($image_id,$image_optimize_meta);
 
                             $success=false;
                             $has_convert=false;
@@ -1036,7 +1100,7 @@ class CompressX_Image_Opt_Method
                 }
 
                 if($has_convert)
-                    CompressX_Image_Meta::update_image_meta_webp_converted($image_id,1);
+                    CompressX_Image_Meta_V2::update_image_meta_webp_converted($image_id,1);
             }
         }
 
@@ -1047,11 +1111,11 @@ class CompressX_Image_Opt_Method
     {
         $success=true;
         $has_convert=true;
-        $image_optimize_meta =CompressX_Image_Meta::get_image_meta($image_id);
+        $image_optimize_meta =CompressX_Image_Meta_V2::get_image_meta($image_id);
         $uploads=wp_get_upload_dir();
         if(CompressX_Image_Opt_Method::need_convert_to_avif_ex($image_id,$options))
         {
-            if(CompressX_Image_Meta::get_image_meta_avif_converted($image_id)==0)
+            if(CompressX_Image_Meta_V2::get_image_meta_avif_converted($image_id)==0)
             {
                 $file_path = get_attached_file( $image_id );
 
@@ -1118,14 +1182,14 @@ class CompressX_Image_Opt_Method
                                     @wp_delete_file($output_path);
                                     if($size_key=="og")
                                     {
-                                        CompressX_Image_Meta::update_avif_converted_size($image_id,filesize($filename));
+                                        CompressX_Image_Meta_V2::update_avif_converted_size($image_id,filesize($filename));
                                     }
                                 }
                                 else
                                 {
                                     if($size_key=="og")
                                     {
-                                        CompressX_Image_Meta::update_avif_converted_size($image_id,filesize($output_path));
+                                        CompressX_Image_Meta_V2::update_avif_converted_size($image_id,filesize($output_path));
                                     }
                                 }
                             }
@@ -1133,11 +1197,11 @@ class CompressX_Image_Opt_Method
                             {
                                 if($size_key=="og")
                                 {
-                                    CompressX_Image_Meta::update_avif_converted_size($image_id,filesize($output_path));
+                                    CompressX_Image_Meta_V2::update_avif_converted_size($image_id,filesize($output_path));
                                 }
                             }
 
-                            CompressX_Image_Meta::update_images_meta($image_id,$image_optimize_meta);
+                            CompressX_Image_Meta_V2::update_images_meta($image_id,$image_optimize_meta);
                         }
                         else
                         {
@@ -1145,7 +1209,7 @@ class CompressX_Image_Opt_Method
                             $image_optimize_meta['size'][$size_key]['convert_avif_status']=0;
                             $image_optimize_meta['size'][$size_key]['status']='failed';
                             $image_optimize_meta['size'][$size_key]['error']=$ret['error'];
-                            CompressX_Image_Meta::update_images_meta($image_id,$image_optimize_meta);
+                            CompressX_Image_Meta_V2::update_images_meta($image_id,$image_optimize_meta);
 
                             $success=false;
                             $has_convert=false;
@@ -1154,7 +1218,7 @@ class CompressX_Image_Opt_Method
                 }
 
                 if($has_convert)
-                    CompressX_Image_Meta::update_image_meta_avif_converted($image_id,1);
+                    CompressX_Image_Meta_V2::update_image_meta_avif_converted($image_id,1);
             }
         }
 
@@ -1394,7 +1458,7 @@ class CompressX_Image_Opt_Method
         // Store the original image file name in image_meta.
         $image_meta['original_image'] = wp_basename( $original_file_path );
         update_post_meta( $image_id, '_wp_attachment_metadata', $image_meta );
-        CompressX_Image_Meta::update_og_size($image_id,$image_meta['filesize']);
+        CompressX_Image_Meta_V2::update_og_size($image_id,$image_meta['filesize']);
         return true;
     }
 
@@ -1507,7 +1571,7 @@ class CompressX_Image_Opt_Method
 
         // Store the original image file name in image_meta.
         $image_meta['original_image'] = wp_basename( $original_file_path );
-        CompressX_Image_Meta::update_og_size($image_id,$image_meta['filesize']);
+        CompressX_Image_Meta_V2::update_og_size($image_id,$image_meta['filesize']);
 
         $ret['result']='success';
         $ret['meta']=$image_meta;
@@ -1586,7 +1650,7 @@ class CompressX_Image_Opt_Method
 
         if(!file_exists($real_path))
         {
-            @mkdir($real_path,0777,true);
+            wp_mkdir_p($real_path);
         }
 
         return $real_path.'/'.basename($og_path);
@@ -1644,6 +1708,7 @@ class CompressX_Image_Opt_Method
         delete_post_meta($image_id,'compressx_image_meta');
         delete_post_meta($image_id,'compressx_image_progressing');
 
+        CompressX_Image_Meta_V2::delete_image_meta($image_id);
         do_action('compressx_delete_image',$image_id);
     }
 

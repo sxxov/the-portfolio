@@ -75,6 +75,15 @@ class SettingsController extends Controller
 
                 if (is_string($value) && $value) {
                     $connection[$index] = sanitize_text_field($value);
+
+                    // Store the name the admin typed. A sender name copied from
+                    // the site title arrives HTML-escaped, and it is plain text
+                    // everywhere it is used. fluentMailGetSettings() decodes on
+                    // read as well, so installs that already hold an escaped
+                    // name are fixed whether or not they ever save again.
+                    if ($index === 'sender_name') {
+                        $connection[$index] = wp_specialchars_decode($connection[$index], ENT_QUOTES);
+                    }
                 }
             }
 
@@ -158,16 +167,57 @@ class SettingsController extends Controller
                 define('FLUENTMAIL_EMAIL_TESTING', true);
             }
 
+            $startedAt = microtime(true);
+
             $settings->sendTestEmail($data, $settings->get());
 
+            /*
+             * The handover to the provider is synchronous, so this covers the whole
+             * round trip: connection/handshake, the API call or SMTP conversation and
+             * the provider's response. It is not the time until the mail lands in the
+             * inbox - that part is out of our hands.
+             */
+            $timeTaken = microtime(true) - $startedAt;
+
             return $this->sendSuccess([
-                'message' => __('Email delivered successfully.', 'fluent-smtp')
+                'message'          => __('Email delivered successfully.', 'fluent-smtp'),
+                'time_taken'       => round($timeTaken, 3),
+                'time_taken_human' => $this->formatDuration($timeTaken)
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            /*
+             * Throwable, not Exception. A missing PHP extension, a type error or
+             * any other engine-level failure raised while sending is an \Error,
+             * which catch(Exception) lets through — the AJAX request then died
+             * with no JSON body and the UI span forever with no message shown.
+             *
+             * getCode() is meaningless on an \Error (almost always 0) and an HTTP
+             * status of 0 is not valid, so only a sane positive code is honoured.
+             */
+            $code = (int)$e->getCode();
+            if ($code < 400 || $code > 599) {
+                $code = 422;
+            }
+
             return $this->sendError([
                 'message' => $e->getMessage()
-            ], $e->getCode());
+            ], $code);
         }
+    }
+
+    protected function formatDuration($seconds)
+    {
+        if ($seconds < 1) {
+            return sprintf(
+                __('Delivered in %s milliseconds', 'fluent-smtp'),
+                number_format_i18n($seconds * 1000)
+            );
+        }
+
+        return sprintf(
+            __('Delivered in %s seconds', 'fluent-smtp'),
+            number_format_i18n($seconds, 2)
+        );
     }
 
     public function onFail($response)
@@ -296,7 +346,34 @@ class SettingsController extends Controller
     public function installPlugin(Request $request)
     {
         $this->verify();
-        $pluginSlug = $request->get('plugin_slug');
+
+        // Sanitize plugin slug input
+        $pluginSlug = sanitize_key($request->get('plugin_slug'));
+
+        // Define whitelist of allowed plugins
+        $allowedPlugins = ['fluentform', 'fluent-crm', 'ninja-tables'];
+
+        // Validate plugin slug against whitelist with strict comparison
+        if (!in_array($pluginSlug, $allowedPlugins, true)) {
+            return $this->sendError([
+                'message' => __('Invalid plugin specified. Only approved plugins can be installed.', 'fluent-smtp')
+            ]);
+        }
+
+        // Verify user has permission to install plugins
+        if (!current_user_can('install_plugins')) {
+            return $this->sendError([
+                'message' => __('Sorry, you do not have permission to install plugins.', 'fluent-smtp')
+            ]);
+        }
+
+        // Verify file modifications are allowed
+        if (!wp_is_file_mod_allowed('install_plugins')) {
+            return $this->sendError([
+                'message' => __('Plugin installation is disabled on this site.', 'fluent-smtp')
+            ]);
+        }
+
         $plugin = [
             'name'      => $pluginSlug,
             'repo-slug' => $pluginSlug,
@@ -318,20 +395,14 @@ class SettingsController extends Controller
             ]
         ];
 
-        if (!isset($UrlMaps[$pluginSlug]) || !wp_is_file_mod_allowed('install_plugins')) {
-            $this->sendError([
-                'message' => __('Sorry, You can not install this plugin', 'fluent-smtp')
-            ]);
-        }
-
         try {
             $this->backgroundInstaller($plugin);
-            $this->send([
+            return $this->send([
                 'message' => __('Plugin has been successfully installed.', 'fluent-smtp'),
                 'info'    => $UrlMaps[$pluginSlug]
             ]);
         } catch (\Exception $exception) {
-            $this->sendError([
+            return $this->sendError([
                 'message' => $exception->getMessage()
             ]);
         }
@@ -453,23 +524,23 @@ class SettingsController extends Controller
     public function subscribe()
     {
         $this->verify();
-        $email = sanitize_text_field($_REQUEST['email']); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-        $displayName = '';
+        // Properly sanitize email input with sanitize_email() instead of sanitize_text_field()
+        $email = isset($_REQUEST['email']) ? sanitize_email($_REQUEST['email']) : '';
 
-        if (isset($_REQUEST['display_name'])) {
-            $displayName = sanitize_text_field($_REQUEST['display_name']);
-        }
+        // Sanitize display name
+        $displayName = isset($_REQUEST['display_name']) ? sanitize_text_field($_REQUEST['display_name']) : '';
 
+        // Validate email format
         if (!is_email($email)) {
             return $this->sendError([
-                'message' => __('Sorry! The provider email is not valid', 'fluent-smtp')
+                'message' => __('Sorry! The provided email is not valid', 'fluent-smtp')
             ], 422);
         }
 
+        // Properly validate share_essentials with isset() check and strict comparison
         $shareEssentials = 'no';
-
-        if ($_REQUEST['share_essentials'] == 'yes') {
+        if (isset($_REQUEST['share_essentials']) && $_REQUEST['share_essentials'] === 'yes') {
             update_option('_fluentsmtp_sub_update', 'shared', 'no');
             $shareEssentials = 'yes';
         } else {
@@ -586,6 +657,21 @@ class SettingsController extends Controller
 
         $clientId = Arr::get($connection, 'client_id');
         $clientSecret = Arr::get($connection, 'client_secret');
+        $tenantId = Arr::get($connection, 'tenant_id');
+
+        /*
+         * The tenant is part of the authority the browser is about to be sent
+         * to, so it is checked here as well as on save — this endpoint is
+         * reached before the connection has been stored, and refusing a bad
+         * value is better than quietly signing in against the wrong directory.
+         */
+        if (!\FluentMail\App\Services\Mailer\Providers\Outlook\API::isValidTenant($tenantId)) {
+            return $this->sendError([
+                'tenant_id' => [
+                    'invalid' => __('Directory (tenant) ID must be the tenant GUID, a verified domain such as contoso.onmicrosoft.com, or one of common, organizations, consumers.', 'fluent-smtp')
+                ]
+            ]);
+        }
 
         delete_option('_fluentsmtp_intended_outlook_info');
 
@@ -611,7 +697,8 @@ class SettingsController extends Controller
         } else {
             update_option('_fluentsmtp_intended_outlook_info', [
                 'client_id'     => $clientId,
-                'client_secret' => $clientSecret
+                'client_secret' => $clientSecret,
+                'tenant_id'     => $tenantId
             ]);
         }
 
@@ -632,7 +719,7 @@ class SettingsController extends Controller
         }
 
         return $this->sendSuccess([
-            'auth_url' => (new \FluentMail\App\Services\Mailer\Providers\Outlook\API($clientId, $clientSecret))->getAuthUrl()
+            'auth_url' => (new \FluentMail\App\Services\Mailer\Providers\Outlook\API($clientId, $clientSecret, $tenantId))->getAuthUrl()
         ]);
     }
 

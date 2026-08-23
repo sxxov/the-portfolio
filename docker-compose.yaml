@@ -17,7 +17,7 @@ services:
         networks:
             private:
     wordpress:
-        image: wordpress:6.9.0-php8.5-apache
+        image: wordpress:7.1.0-php8.5-apache
         restart: unless-stopped
         hostname: ${SITE_HOST}
         command:
@@ -37,6 +37,7 @@ services:
             WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
             WORDPRESS_CONFIG_EXTRA: |
                 $$_SERVER['HTTPS'] = 'on';
+                define('AUTOMATIC_UPDATER_DISABLED', true);
                 define('WP_HOME', 'https://${SITE_HOST}');
                 define('WP_SITEURL', 'https://${SITE_HOST}');
         env_file:

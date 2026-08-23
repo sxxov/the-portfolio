@@ -3,235 +3,339 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class CompressX_Image_Scanner
 {
+    private static $has_sellvia = null;
+
+    public static function check_sellvia_environment()
+    {
+        if ( self::$has_sellvia === null )
+        {
+            if ( !function_exists('get_plugins') )
+            {
+                require_once ABSPATH . 'wp-admin/includes/plugin.php';
+            }
+
+            $plugin_path = 'sellvia-platform/sellvia-platform.php';
+
+            $installed_plugins = get_plugins();
+            $is_installed = isset( $installed_plugins[ $plugin_path ] );
+            if($is_installed)
+            {
+                self::$has_sellvia=true;
+            }
+            else
+            {
+                self::$has_sellvia=false;
+            }
+        }
+        return self::$has_sellvia;
+    }
+
+    //bulk
     public static function scan_unoptimized_images($force,$start_row)
     {
-        $max_image_count=CompressX_Image_Method::get_max_image_count();
-
         $convert_to_webp=CompressX_Image_Method::get_convert_to_webp();
         $convert_to_avif=CompressX_Image_Method::get_convert_to_avif();
 
-        //$exclude_regex_folder=CompressX_Options::get_excludes();
+        //$exclude_regex_folder=CompressX_Pro_Options::get_excludes();
 
         $time_start=time();
         $max_timeout_limit=21;
         $finished=true;
-        $page=300;
-        $max_count=5000;
+        $options = CompressX_Options::get_option(
+            'compressx_general_settings',
+            array()
+        );
 
-        $count=0;
-        for ($offset=$start_row; $offset <= $max_image_count; $offset += $page)
+        $page = isset($options['scan_images_page'])
+            ? $options['scan_images_page']
+            : 500;
+
+        $max_count=10000;
+
+        $count = 0;
+        $last_id = (int) $start_row;
+        $processed = 0;
+
+        while (true)
         {
-            CompressX_Image_Scanner::scan_unoptimized_image($page,$offset,$convert_to_webp,$convert_to_avif);
+            $result = self::scan_unoptimized_image_by_cursor($page, $last_id, $convert_to_webp, $convert_to_avif, $force);
 
-            $count=$count+$page;
-            $time_spend=time()-$time_start;
-            if($time_spend>$max_timeout_limit)
-            {
-                $offset+=$page;
-                $finished=false;
+            if (empty($result['last_id'])) {
+                $finished = true;
                 break;
             }
-            else if($count>$max_count)
-            {
-                $offset+=$page;
-                $finished=false;
+
+            $last_id = $result['last_id'];
+            $processed += $result['count'];
+
+            $time_spend = time() - $time_start;
+            if ($time_spend > $max_timeout_limit || $processed > $max_count) {
+                $finished = false;
                 break;
             }
         }
 
-        $need_optimize_images=CompressX_Image_Scanner::get_need_optimize_images_count($force);
-        $ret['result']='success';
-        $ret['finished']=$finished;
-        $ret['offset']=$offset;
-        $ret['progress']=sprintf(
-        /* translators: %1$d: Scanning images*/
-            __('Scanning images: %1$d found' ,'compressx'),
-            $need_optimize_images);
+        $need_optimize_images = self::get_need_optimize_images_count($force);
+
+        $ret['result']   = 'success';
+        $ret['finished'] = $finished;
+        $ret['offset']   = $last_id;
+        //$max_image_count=CompressX_Image_Method::get_max_image_count();
+        global $wpdb;
+        $max_image_id = (int) $wpdb->get_var("
+    SELECT MAX(ID) FROM {$wpdb->posts} WHERE post_type='attachment'
+");
+        $progress = min(100, round(($last_id / $max_image_id) * 100, 2));
+        $ret['progress'] = sprintf('Scanning up to ID %1$d of %2$d, Found %3$d (%4$s%%)',
+            $last_id, $max_image_id, $need_optimize_images, $progress
+        );
 
         return $ret;
     }
 
-    public static function scan_unoptimized_images_ex($force, $start_row)
+    //scan
+    public static function scan_unoptimized_images_v2($force, $start_row)
     {
-        $max_image_count = CompressX_Image_Method::get_max_image_count();
+        $convert_to_webp=CompressX_Image_Method::get_convert_to_webp();
+        $convert_to_avif=CompressX_Image_Method::get_convert_to_avif();
 
-        $convert_to_webp = CompressX_Image_Method::get_convert_to_webp();
-        $convert_to_avif = CompressX_Image_Method::get_convert_to_avif();
+        $time_start=time();
+        $max_timeout_limit=15;
+        $finished=true;
+        $options = CompressX_Options::get_option(
+            'compressx_general_settings',
+            array()
+        );
 
-        $time_start = time();
-        $max_timeout_limit = 21;
-        $finished = true;
-        $page = 300;
-        $max_count_per_run = 5000;
+        $page = isset($options['scan_images_page'])
+            ? $options['scan_images_page']
+            : 500;
+
+        $max_count=10000;
 
         $count = 0;
-        $offset = $start_row;
+        $last_id = (int) $start_row;
+        $processed = 0;
 
-        for (; $offset <= $max_image_count; $offset += $page)
+        while (true)
         {
-            CompressX_Image_Scanner::scan_unoptimized_image(
+            $result = self::scan_unoptimized_image_by_cursor_v2(
                 $page,
-                $offset,
+                $last_id,
                 $convert_to_webp,
-                $convert_to_avif
+                $convert_to_avif,
+                $force
             );
 
-            $count += $page;
-
-            // TIME LIMIT
-            if ((time() - $time_start) > $max_timeout_limit) {
-                $finished = false;
+            if (empty($result['last_id'])) {
+                $finished = true;
                 break;
             }
 
-            // MAX COUNT PER CHUNK
-            if ($count >= $max_count_per_run) {
+            $last_id = $result['last_id'];
+            $processed += $result['count'];
+
+            $time_spend = time() - $time_start;
+            if ($time_spend > $max_timeout_limit || $processed > $max_count) {
                 $finished = false;
                 break;
             }
         }
-
-        // prevent overflow
-        if ($offset > $max_image_count) {
-            $offset = $max_image_count;
-        }
-
-        // total number of images scanned
-        $total_scanned = min($offset, $max_image_count);
-
-        // total images to scan
-        $total_images = $max_image_count > 0 ? $max_image_count : 1; // avoid division by zero
 
         // percent
-        $percent = round(($total_scanned / $total_images) * 100, 2);
+        global $wpdb;
+        $total_attachments   = self::get_total_attachments_cached();
+
+        $scanned_attachments = self::get_scanned_attachments($last_id);
+
+        $percent = $total_attachments > 0
+            ? min(100, round(($scanned_attachments / $total_attachments) * 100, 2))
+            : 100;
 
         // need optimize images
-        $need_optimize_images = CompressX_Image_Scanner::get_need_optimize_images_count($force);
+        $need_optimize_images = self::get_need_optimize_images_count($force);
 
-        // progress text (example "123 / 5000 scanned")
         $progress_text = sprintf(
-            __('%1$d / %2$d scanned', 'compressx'),
-            $total_scanned,
-            $max_image_count
+            '%1$d / %2$d scanned',
+            $scanned_attachments,
+            $total_attachments
         );
 
         $ret = [
             'result'           => 'success',
             'finished'         => $finished,
-            'offset'           => $offset,
+            'offset'           => $last_id,
             'found'            => $need_optimize_images,
             'progress_text'    => $progress_text,
-            'progress_percent' => $percent
+            'progress_percent' => $percent,
+            'last_id'          => $last_id
         ];
 
         return $ret;
     }
 
-    public static function scan_unoptimized_image($limit,$offset,$convert_to_webp,$convert_to_avif)
+    private static function get_total_attachments_cached()
     {
-        if(!$convert_to_webp&&!$convert_to_avif)
-        {
-            return;
-        }
-
         global $wpdb;
 
         $mime_types = array(
-            "image/jpg",
-            "image/jpeg",
-            "image/png",
-            "image/webp",
-            "image/avif"
+            'image/jpg',
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/avif'
         );
 
         $placeholders = implode(',', array_fill(0, count($mime_types), '%s'));
 
-        if ($limit <= 0) {
-            $limit = 300; //
-        }
-        if ($offset < 0) {
-            $offset = 0;
+        $query = "
+        SELECT COUNT(1)
+        FROM {$wpdb->posts}
+        WHERE post_type='attachment'
+        AND post_mime_type IN ($placeholders)
+    ";
+
+        $query = $wpdb->prepare($query, $mime_types);
+
+        return (int) $wpdb->get_var($query);
+    }
+
+    public static function scan_unoptimized_image_by_cursor($limit, $last_id, $convert_to_webp, $convert_to_avif, $force)
+    {
+        if (!$convert_to_webp && !$convert_to_avif)
+        {
+            return ['count' => 0, 'last_id' => 0];
         }
 
+        global $wpdb;
+
+        $mime_types = ["image/jpg", "image/jpeg", "image/png", "image/webp", "image/avif"];
+        $placeholders = implode(',', array_fill(0, count($mime_types), '%s'));
+
         $subquery = "
-        SELECT ID
+        SELECT ID,post_mime_type
         FROM {$wpdb->posts}
         WHERE post_type = 'attachment'
           AND post_mime_type IN ($placeholders)
+          AND ID > %d
         ORDER BY ID ASC
-        LIMIT %d OFFSET %d
+        LIMIT %d
     ";
-        $args = array_merge($mime_types, [$limit, $offset]);
+        $args = array_merge($mime_types, [$last_id, $limit]);
 
+        if ($force) {
+            $status_filter = "1=1";
+        } else {
+            $status_filter = "(pm.status IS NULL OR pm.status NOT IN ('pending', 'skip'))";
+        }
+
+        $meta_table=CompressX_Image_Meta_V2::table_name();
         $outer_query = "
-        SELECT p.ID
+        SELECT p.ID,p.post_mime_type,pm.attachment_id
         FROM ($subquery) p
-        LEFT JOIN {$wpdb->postmeta} pm 
-          ON p.ID = pm.post_id AND pm.meta_key = 'compressx_image_meta_status'
-        WHERE (pm.meta_value IS NULL OR pm.meta_value != 'pending')
+        LEFT JOIN {$meta_table} pm
+          ON p.ID = pm.attachment_id
+        WHERE $status_filter
     ";
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
         $query = $wpdb->prepare($outer_query, $args);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
         $result = $wpdb->get_results($query, OBJECT_K);
 
-        if(!empty($result))
+        if (empty($result)) {
+            return ['count' => 0, 'last_id' => 0];
+        }
+
+        $processed = 0;
+        $max_id = 0;
+        $exclude = CompressX_Options::get_excludes();
+
+        foreach ($result as $image)
         {
-            foreach ( $result as $image )
+            $image_id = (int) $image->ID;
+            $max_id = max($max_id, $image_id);
+            $processed++;
+
+            $meta=CompressX_Image_Meta_V2::get_image_meta($image_id);
+
+            if (self::should_skip($image_id))
             {
-                wp_cache_delete( $image->ID, 'post_meta' );
+                CompressX_Image_Meta_V2::update_image_meta_status($image_id, 'skip');
+                continue;
+            }
 
-                if(CompressX_Image_Meta::is_image_optimized($image->ID))
+            if(isset($meta['status'])&&$meta['status']=='optimized')
+            {
+                continue;
+            }
+
+            $type=$image->post_mime_type;
+            $file_path = get_post_meta($image_id, '_wp_attached_file', true);
+
+            if (empty($file_path))
+            {
+                continue;
+            }
+
+            if (self::should_exclude_by_path($file_path, $exclude))
+            {
+                CompressX_Image_Meta_V2::update_image_meta_status(
+                    $image_id,
+                    'skip'
+                );
+
+                continue;
+            }
+
+            $need_opt = false;
+
+            if ($convert_to_webp)
+            {
+                if ($type != 'image/avif')
                 {
-                    continue;
-                }
-                else
-                {
-                    $need_opt=false;
-                    $file_path = get_attached_file($image->ID);
-                    $type=pathinfo($file_path, PATHINFO_EXTENSION);
-
-                    if($convert_to_webp)
+                    if( !isset($meta['webp_converted']) ||$meta['webp_converted']==0)
                     {
-                        if($type!='webp'&&$type!='avif')
-                        {
-                            if(!CompressX_Image_Meta::get_image_meta_webp_converted($image->ID))
-                            {
-                                $need_opt=true;
-                            }
-                        }
-                        else if($type=='webp')
-                        {
-                            if(!CompressX_Image_Meta::get_image_meta_compressed($image->ID))
-                            {
-                                $need_opt=true;
-                            }
-                        }
-                    }
-
-                    if($convert_to_avif)
-                    {
-                        if($type!='avif')
-                        {
-                            if(!CompressX_Image_Meta::get_image_meta_avif_converted($image->ID))
-                            {
-                                $need_opt=true;
-                            }
-                        }
-                        else
-                        {
-                            if(!CompressX_Image_Meta::get_image_meta_compressed($image->ID))
-                            {
-                                $need_opt=true;
-                            }
-                        }
-                    }
-
-                    if($need_opt)
-                    {
-                        CompressX_Image_Meta::update_image_meta_status($image->ID,'pending');
+                        $need_opt = true;
                     }
                 }
             }
+
+            if ($convert_to_avif)
+            {
+                if( !isset($meta['avif_converted']) ||$meta['avif_converted']==0)
+                {
+                    $need_opt = true;
+                }
+            }
+
+            if ($need_opt)
+            {
+                CompressX_Image_Meta_V2::update_image_meta_status($image_id, 'pending');
+            }
+        }
+
+        return [
+            'count' => $processed,
+            'last_id' => $max_id,
+        ];
+    }
+
+    public static function should_skip($image_id)
+    {
+        if ( ! self::check_sellvia_environment() )
+        {
+            return false;
+        }
+
+        $is_sellvia = get_post_meta($image_id, '_wp_sellvia_attached_file', true);
+        if ($is_sellvia === '1')
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
@@ -239,70 +343,294 @@ class CompressX_Image_Scanner
     {
         global $wpdb;
 
-        $meta_key = 'compressx_image_meta_status';
+        $meta_table = CompressX_Image_Meta_V2::table_name();
 
-        if ( $force ) {
-            $query = $wpdb->prepare("
-            SELECT COUNT(DISTINCT post_id)
-            FROM {$wpdb->postmeta}
-            WHERE meta_key = %s
-              AND meta_value IN ('pending', 'optimized')
-        ", $meta_key);
+        if ($force) {
+            $statuses = ['pending', 'optimized', 'failed'];
         } else {
-            $query = $wpdb->prepare("
-            SELECT COUNT(DISTINCT post_id)
-            FROM {$wpdb->postmeta}
-            WHERE meta_key = %s
-              AND meta_value = 'pending'
-        ", $meta_key);
+            $statuses = ['pending', 'failed'];
         }
 
-        return (int) $wpdb->get_var($query);
-    }
+        $placeholders = implode(',', array_fill(0, count($statuses), '%s'));
 
-    public static function get_need_optimize_images($max_image_count = 100, $offset = 0, $force = false)
-    {
-        global $wpdb;
-
-        $meta_key = 'compressx_image_meta_status';
-
-        if ( $force ) {
-            $status_condition = "meta_value IN ('pending', 'optimized')";
-        } else {
-            $status_condition = "meta_value = 'pending'";
-        }
-
-        $query = $wpdb->prepare("
-        SELECT DISTINCT post_id
-        FROM {$wpdb->postmeta}
-        WHERE meta_key = %s
-          AND $status_condition
-        LIMIT %d OFFSET %d
-    ", $meta_key, $max_image_count, $offset);
-
-        return $wpdb->get_col($query);
+        return (int) $wpdb->get_var($wpdb->prepare("
+        SELECT COUNT(attachment_id)
+        FROM {$meta_table}
+        WHERE status IN ($placeholders)
+    ", $statuses));
     }
 
     public static function get_need_optimize_images_by_cursor($last_id = 0, $limit = 200, $force = false)
     {
         global $wpdb;
 
-        $meta_key = 'compressx_image_meta_status';
+        $meta_table=CompressX_Image_Meta_V2::table_name();
 
-        $status_condition = $force
-            ? "pm.meta_value IN ('pending', 'optimized')"
-            : "pm.meta_value = 'pending'";
-
-        $query = $wpdb->prepare("
-        SELECT DISTINCT pm.post_id
-        FROM {$wpdb->postmeta} pm
-        WHERE pm.meta_key = %s
-          AND $status_condition
-          AND pm.post_id > %d
-        ORDER BY pm.post_id ASC
+        if ($force)
+        {
+            return $wpdb->get_col($wpdb->prepare("
+        SELECT pm.attachment_id 
+        FROM {$meta_table} pm
+        WHERE pm.status IN ('pending', 'optimized', 'failed')
+          AND pm.attachment_id  > %d
+        ORDER BY pm.attachment_id  ASC
         LIMIT %d
-    ", $meta_key, $last_id, $limit);
+    ",  $last_id, $limit));
+        }
+        else
+        {
+            return $wpdb->get_col($wpdb->prepare("
+        SELECT pm.attachment_id 
+        FROM {$meta_table} pm
+        WHERE pm.status IN ('pending', 'failed')
+          AND pm.attachment_id  > %d
+        ORDER BY pm.attachment_id  ASC
+        LIMIT %d
+    ",  $last_id, $limit));
+        }
+    }
 
-        return $wpdb->get_col($query);
+    private static function get_scanned_attachments($last_id)
+    {
+        global $wpdb;
+
+        $mime_types = array(
+            'image/jpg',
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/avif'
+        );
+
+        $placeholders = implode(',', array_fill(0, count($mime_types), '%s'));
+
+        $query = "
+        SELECT COUNT(1)
+        FROM {$wpdb->posts}
+        WHERE post_type='attachment'
+        AND post_mime_type IN ($placeholders)
+        AND ID <= %d
+    ";
+
+        $args = array_merge($mime_types, array($last_id));
+
+        $query = $wpdb->prepare($query, $args);
+
+        return (int) $wpdb->get_var($query);
+    }
+
+    public static function scan_unoptimized_image_by_cursor_v2($limit, $last_id, $convert_to_webp, $convert_to_avif, $force)
+    {
+        if (!$convert_to_webp && !$convert_to_avif)
+        {
+            return array(
+                'count'   => 0,
+                'last_id' => 0
+            );
+        }
+
+        global $wpdb;
+
+        $limit   = max(1, (int)$limit);
+        $last_id = max(0, (int)$last_id);
+
+        $mime_types = array(
+            'image/jpg',
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/avif'
+        );
+
+        $placeholders = implode(',', array_fill(0, count($mime_types), '%s'));
+
+        if ($force)
+        {
+            $status_filter = "1=1";
+        }
+        else
+        {
+            $status_filter = "(pm.status IS NULL OR pm.status NOT IN ('pending', 'skip'))";
+        }
+
+        $meta_table = CompressX_Image_Meta_V2::table_name();
+
+        $sql = "
+        SELECT
+            p.ID,
+            p.post_mime_type,
+            pm.status,
+            pm.webp_converted,
+            pm.avif_converted,
+            af.meta_value AS attached_file
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$meta_table} pm
+            ON p.ID = pm.attachment_id
+        LEFT JOIN {$wpdb->postmeta} af
+            ON af.post_id = p.ID
+            AND af.meta_key = '_wp_attached_file'
+        WHERE p.post_type = 'attachment'
+            AND p.post_mime_type IN ($placeholders)
+            AND p.ID > %d
+            AND {$status_filter}
+        ORDER BY p.ID ASC
+        LIMIT %d
+    ";
+
+        $args = array_merge(
+            $mime_types,
+            array(
+                $last_id,
+                $limit
+            )
+        );
+
+        $query = $wpdb->prepare($sql, $args);
+
+        $result = $wpdb->get_results($query);
+
+        if (empty($result))
+        {
+            return array(
+                'count'   => 0,
+                'last_id' => 0
+            );
+        }
+
+        $processed = 0;
+        $max_id = 0;
+        $exclude = CompressX_Options::get_excludes();
+
+        foreach ($result as $image)
+        {
+            $image_id = (int)$image->ID;
+
+            $max_id = max($max_id, $image_id);
+            $processed++;
+
+            $status = isset($image->status)
+                ? (string)$image->status
+                : '';
+
+            $webp_converted = isset($image->webp_converted)
+                ? (int)$image->webp_converted
+                : 0;
+
+            $avif_converted = isset($image->avif_converted)
+                ? (int)$image->avif_converted
+                : 0;
+
+
+            if (self::should_skip($image_id))
+            {
+                CompressX_Image_Meta_V2::update_image_meta_status(
+                    $image_id,
+                    'skip'
+                );
+
+                continue;
+            }
+
+
+            if ($status === 'optimized')
+            {
+                continue;
+            }
+
+
+            $file_path = isset($image->attached_file)
+                ? (string)$image->attached_file
+                : '';
+
+            if (empty($file_path))
+            {
+                continue;
+            }
+
+            if (self::should_exclude_by_path($file_path, $exclude))
+            {
+                CompressX_Image_Meta_V2::update_image_meta_status(
+                    $image_id,
+                    'skip'
+                );
+
+                continue;
+            }
+
+            $type = (string)$image->post_mime_type;
+
+            $need_opt = false;
+
+
+            if ($convert_to_webp && $type !== 'image/avif' && $webp_converted === 0)
+            {
+                $need_opt = true;
+            }
+
+
+            if ($convert_to_avif && $avif_converted === 0)
+            {
+                $need_opt = true;
+            }
+
+
+            if ($need_opt)
+            {
+                CompressX_Image_Meta_V2::update_image_meta_status(
+                    $image_id,
+                    'pending'
+                );
+            }
+        }
+
+
+        return array(
+            'count'   => $processed,
+            'last_id' => $max_id,
+        );
+    }
+
+    public static function get_attached_file_by_meta_value($file)
+    {
+        if (empty($file))
+        {
+            return false;
+        }
+
+        if (
+            0 !== strpos($file, '/') &&
+            !preg_match('|^.:\\\\|', $file) &&
+            !preg_match('|^[a-zA-Z]:/|', $file)
+        )
+        {
+            $uploads = wp_get_upload_dir();
+
+            if (false === $uploads['error'])
+            {
+                $file = $uploads['basedir'] . '/' . ltrim($file, '/');
+            }
+        }
+
+        return $file;
+    }
+
+    public static function should_exclude_by_path($relative_file, $exclude)
+    {
+        if (empty($relative_file) || empty($exclude))
+        {
+            return false;
+        }
+
+        $file_path = self::get_attached_file_by_meta_value($relative_file);
+
+        if (empty($file_path))
+        {
+            return false;
+        }
+
+        return CompressX_Image_Method::exclude_path_ex(
+            $file_path,
+            $exclude
+        );
     }
 }

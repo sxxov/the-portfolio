@@ -41,7 +41,7 @@ trait ValidatorTrait
     public function checkConnection($connection)
     {
         $connection = $this->filterConnectionVars($connection);
-        $region = 'email.' . $connection['region'] . '.amazonaws.com';
+        $region = SimpleEmailService::regionToHost($connection['region']);
 
         $ses = new SimpleEmailService(
             $connection['access_key'],

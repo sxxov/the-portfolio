@@ -74,6 +74,7 @@ class CompressX_Settings_Display
                 <?php $this->output_exclude_folders(); ?>
                 <?php $this->output_custom_folders(); ?>
                 <?php $this->output_cache_control_settings(); ?>
+                <?php $this->output_scan_page_settings(); ?>
                 <?php $this->output_delete_images(); ?>
 
             </div>
@@ -355,7 +356,7 @@ class CompressX_Settings_Display
                     </button>
 
                     <span id="cx-v2-delete-file-progress" style="display: none;" class="compressx-v2-flex compressx-v2-items-center">
-                        <img src="<?php echo esc_url(is_network_admin() ? network_admin_url('images/loading.gif') : admin_url('images/loading.gif')); ?>" alt="Loading..." style="width: 16px; height: 16px;">
+                        <img src="<?php echo esc_url(is_network_admin() ? network_admin_url('images/loading.gif') : admin_url('images/loading.gif')); ?>" alt="<?php echo esc_attr__( 'Loading...', 'compressx' ); ?>" style="width: 16px; height: 16px;">
                     </span>
 
                     <span id="cx-v2-delete-file-success" class="success hidden compressx-v2-text-sm compressx-v2-font-medium" aria-hidden="true" style="color:#007017"><?php esc_html_e('Deleted!', 'compressx') ?></span>
@@ -397,6 +398,60 @@ class CompressX_Settings_Display
         <?php
     }
 
+    private function output_scan_page_settings()
+    {
+        $options = CompressX_Options::get_option('compressx_general_settings', array());
+        $scan_images_page = isset($options['scan_images_page']) ? intval($options['scan_images_page']) : 500;
+
+        if ($scan_images_page <= 0)
+        {
+            $scan_images_page = 500;
+        }
+        ?>
+        <div class="compressx-v2-border compressx-v2-rounded compressx-v2-bg-white compressx-v2-p-6 compressx-v2-mb-4 compressx-v2-space-y-4">
+
+            <div>
+                <h3 class="compressx-v2-text-sm compressx-v2-font-medium compressx-v2-text-gray-800">
+                    <?php esc_html_e('Images per scan batch', 'compressx'); ?>
+                    <span>
+                    <?php
+                    $this->output_tooltip(
+                        '',
+                        esc_html__('Set the number of images processed per scan batch. A higher value may speed up scanning but requires more server resources.', 'compressx'),
+                        'large'
+                    );
+                    ?>
+                </span>
+                </h3>
+                <p class="compressx-v2-text-xs compressx-v2-text-gray-500">
+                    <?php esc_html_e('Set the number of images processed in each scan batch. The default and recommended value is 500.', 'compressx'); ?>
+                </p>
+            </div>
+
+            <div>
+                <label class="compressx-v2-flex compressx-v2-items-center compressx-v2-gap-2">
+                <span class="compressx-v2-text-sm compressx-v2-text-gray-700">
+                    <?php esc_html_e('Images per scan batch', 'compressx'); ?>
+                </span>
+                    <input
+                            type="number"
+                            option="scan_page_setting"
+                            name="scan_images_page"
+                            value="<?php echo esc_attr($scan_images_page); ?>"
+                            min="50"
+                            max="5000"
+                            step="50"
+                            class="compressx-v2-border compressx-v2-rounded compressx-v2-px-3 compressx-v2-py-2 compressx-v2-text-sm compressx-v2-w-32"
+                    >
+                </label>
+                <!--<p class="compressx-v2-text-xs compressx-v2-text-gray-500 compressx-v2-mt-2">
+                    <?php esc_html_e('Recommended value: 500. Increase this value only if your server has enough resources.', 'compressx'); ?>
+                </p>-->
+            </div>
+        </div>
+        <?php
+    }
+
     private function output_save_section()
     {
         ?>
@@ -408,7 +463,7 @@ class CompressX_Settings_Display
                     </button>
 
                     <span id="cx-v2-save-settings-progress" style="display: none;" class="compressx-v2-flex compressx-v2-items-center">
-                        <img src="<?php echo esc_url(is_network_admin() ? network_admin_url('images/loading.gif') : admin_url('images/loading.gif')); ?>" alt="Loading..." style="width: 16px; height: 16px;">
+                        <img src="<?php echo esc_url(is_network_admin() ? network_admin_url('images/loading.gif') : admin_url('images/loading.gif')); ?>" alt="<?php echo esc_attr__( 'Loading...', 'compressx' ); ?>" style="width: 16px; height: 16px;">
                     </span>
 
                     <span id="cx-v2-save-settings-text" class="success hidden compressx-v2-text-sm compressx-v2-font-medium" aria-hidden="true" style="color:#007017"><?php esc_html_e('Saved!', 'compressx') ?></span>
@@ -664,7 +719,7 @@ class CompressX_Settings_Display
             echo wp_json_encode($ret);
         } catch (Exception $error) {
             $message = 'An exception has occurred. class: ' . get_class($error) . ';msg: ' . $error->getMessage() . ';code: ' . $error->getCode() . ';line: ' . $error->getLine() . ';in_file: ' . $error->getFile() . ';';
-            error_log($message);
+            //error_log($message);
             echo wp_json_encode(array('result' => 'failed', 'error' => $message));
         }
         die();
@@ -794,7 +849,7 @@ class CompressX_Settings_Display
     public function save_settings()
     {
         global $compressx;
-        $compressx->ajax_check_security('compressx-can-use-thumbnail-settings');
+        $compressx->ajax_check_security();
 
         if (isset($_POST['settings']) && !empty($_POST['settings']))
         {
@@ -849,38 +904,66 @@ class CompressX_Settings_Display
         }
 
         // Handle cache_control_setting
-        if (isset($settings['cache_control_setting'])) {
-            $reset_rewrite = false;
-
-            if (isset($settings['cache_control_setting']['disable_cache_control'])) {
+        $reset_rewrite = false;
+        if (isset($settings['cache_control_setting']))
+        {
+            if (isset($settings['cache_control_setting']['disable_cache_control']))
+            {
                 $old_value = isset($options['disable_cache_control']) ? $options['disable_cache_control'] : false;
                 $new_value = $settings['cache_control_setting']['disable_cache_control'] == '1';
 
-                if ($old_value != $new_value) {
+                if ($old_value != $new_value)
+                {
                     $reset_rewrite = true;
                     $options['disable_cache_control'] = $new_value;
                 }
             }
+        }
 
-            if ($reset_rewrite)
+        // Handle scan_page_setting
+        if (isset($settings['scan_page_setting']))
+        {
+            if (isset($settings['scan_page_setting']['scan_images_page']))
             {
-                $image_load = isset($options['image_load']) ? $options['image_load'] : 'htaccess';
-                if ($image_load == 'htaccess')
+                $scan_images_page = intval($settings['scan_page_setting']['scan_images_page']);
+
+                if ($scan_images_page <= 0)
                 {
-                    include_once COMPRESSX_DIR . '/includes/class-compressx-webp-rewrite.php';
-                    $rewrite = new CompressX_Webp_Rewrite();
-                    $rewrite->create_rewrite_rules();
+                    $scan_images_page = 500;
                 }
-                else if ($image_load == 'compat_htaccess')
+
+                if ($scan_images_page < 50)
                 {
-                    include_once COMPRESSX_DIR . '/includes/class-compressx-webp-rewrite.php';
-                    $rewrite = new CompressX_Webp_Rewrite();
-                    $rewrite->create_rewrite_rules_ex();
+                    $scan_images_page = 50;
                 }
+
+                if ($scan_images_page > 5000)
+                {
+                    $scan_images_page = 5000;
+                }
+
+                $options['scan_images_page'] = $scan_images_page;
             }
         }
 
         CompressX_Options::update_option('compressx_general_settings', $options);
+
+        if ($reset_rewrite)
+        {
+            $image_load = isset($options['image_load']) ? $options['image_load'] : 'htaccess';
+            if ($image_load == 'htaccess')
+            {
+                include_once COMPRESSX_DIR . '/includes/class-compressx-webp-rewrite.php';
+                $rewrite = new CompressX_Webp_Rewrite();
+                $rewrite->create_rewrite_rules();
+            }
+            else if ($image_load == 'compat_htaccess')
+            {
+                include_once COMPRESSX_DIR . '/includes/class-compressx-webp-rewrite.php';
+                $rewrite = new CompressX_Webp_Rewrite();
+                $rewrite->create_rewrite_rules_ex();
+            }
+        }
 
         if (isset($_POST['excludes']) && !empty($_POST['excludes']))
         {
@@ -895,13 +978,62 @@ class CompressX_Settings_Display
                 die();
             }
 
+            $old_excludes = CompressX_Options::get_option('compressx_media_excludes', array());
+            $excludes_changed = $this->is_excludes_changed($old_excludes, $excludes);
+
             CompressX_Options::update_option('compressx_media_excludes', $excludes);
+
+            if ($excludes_changed)
+            {
+                CompressX_Image_Meta_V2::clear_image_meta_status();
+            }
 
         }
 
         $ret['result'] = 'success';
         echo wp_json_encode($ret);
         die();
+    }
+
+    private function is_excludes_changed($old_excludes, $new_excludes)
+    {
+        if (!is_array($old_excludes)) {
+            $old_excludes = array();
+        }
+
+        if (!is_array($new_excludes)) {
+            $new_excludes = array();
+        }
+
+        $old_excludes = $this->normalize_excludes_for_compare($old_excludes);
+        $new_excludes = $this->normalize_excludes_for_compare($new_excludes);
+
+        return md5(wp_json_encode($old_excludes)) !== md5(wp_json_encode($new_excludes));
+    }
+
+    private function normalize_excludes_for_compare($excludes)
+    {
+        if (!is_array($excludes)) {
+            return array();
+        }
+
+        ksort($excludes);
+
+        foreach ($excludes as $key => $value) {
+            if (is_array($value)) {
+                $excludes[$key] = $this->normalize_excludes_for_compare($value);
+            } else {
+                if ($value === '1' || $value === 1 || $value === true) {
+                    $excludes[$key] = true;
+                } else if ($value === '0' || $value === 0 || $value === false) {
+                    $excludes[$key] = false;
+                } else {
+                    $excludes[$key] = $value;
+                }
+            }
+        }
+
+        return $excludes;
     }
 
     public function delete_files()
@@ -941,8 +1073,15 @@ class CompressX_Settings_Display
         delete_transient('compressx_set_global_stats');
 
         $table_name = $wpdb->prefix . "compressx_files_opt_meta";
-        $wpdb->get_results("TRUNCATE TABLE $table_name", ARRAY_A);
+        $exists = $wpdb->get_var(
+            $wpdb->prepare("SHOW TABLES LIKE %s", $table_name)
+        );
+        if ($exists == $table_name)
+        {
+            $wpdb->get_results("TRUNCATE TABLE $table_name", ARRAY_A);
+        }
 
+        CompressX_Image_Meta_V2::delete_all_image_meta();
         $this->_delete_files();
 
         $ret['result'] = "success";
@@ -960,23 +1099,24 @@ class CompressX_Settings_Display
         $dir->create_uploads_dir();
     }
 
-    public function deleteDir($dirPath)
+    public function deleteDir( $dirPath )
     {
-        if (! is_dir($dirPath)) {
-            throw new InvalidArgumentException(esc_html("$dirPath must be a directory"));
+        if ( ! is_dir( $dirPath ) ) {
+            return false;
         }
-        if (substr($dirPath, strlen($dirPath) - 1, 1) != '/') {
-            $dirPath .= '/';
+
+        global $wp_filesystem;
+        if ( empty( $wp_filesystem ) ) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            WP_Filesystem();
         }
-        $files = glob($dirPath . '*', GLOB_MARK);
-        foreach ($files as $file) {
-            if (is_dir($file)) {
-                $this->deleteDir($file);
-            } else {
-                wp_delete_file($file);
-            }
+
+        if ( empty( $wp_filesystem ) ) {
+            return false;
         }
-        @rmdir($dirPath);
+
+        // Recursive delete.
+        return $wp_filesystem->rmdir( $dirPath, true );
     }
 
     private function get_custom_children_count($path)

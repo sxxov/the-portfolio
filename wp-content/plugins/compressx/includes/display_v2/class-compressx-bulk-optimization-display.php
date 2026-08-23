@@ -34,7 +34,7 @@ class CompressX_Bulk_Optimization_Display
 
         $start_row=isset($_POST['offset'])?sanitize_key($_POST['offset']):0;
 
-        $ret=CompressX_Image_Scanner::scan_unoptimized_images_ex($force,$start_row);
+        $ret=CompressX_Image_Scanner::scan_unoptimized_images_v2($force,$start_row);
 
         echo wp_json_encode($ret);
 
@@ -162,7 +162,7 @@ class CompressX_Bulk_Optimization_Display
 
         $ret=$log->get_log_content($offset);
 
-        echo json_encode($ret);
+        echo wp_json_encode($ret);
         die();
     }
 
@@ -213,7 +213,7 @@ class CompressX_Bulk_Optimization_Display
             readfile($path);
         } catch (Exception $error) {
             $message = 'An exception has occurred. class: ' . get_class($error) . ';msg: ' . $error->getMessage() . ';code: ' . $error->getCode() . ';line: ' . $error->getLine() . ';in_file: ' . $error->getFile() . ';';
-            error_log($message);
+            //error_log($message);
         }
         exit;
     }
@@ -361,7 +361,7 @@ class CompressX_Bulk_Optimization_Display
                 <!-- Close Button -->
                 <button id="cx_bulk_success_hide"
                         class="compressx-v2-absolute compressx-v2-top-2 compressx-v2-right-2 compressx-v2-text-green-600 hover:compressx-v2-text-green-800 compressx-v2-text-sm compressx-v2-font-medium compressx-v2-bg-transparent compressx-v2-border compressx-v2-border-green-300 hover:compressx-v2-bg-green-100 compressx-v2-rounded-md compressx-v2-px-2 compressx-v2-py-0.5 compressx-v2-transition-all">
-                    Got it
+                    <?php esc_html_e( 'Got it', 'compressx' ); ?>
                 </button>
 
                 <div class="compressx-v2-flex compressx-v2-items-center compressx-v2-gap-3">
@@ -376,7 +376,7 @@ class CompressX_Bulk_Optimization_Display
             <div id="cx_bulk_error" style="display: none" class="compressx-v2-bg-red-50 compressx-v2-border-l-4 compressx-v2-border-red-400 compressx-v2-rounded compressx-v2-p-4 compressx-v2-mb-4 compressx-v2-relative">
                 <button id="cx_bulk_error_hide"
                         class="compressx-v2-absolute compressx-v2-top-2 compressx-v2-right-2 compressx-v2-text-green-600 hover:compressx-v2-text-green-800 compressx-v2-text-sm compressx-v2-font-medium compressx-v2-bg-transparent compressx-v2-border compressx-v2-border-green-300 hover:compressx-v2-bg-green-100 compressx-v2-rounded-md compressx-v2-px-2 compressx-v2-py-0.5 compressx-v2-transition-all">
-                    Got it
+                    <?php esc_html_e( 'Got it', 'compressx' ); ?>
                 </button>
 
                 <div class="compressx-v2-flex compressx-v2-items-center compressx-v2-gap-3">
@@ -610,7 +610,7 @@ class CompressX_Bulk_Optimization_Display
             }
 
             $formatted_logs[] = array(
-                'date' => isset($log['date']) ? $log['date'] : date('M-d-y H:i'),
+                'date' => isset($log['date']) ? $log['date'] : gmdate('M-d-y H:i'),
                 'filename' => isset($log['name']) ? $log['name'] : (isset($log['file_name']) ? $log['file_name'] : 'unknown.txt'),
                 'size' => $size_formatted,
                 'detail_url' => '#',
@@ -623,6 +623,7 @@ class CompressX_Bulk_Optimization_Display
         return $formatted_logs;
     }
 
+    /* old
     private function get_log_list()
     {
         $log_list = array();
@@ -693,15 +694,127 @@ class CompressX_Bulk_Optimization_Display
 
         return $log_list;
     }
+    */
+
+    private function get_log_list()
+    {
+
+        $log_list = array();
+
+        $log = new CompressX_Log();
+        $dir = trailingslashit( $log->GetSaveLogFolder() );
+
+        // Init WP_Filesystem.
+        global $wp_filesystem;
+        if ( empty( $wp_filesystem ) ) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            WP_Filesystem();
+        }
+
+        if ( empty( $wp_filesystem ) ) {
+            return $log_list;
+        }
+
+        if ( ! $wp_filesystem->is_dir( $dir ) ) {
+            return $log_list;
+        }
+
+        $regex = '#^compressx.*_log\.txt$#';
+
+        // List directory files.
+        $dir_list = $wp_filesystem->dirlist( $dir, false, false );
+
+        if ( empty( $dir_list ) || ! is_array( $dir_list ) ) {
+            return $log_list;
+        }
+
+        foreach ( $dir_list as $filename => $info ) {
+
+            if ( empty( $filename ) ) {
+                continue;
+            }
+
+            // Skip folders.
+            if ( isset( $info['type'] ) && 'd' === $info['type'] ) {
+                continue;
+            }
+
+            // Match log files.
+            if ( ! preg_match( $regex, $filename ) ) {
+                continue;
+            }
+
+            $file = $dir . $filename;
+
+            $log_file = array();
+            $log_file['file_name'] = $filename;
+            $log_file['path']      = $file;
+            $log_file['name']      = $filename;
+
+            // Size.
+            $size = $wp_filesystem->size( $file );
+            $log_file['size'] = ( false === $size ) ? 0 : (int) $size;
+
+            // Time.
+            $mtime = $wp_filesystem->mtime( $file );
+            $mtime = ( false === $mtime ) ? 0 : (int) $mtime;
+            $log_file['time'] = $mtime;
+
+            // ID extraction (keep your original logic).
+            if ( preg_match( '/compressx-(.*?)_/', $filename, $matches ) ) {
+                $id = $matches[0];
+                $id = substr( $id, 0, strlen( $id ) - 1 );
+                $log_file['id'] = $id;
+            }
+
+            // Local time format.
+            $offset    = (float) get_option( 'gmt_offset' );
+            $localtime = $mtime + (int) ( $offset * 3600 );
+            $log_file['date'] = gmdate( 'M-d-y H:i', $localtime );
+
+            // Read first line from log file (simulate fgets).
+            $content = $wp_filesystem->get_contents( $file );
+
+            if ( ! empty( $content ) ) {
+                $lines = preg_split( "/\r\n|\n|\r/", $content );
+                $line  = isset( $lines[0] ) ? $lines[0] : '';
+
+                if ( ! empty( $line ) ) {
+                    $pos = strpos( $line, 'Log created: ' );
+                    if ( false !== $pos ) {
+                        $log_file['time'] = substr( $line, $pos + strlen( 'Log created: ' ) );
+                    }
+                }
+            }
+
+            $log_list[ $filename ] = $log_file;
+        }
+
+        uasort(
+            $log_list,
+            function ( $a, $b ) {
+                if ( $a['time'] > $b['time'] ) {
+                    return -1;
+                } elseif ( $a['time'] === $b['time'] ) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        );
+
+        return $log_list;
+    }
 
     public function get_latest_image_data()
     {
         global $compressx;
-        $compressx->ajax_check_security();
+        $compressx->ajax_check_security('compressx-can-use-image-optimization');
 
         $current_image_id=CompressX_Options::get_option('compressx_latest_bulk_image',null);//
 
-        $meta=CompressX_Image_Meta::get_image_meta($current_image_id);
+
+        $meta=CompressX_Image_Meta_V2::get_image_meta($current_image_id);
         if(empty($current_image_id))
         {
             $default_image_data=true;
@@ -716,8 +829,18 @@ class CompressX_Bulk_Optimization_Display
         }
         else
         {
-            $default_image_data=false;
+            if($this->webp_converted_exist($current_image_id)||$this->avif_converted_exist($current_image_id))
+            {
+                $default_image_data=false;
+            }
+            else
+            {
+                $default_image_data=true;
+            }
         }
+
+        $ret['compressx_latest_bulk_image']=$current_image_id;
+        $ret['default_image_data']=$default_image_data;
 
         if($default_image_data)
         {
@@ -768,8 +891,9 @@ class CompressX_Bulk_Optimization_Display
             $og_url=wp_get_attachment_url($current_image_id);
             $current_image['original_url']=$og_url.'?original';
             $current_image['original_path'] = get_attached_file($current_image_id);
+            $meta=CompressX_Image_Meta_V2::get_image_meta($current_image_id);
 
-            $current_image['original_size']=size_format($meta['og_file_size'],2);
+            $current_image['original_size']=size_format($meta['og_file_size']);
 
             if($meta['webp_converted'])
             {
@@ -778,8 +902,17 @@ class CompressX_Bulk_Optimization_Display
                 $savings = round((( $meta['og_file_size'] -  $meta['webp_converted_size']) / $meta['og_file_size']) * 100);
 
                 $output_path=CompressX_Image_Method::get_output_path($current_image['original_path']);
-                $current_image['webp_path']=$output_path.'.webp';
-                $current_image['webp_url']=$this->get_nextgen_url($og_url).'.webp?original';
+                if(isset($meta['mime_type'])&&$meta['mime_type']=="image/webp")
+                {
+                    $current_image['webp_path']=$output_path;
+                    $current_image['webp_url']=$this->get_nextgen_url($og_url).'?original';
+                }
+                else
+                {
+                    $current_image['webp_path']=$output_path.'.webp';
+                    $current_image['webp_url']=$this->get_nextgen_url($og_url).'.webp?original';
+                }
+
                 $current_image['webp_savings'] ="~{$savings}% smaller";
             }
             else
@@ -791,24 +924,21 @@ class CompressX_Bulk_Optimization_Display
                 $current_image['webp_savings'] =0;
             }
 
-            if($meta['compressed'])
-            {
-                $current_image['webp_disabled'] = false;
-                $current_image['webp_size'] = size_format($meta['compressed_size'],2);
-                $savings = round((( $meta['og_file_size'] -  $meta['compressed_size']) /  $meta['og_file_size']) * 100);
-
-                $output_path=CompressX_Image_Method::get_output_path($current_image['original_path']);
-                $current_image['webp_path']=$output_path;
-                $current_image['webp_url']=$this->get_nextgen_url($og_url).'.webp?original';
-                $current_image['webp_savings'] ="~{$savings}% smaller";
-            }
-
             if($meta['avif_converted'])
             {
                 $current_image['avif_disabled'] = false;
                 $output_path=CompressX_Image_Method::get_output_path($current_image['original_path']);
-                $current_image['avif_path']=$output_path.'.avif';
-                $current_image['avif_url']=$this->get_nextgen_url($og_url).'.avif?original';
+                if(isset($meta['mime_type'])&&$meta['mime_type']=="image/avif")
+                {
+                    $current_image['avif_path']=$output_path;
+                    $current_image['avif_url']=$this->get_nextgen_url($og_url).'?original';
+                }
+                else
+                {
+                    $current_image['avif_path']=$output_path.'.avif';
+                    $current_image['avif_url']=$this->get_nextgen_url($og_url).'.avif?original';
+                }
+
                 $current_image['avif_size'] = size_format($meta['avif_converted_size'],2);
                 $savings = round((( $meta['og_file_size'] -  $meta['avif_converted_size']) /  $meta['og_file_size']) * 100);
                 $current_image['avif_savings'] ="~{$savings}% smaller";
@@ -825,8 +955,71 @@ class CompressX_Bulk_Optimization_Display
 
         $ret['result']='success';
         $ret['current_image']=$current_image;
-        echo json_encode($ret);
+        echo wp_json_encode($ret);
         die();
+    }
+
+    public function webp_converted_exist($image_id)
+    {
+        $original_path = get_attached_file($image_id);
+        $meta=CompressX_Image_Meta_V2::get_image_meta($image_id);
+        if($meta['webp_converted'])
+        {
+            $output_path=CompressX_Image_Method::get_output_path($original_path);
+            if(isset($meta['mime_type'])&&$meta['mime_type']=="image/webp")
+            {
+                $webp_path=$output_path;
+            }
+            else
+            {
+                $webp_path=$output_path.'.webp';
+            }
+
+            if(file_exists($webp_path))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public function avif_converted_exist($image_id)
+    {
+        $original_path = get_attached_file($image_id);
+        $meta=CompressX_Image_Meta_V2::get_image_meta($image_id);
+
+        if($meta['avif_converted'])
+        {
+            $output_path=CompressX_Image_Method::get_output_path($original_path);
+            if(isset($meta['mime_type'])&&$meta['mime_type']=="image/avif")
+            {
+                $avif_path=$output_path;
+            }
+            else
+            {
+                $avif_path=$output_path.'.avif';
+            }
+
+            if(file_exists($avif_path))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function get_nextgen_url( $orig_url )

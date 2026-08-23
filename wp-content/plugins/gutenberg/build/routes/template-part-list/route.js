@@ -59,45 +59,127 @@ var require_preferences = __commonJS({
   }
 });
 
+// package-external:@wordpress/private-apis
+var require_private_apis = __commonJS({
+  "package-external:@wordpress/private-apis"(exports, module) {
+    module.exports = window.wp.privateApis;
+  }
+});
+
 // routes/template-part-list/route.ts
 var import_data4 = __toESM(require_data());
 var import_core_data2 = __toESM(require_core_data());
 var import_i18n = __toESM(require_i18n());
-
-// packages/views/build-module/preference-keys.mjs
-function generatePreferenceKey(kind, name, slug) {
-  return `dataviews-${kind}-${name}-${slug}`;
-}
 
 // packages/views/build-module/use-view.mjs
 var import_element = __toESM(require_element(), 1);
 var import_data = __toESM(require_data(), 1);
 var import_preferences = __toESM(require_preferences(), 1);
 
+// packages/views/build-module/preference-keys.mjs
+function generatePreferenceKey(kind, name, slug) {
+  return `dataviews-${kind}-${name}-${slug}`;
+}
+
+// packages/views/build-module/resolve-view.mjs
+var QUERY_PARAMS = ["page", "search"];
+function isPlainObject(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function withoutQueryParams(layer) {
+  const result = isPlainObject(layer) ? { ...layer } : {};
+  for (const key of QUERY_PARAMS) {
+    delete result[key];
+  }
+  return result;
+}
+function mergeLayer(lower, upper) {
+  const result = { ...lower };
+  for (const key of Object.keys(upper)) {
+    const value = upper[key];
+    const current = result[key];
+    result[key] = isPlainObject(current) && isPlainObject(value) ? mergeLayer(current, value) : value;
+  }
+  return result;
+}
+function getLockedFilters(overrides) {
+  return (overrides?.filters ?? []).filter((filter) => filter.isLocked);
+}
+function applyLockedFilters(view, overrides) {
+  const locked = getLockedFilters(overrides);
+  if (locked.length === 0) {
+    return view;
+  }
+  const rest = (view.filters ?? []).filter(
+    (filter) => !locked.some((f) => f.field === filter.field)
+  );
+  return { ...view, filters: [...locked, ...rest] };
+}
+function resolveBaseView(layers, effectiveType) {
+  const { defaultView, defaultLayouts, activeViewOverrides } = layers;
+  const layoutDefaults = defaultLayouts?.[effectiveType];
+  return applyLockedFilters(
+    [layoutDefaults, activeViewOverrides].reduce(
+      (lower, upper) => mergeLayer(lower, withoutQueryParams(upper)),
+      withoutQueryParams(defaultView)
+    ),
+    activeViewOverrides
+  );
+}
+function resolveView(args) {
+  const { defaultView, activeViewOverrides, persistedView, page, search } = args;
+  const effectiveType = persistedView?.type ?? activeViewOverrides?.type ?? defaultView?.type;
+  const baseView = resolveBaseView(args, effectiveType);
+  const view = {
+    ...applyLockedFilters(
+      mergeLayer(baseView, withoutQueryParams(persistedView)),
+      activeViewOverrides
+    ),
+    page: Number(page ?? 1),
+    search: search ?? ""
+  };
+  return view;
+}
+
 // packages/views/build-module/load-view.mjs
 var import_data2 = __toESM(require_data(), 1);
 var import_preferences2 = __toESM(require_preferences(), 1);
 async function loadView(config) {
-  const { kind, name, slug, defaultView, queryParams } = config;
+  const {
+    kind,
+    name,
+    slug,
+    defaultView,
+    defaultLayouts,
+    activeViewOverrides,
+    queryParams
+  } = config;
   const preferenceKey = generatePreferenceKey(kind, name, slug);
-  const persistedView = (0, import_data2.select)(import_preferences2.store).get(
-    "core/views",
-    preferenceKey
-  );
-  const baseView = persistedView ?? defaultView;
-  const page = queryParams?.page ?? 1;
-  const search = queryParams?.search ?? "";
-  return {
-    ...baseView,
-    page,
-    search
-  };
+  const persistedView = (0, import_data2.select)(
+    import_preferences2.store
+  ).get("core/views", preferenceKey);
+  return resolveView({
+    defaultView,
+    defaultLayouts,
+    activeViewOverrides,
+    persistedView,
+    page: queryParams?.page,
+    search: queryParams?.search
+  });
 }
 
+// packages/views/build-module/use-view-config.mjs
+var import_data3 = __toESM(require_data(), 1);
+var import_core_data = __toESM(require_core_data(), 1);
+
+// packages/views/build-module/lock-unlock.mjs
+var import_private_apis = __toESM(require_private_apis(), 1);
+var { lock, unlock } = (0, import_private_apis.__dangerousOptInToUnstableAPIsOnlyForCoreModules)(
+  "I acknowledge private features are not for use in themes or plugins and doing so will break in the next version of WordPress.",
+  "@wordpress/views"
+);
+
 // routes/template-part-list/view-utils.ts
-var import_data3 = __toESM(require_data());
-var import_core_data = __toESM(require_core_data());
-var NAVIGATION_OVERLAY_TEMPLATE_PART_AREA = "navigation-overlay";
 var DEFAULT_VIEW = {
   type: "grid",
   sort: {
@@ -108,97 +190,27 @@ var DEFAULT_VIEW = {
   titleField: "title",
   mediaField: "preview"
 };
-var DEFAULT_VIEWS = [
-  {
-    slug: "all",
-    label: "All Template Parts",
-    view: {
-      ...DEFAULT_VIEW
-    }
-  },
-  {
-    slug: "header",
-    label: "Headers",
-    view: {
-      ...DEFAULT_VIEW,
-      filters: [
-        {
-          field: "area",
-          operator: "is",
-          value: "header"
-        }
-      ]
-    }
-  },
-  {
-    slug: "footer",
-    label: "Footers",
-    view: {
-      ...DEFAULT_VIEW,
-      filters: [
-        {
-          field: "area",
-          operator: "is",
-          value: "footer"
-        }
-      ]
-    }
-  },
-  {
-    slug: "sidebar",
-    label: "Sidebars",
-    view: {
-      ...DEFAULT_VIEW,
-      filters: [
-        {
-          field: "area",
-          operator: "is",
-          value: "sidebar"
-        }
-      ]
-    }
-  },
-  {
-    slug: NAVIGATION_OVERLAY_TEMPLATE_PART_AREA,
-    label: "Overlays",
-    view: {
-      ...DEFAULT_VIEW,
-      filters: [
-        {
-          field: "area",
-          operator: "is",
-          value: NAVIGATION_OVERLAY_TEMPLATE_PART_AREA
-        }
-      ]
-    }
-  },
-  {
-    slug: "uncategorized",
-    label: "General",
-    view: {
-      ...DEFAULT_VIEW,
-      filters: [
-        {
-          field: "area",
-          operator: "is",
-          value: "uncategorized"
-        }
-      ]
-    }
+function getActiveViewOverridesForTab(area) {
+  if (area === "all") {
+    return {};
   }
-];
-function getDefaultView(postType, area) {
-  const viewConfig = DEFAULT_VIEWS.find((v) => v.slug === area);
-  return viewConfig?.view || DEFAULT_VIEW;
+  return {
+    filters: [
+      {
+        field: "area",
+        operator: "is",
+        value: area
+      }
+    ]
+  };
 }
 async function ensureView(area, search) {
-  const postTypeObject = await (0, import_data3.resolveSelect)(import_core_data.store).getPostType("wp_template_part");
-  const defaultView = getDefaultView(postTypeObject, area);
   return loadView({
     kind: "postType",
     name: "wp_template_part",
-    slug: area ?? "all",
-    defaultView,
+    slug: "default-new",
+    defaultView: DEFAULT_VIEW,
+    activeViewOverrides: getActiveViewOverridesForTab(area ?? "all"),
     queryParams: search
   });
 }

@@ -660,7 +660,8 @@
         field_key: this.get('key'),
         i: $layout.index(),
         layout: $layout.data('layout'),
-        value: acf.serialize($layout, prefix)
+        value: acf.serialize($layout, prefix),
+        nonce: this.get('nonce')
       };
 
       // ajax
@@ -836,7 +837,7 @@
                   <label for="acf-new-layout-label">${acf.strEscape(acf.__('New Label'))}</label>
                 </div>
                 <div class="acf-input">
-                  <input id="acf-new-layout-label" type="text" name="acf_new_layout_label" value="${this.get('currentName')}">
+                  <input id="acf-new-layout-label" type="text" name="acf_new_layout_label" value="">
                 </div>
               </div>
               <div class="acf-actions">
@@ -853,6 +854,7 @@
       acf.models.PopupConfirm.prototype.render.apply(this, arguments);
       setTimeout(() => {
         const $input = this.$el.find('input#acf-new-layout-label');
+        $input.val(this.get('currentName'));
         const textLength = $input.val().length;
         $input.trigger('focus');
         $input[0].setSelectionRange(textLength, textLength);
@@ -1021,7 +1023,9 @@
       return this.$('.acf-gallery-attachment');
     },
     $attachment: function (id) {
-      return this.$('.acf-gallery-attachment[data-id="' + id + '"]');
+      return this.$attachments().filter(function () {
+        return String($(this).data('id')) === String(id);
+      });
     },
     $active: function () {
       return this.$('.acf-gallery-attachment.active');
@@ -1051,6 +1055,19 @@
 
       // return
       return val.length ? val : false;
+    },
+    setValue: function (value) {
+      if (!Array.isArray(value)) {
+        value = value ? [value] : [];
+      }
+      this.closeSidebar();
+      this.$attachments().remove();
+      value.forEach(id => {
+        this.appendAttachment({
+          id
+        });
+      });
+      this.render();
     },
     addUnscopedEvents: function (self) {
       // invalidField
@@ -1213,7 +1230,8 @@
       }
 
       // html
-      var html = ['<div class="acf-gallery-attachment" data-id="' + attachment.id + '">', '<input type="hidden" value="' + attachment.id + '" name="' + this.getInputName() + '[]">', '<div class="margin" title="">', '<div class="thumbnail">', '<img src="" alt="">', '</div>', '<div class="filename"></div>', '</div>', '<div class="actions">', '<a href="#" class="acf-icon -cancel dark acf-gallery-remove" data-id="' + attachment.id + '"></a>', '</div>', '</div>'].join('');
+      const escapedId = acf.strEscape(String(attachment.id));
+      var html = ['<div class="acf-gallery-attachment" data-id="' + escapedId + '">', '<input type="hidden" value="' + escapedId + '" name="' + this.getInputName() + '[]">', '<div class="margin" title="">', '<div class="thumbnail">', '<img src="" alt="">', '</div>', '<div class="filename"></div>', '</div>', '<div class="actions">', '<a href="#" class="acf-icon -cancel dark acf-gallery-remove" data-id="' + escapedId + '"></a>', '</div>', '</div>'].join('');
       var $html = $(html);
 
       // append
@@ -1407,6 +1425,7 @@
       var step3 = this.proxy(function (html) {
         // bail early if no html
         if (!html) {
+          this.closeSidebar();
           return;
         }
 
@@ -2252,7 +2271,8 @@
         field_name: this.get('orig_name'),
         rows_per_page: parseInt(this.get('per_page')),
         refresh: clearChanged,
-        nonce: this.get('nonce')
+        nonce: this.get('nonce'),
+        options_page_slug: acf.get('options_page_slug') || ''
       });
       $.ajax({
         url: ajaxurl,

@@ -11,6 +11,23 @@ class CompressX_Log
         $this->log_file_handle=false;
     }
 
+    public function fopen($filename,$mode)
+    {
+        return @fopen($filename,$mode);
+    }
+
+    public function fwrite($handle,$text)
+    {
+        if($handle)
+        {
+            return @fwrite($handle,$text );
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public function CreateLogFile($file_name='')
     {
         if(empty($file_name))
@@ -21,8 +38,7 @@ class CompressX_Log
         }
 
         $this->log_file=$this->GetSaveLogFolder().$file_name;
-
-        $this->log_file_handle = fopen($this->log_file, 'a');
+        $this->log_file_handle = $this->fopen($this->log_file, 'a');
         if($this->log_file_handle===false)
         {
             return false;
@@ -30,7 +46,7 @@ class CompressX_Log
         $text="====================================================\n";
         $time =gmdate("Y-m-d H:i:s",time());
         $text.='open log file: '.$time."\n";
-        fwrite($this->log_file_handle,$text);
+        $this->fwrite($this->log_file_handle,$text);
         return $this->log_file;
     }
 
@@ -45,7 +61,7 @@ class CompressX_Log
 
         $this->log_file=$this->GetSaveLogFolder().$file_name;
 
-        $this->log_file_handle = fopen($this->log_file, 'a');
+        $this->log_file_handle = $this->fopen($this->log_file, 'a');
 
         return $this->log_file;
     }
@@ -56,7 +72,7 @@ class CompressX_Log
         {
             $time =gmdate("Y-m-d H:i:s",time());
             $text='['.$time.']'.'['.$type.']'.$log."\n";
-            fwrite($this->log_file_handle,$text );
+            $this->fwrite($this->log_file_handle,$text );
         }
     }
 
@@ -79,28 +95,19 @@ class CompressX_Log
         return $text;
     }
 
-    public function CloseFile()
-    {
-        if ($this->log_file_handle)
-        {
-            fclose($this->log_file_handle);
-            $this->log_file_handle=false;
-        }
-    }
-
     public function GetSaveLogFolder()
     {
         $path=WP_CONTENT_DIR.'/compressx/'.'log';
 
         if(!is_dir($path))
         {
-            @mkdir($path,0777,true);
-            @fopen($path.DIRECTORY_SEPARATOR.'index.html', 'x');
-            $tempfile=@fopen($path.DIRECTORY_SEPARATOR.'.htaccess', 'x');
+            wp_mkdir_p($path);
+            $this->fopen($path.DIRECTORY_SEPARATOR.'index.html', 'x');
+            $tempfile=$this->fopen($path.DIRECTORY_SEPARATOR.'.htaccess', 'x');
             if($tempfile)
             {
                 $text="deny from all";
-                fwrite($tempfile,$text );
+                $this->fwrite($tempfile,$text );
             }
         }
 
@@ -150,6 +157,23 @@ class CompressX_Log_Ex
         return self::$instance;
     }
 
+    public function fopen($filename,$mode)
+    {
+        return @fopen($filename,$mode);
+    }
+
+    public function fwrite($handle,$text)
+    {
+        if($handle)
+        {
+            return @fwrite($handle,$text );
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public function CreateLogFile($file_name = '')
     {
         if ($this->log_file_handle && !empty($this->log_file)) {
@@ -163,7 +187,7 @@ class CompressX_Log_Ex
         }
 
         $this->log_file = $this->GetSaveLogFolder() . $file_name;
-        $this->log_file_handle = fopen($this->log_file, 'a');
+        $this->log_file_handle = $this->fopen($this->log_file, 'a');
 
         if ($this->log_file_handle === false) {
             return false;
@@ -182,7 +206,7 @@ class CompressX_Log_Ex
         }
 
         $this->log_file = $this->GetSaveLogFolder() . $file_name;
-        $this->log_file_handle = fopen($this->log_file, 'a');
+        $this->log_file_handle = $this->fopen($this->log_file, 'a');
 
         return $this->log_file;
     }
@@ -192,7 +216,7 @@ class CompressX_Log_Ex
         $this->log_file = $this->GetSaveLogFolder() . $file_name;
 
         if (!$this->log_file_handle) {
-            $this->log_file_handle = fopen($this->log_file, 'a');
+            $this->log_file_handle = $this->fopen($this->log_file, 'a');
             $this->write_open_header();
         }
         return $this->log_file;
@@ -207,7 +231,7 @@ class CompressX_Log_Ex
         $time = gmdate("Y-m-d H:i:s", time());
         $text = '[' . $time . '][' . $type . '] ' . $log . "\n";
 
-        fwrite($this->log_file_handle, $text);
+        $this->fwrite($this->log_file_handle, $text);
     }
 
     public function GetlastLog()
@@ -237,7 +261,7 @@ class CompressX_Log_Ex
             ];
         }
 
-        $fp = fopen($file, 'r');
+        $fp = $this->fopen($file, 'r');
         if (!$fp) {
             return [
                 'result'  => 'success',
@@ -265,20 +289,12 @@ class CompressX_Log_Ex
         ];
     }
 
-    public function CloseFile()
-    {
-        if ($this->log_file_handle) {
-            fclose($this->log_file_handle);
-            $this->log_file_handle = false;
-        }
-    }
-
     public function GetSaveLogFolder()
     {
         $path = WP_CONTENT_DIR . '/compressx/log';
 
         if (!is_dir($path)) {
-            @mkdir($path, 0777, true);
+            wp_mkdir_p($path);
             @file_put_contents($path . '/index.html', '');
             @file_put_contents($path . '/.htaccess', "deny from all");
         }
@@ -295,7 +311,7 @@ class CompressX_Log_Ex
 
         if (!empty($this->log_file))
         {
-            $this->log_file_handle = fopen($this->log_file, 'a');
+            $this->log_file_handle = $this->fopen($this->log_file, 'a');
             return (bool)$this->log_file_handle;
         }
 
@@ -308,7 +324,7 @@ class CompressX_Log_Ex
         $text  = "====================================================\n";
         $time  = gmdate("Y-m-d H:i:s", time());
         $text .= "open log file: {$time}\n";
-        fwrite($this->log_file_handle, $text);
+        $this->fwrite($this->log_file_handle, $text);
     }
 
     public function get_logs()
@@ -556,7 +572,17 @@ class CompressX_Log_List extends WP_List_Table
     {
         list( $columns, $hidden, $sortable, $primary ) = $this->get_column_info();
 
-        $current_url = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+        if(isset($_SERVER['HTTP_HOST']))
+            $HTTP_HOST=sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST']));
+        else
+            $HTTP_HOST="";
+
+        if(isset($_SERVER['REQUEST_URI']))
+            $REQUEST_URI=sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI']));
+        else
+            $REQUEST_URI="";
+
+        $current_url = set_url_scheme( 'http://' .$HTTP_HOST . $REQUEST_URI );
         $current_url = remove_query_arg( 'paged', $current_url );
 
         // When users click on a column header to sort by other columns.
@@ -580,8 +606,7 @@ class CompressX_Log_List extends WP_List_Table
             $columns['cb']     = '<input id="cb-select-all-' . $cb_counter . '" type="checkbox" />
 			<label for="cb-select-all-' . $cb_counter . '">' .
                 '<span class="screen-reader-text">' .
-                /* translators: Hidden accessibility text. */
-                __( 'Select All' ) .
+                'Select All' .
                 '</span>' .
                 '</label>';
             ++$cb_counter;
@@ -649,10 +674,8 @@ class CompressX_Log_List extends WP_List_Table
                     $class[] = 'sortable';
                     $class[] = 'desc' === $order ? 'asc' : 'desc';
 
-                    /* translators: Hidden accessibility text. */
-                    $asc_text = __( 'Sort ascending.' );
-                    /* translators: Hidden accessibility text. */
-                    $desc_text  = __( 'Sort descending.' );
+                    $asc_text = 'Sort ascending.' ;
+                    $desc_text  = 'Sort descending.';
                     $order_text = 'asc' === $order ? $asc_text : $desc_text;
                 }
 
@@ -686,7 +709,7 @@ class CompressX_Log_List extends WP_List_Table
                 $class = "class='" . implode( ' ', $class ) . "'";
             }
 
-            echo "<$tag $scope $id $class $aria_sort_attr $abbr_attr>$column_display_name</$tag>";
+            echo wp_kses_post("<$tag $scope $id $class $aria_sort_attr $abbr_attr>$column_display_name</$tag>");
         }
     }
 
@@ -867,6 +890,164 @@ class CompressX_Log_List_V2 extends WP_List_Table
         }
     }
 
+    public function pagination( $which )
+    {
+        if ( empty( $this->_pagination_args ) ) {
+            return;
+        }
+
+        $total_items     = isset( $this->_pagination_args['total_items'] ) ? (int) $this->_pagination_args['total_items'] : 0;
+        $total_pages     = isset( $this->_pagination_args['total_pages'] ) ? (int) $this->_pagination_args['total_pages'] : 0;
+        $infinite_scroll = false;
+
+        if ( isset( $this->_pagination_args['infinite_scroll'] ) ) {
+            $infinite_scroll = $this->_pagination_args['infinite_scroll'];
+        }
+
+        if ( 'top' === $which && $total_pages > 1 ) {
+            $this->screen->render_screen_reader_content( 'heading_pagination' );
+        }
+
+        $output = '<span class="displaying-num">' . sprintf(
+                _n( '%s item', '%s items', $total_items ),
+                number_format_i18n( $total_items )
+            ) . '</span>';
+
+        $current = (int) $this->get_pagenum();
+
+        if ( $current < 1 ) {
+            $current = 1;
+        }
+
+        if ( $total_pages > 0 && $current > $total_pages ) {
+            $current = $total_pages;
+        }
+
+        $page_links = array();
+
+        $total_pages_before = '<span class="paging-input">';
+        $total_pages_after  = '</span></span>';
+
+        $disable_first = false;
+        $disable_last  = false;
+        $disable_prev  = false;
+        $disable_next  = false;
+
+        if ( 1 === $current ) {
+            $disable_first = true;
+            $disable_prev  = true;
+        }
+
+        if ( $total_pages === $current ) {
+            $disable_last = true;
+            $disable_next = true;
+        }
+
+        /*
+         * First page.
+         * Existing JS does not read value from .first-page.
+         * It directly sends page = 'first'.
+         */
+        if ( $disable_first ) {
+            $page_links[] = '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&laquo;</span>';
+        } else {
+            $page_links[] = sprintf(
+                "<a class='first-page button' href='javascript:void(0);' value='1'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
+                esc_html__( 'First page' ),
+                '&laquo;'
+            );
+        }
+
+        /*
+         * Previous page.
+         * Existing JS reads value and then uses page - 1.
+         * Therefore value must be the current page, not the target page.
+         */
+        if ( $disable_prev ) {
+            $page_links[] = '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&lsaquo;</span>';
+        } else {
+            $page_links[] = sprintf(
+                "<a class='prev-page button' href='javascript:void(0);' value='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
+                esc_attr( $current ),
+                esc_html__( 'Previous page' ),
+                '&lsaquo;'
+            );
+        }
+
+        if ( 'bottom' === $which ) {
+            $html_current_page  = $current;
+            $total_pages_before = '<span class="screen-reader-text">' . esc_html__( 'Current Page' ) . '</span><span id="table-paging" class="paging-input"><span class="tablenav-paging-text">';
+        } else {
+            $html_current_page = sprintf(
+                "%s<input class='current-page' id='current-page-selector' type='text' name='paged' value='%s' size='%d' aria-describedby='table-paging' /><span class='tablenav-paging-text'>",
+                '<label for="current-page-selector" class="screen-reader-text">' . esc_html__( 'Current Page' ) . '</label>',
+                esc_attr( $current ),
+                strlen( (string) $total_pages )
+            );
+        }
+
+        $html_total_pages = sprintf(
+            "<span class='total-pages'>%s</span>",
+            number_format_i18n( $total_pages )
+        );
+
+        $page_links[] = $total_pages_before . sprintf(
+                _x( '%1$s of %2$s', 'paging' ),
+                $html_current_page,
+                $html_total_pages
+            ) . $total_pages_after;
+
+        /*
+         * Next page.
+         * Existing JS reads value and then uses page + 1.
+         * Therefore value must be the current page, not the target page.
+         */
+        if ( $disable_next ) {
+            $page_links[] = '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&rsaquo;</span>';
+        } else {
+            $page_links[] = sprintf(
+                "<a class='next-page button' href='javascript:void(0);' value='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
+                esc_attr( $current ),
+                esc_html__( 'Next page' ),
+                '&rsaquo;'
+            );
+        }
+
+        /*
+         * Last page.
+         * Existing JS does not read value from .last-page.
+         * It directly sends page = 'last'.
+         */
+        if ( $disable_last ) {
+            $page_links[] = '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&raquo;</span>';
+        } else {
+            $page_links[] = sprintf(
+                "<a class='last-page button' href='javascript:void(0);' value='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
+                esc_attr( $total_pages ),
+                esc_html__( 'Last page' ),
+                '&raquo;'
+            );
+        }
+
+        $pagination_links_class = 'pagination-links';
+
+        if ( ! empty( $infinite_scroll ) ) {
+            $pagination_links_class .= ' hide-if-js';
+        }
+
+        $output .= "\n<span class='" . esc_attr( $pagination_links_class ) . "'>" . implode( "\n", $page_links ) . '</span>';
+
+        if ( $total_pages ) {
+            $page_class = $total_pages < 2 ? ' one-page' : '';
+        } else {
+            $page_class = ' no-pages';
+        }
+
+        $this->_pagination = "<div class='tablenav-pages" . esc_attr( $page_class ) . "'>" . $output . '</div>';
+
+        echo $this->_pagination;
+    }
+
     public function display()
     {
         $this->display_tablenav( 'top' );
@@ -942,7 +1123,7 @@ class CompressX_Log_List_V2 extends WP_List_Table
 			<label for="cb-select-all-' . $cb_counter . '">' .
                 '<span class="screen-reader-text">' .
                 /* translators: Hidden accessibility text. */
-                __( 'Select All' ) .
+                'Select All' .
                 '</span>' .
                 '</label>';
             ++$cb_counter;
@@ -1011,9 +1192,9 @@ class CompressX_Log_List_V2 extends WP_List_Table
                     $class[] = 'desc' === $order ? 'asc' : 'desc';
 
                     /* translators: Hidden accessibility text. */
-                    $asc_text = __( 'Sort ascending.' );
+                    $asc_text = 'Sort ascending.';
                     /* translators: Hidden accessibility text. */
-                    $desc_text  = __( 'Sort descending.' );
+                    $desc_text  = 'Sort descending.';
                     $order_text = 'asc' === $order ? $asc_text : $desc_text;
                 }
 
@@ -1050,7 +1231,7 @@ class CompressX_Log_List_V2 extends WP_List_Table
                 $class = "class='" . implode( ' ', $class ) . "'";
             }
 
-            echo "<$tag $scope $id $class $aria_sort_attr $abbr_attr>$column_display_name</$tag>";
+            echo wp_kses_post("<$tag $scope $id $class $aria_sort_attr $abbr_attr>$column_display_name</$tag>");
         }
     }
 

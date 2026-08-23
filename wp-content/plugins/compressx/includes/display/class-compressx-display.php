@@ -14,8 +14,12 @@ class CompressX_Display
     public $image_optimization;
     public $settings;
 
+    public $media_replace;
+
     public function __construct()
     {
+        $this->load_v2();
+        /*
         $interface_version = CompressX_Options::get_interface_version();
         if($interface_version === 'v2')
         {
@@ -24,9 +28,10 @@ class CompressX_Display
         else
         {
             $this->load();
-        }
+        }*/
     }
 
+    /*
     public function load()
     {
         include_once COMPRESSX_DIR . '/includes/display/class-compressx-dashboard.php';
@@ -61,6 +66,7 @@ class CompressX_Display
             add_action('admin_menu',array( $this,'add_plugin_admin_menu'));
         }
     }
+    */
 
     public function load_v2()
     {
@@ -84,6 +90,8 @@ class CompressX_Display
         include_once COMPRESSX_DIR . '/includes/display_v2/class-compressx-custom-bulk-action-v2.php';
         $this->custom_bulk_action=new CompressX_Custom_Bulk_Action_V2();
         //
+        include_once COMPRESSX_DIR . '/includes/display_v2/class-compressx-media-replace-display.php';
+        $this->media_replace=new CompressX_Media_Replace_Display();
 
         add_action('admin_enqueue_scripts',array( $this,'enqueue_styles_v2'));
         add_action('admin_enqueue_scripts',array( $this,'enqueue_scripts_v2'));
@@ -99,6 +107,8 @@ class CompressX_Display
         else
         {
             add_action('admin_menu',array( $this,'add_plugin_admin_menu_v2'));
+            add_action('admin_menu',array( $this,'add_media_replace_menu'));
+            add_action('submenu_file', array($this, 'hide_media_replace_menu'));
         }
     }
 
@@ -231,6 +241,8 @@ class CompressX_Display
             $screen_ids[]='compressx_page_cdn-compressx';
             $screen_ids[]='compressx_page_info-compressx';
             $screen_ids[]='compressx_page_addons-compressx';
+            //Replace Media
+            $screen_ids[]='media_page_media-replace-compressx';
         }
 
         $screen_ids=apply_filters('compressx_get_screen_ids',$screen_ids);
@@ -258,6 +270,8 @@ class CompressX_Display
         $screen_ids[]='compressx_page_cdn-compressx';
         $screen_ids[]='compressx_page_info-compressx';
         $screen_ids[]='compressx_page_addons-compressx';
+
+        $screen_ids[]='media_page_media-replace-compressx';
 
         $screen_ids=apply_filters('compressx_get_screen_ids',$screen_ids);
 
@@ -340,9 +354,37 @@ class CompressX_Display
             wp_enqueue_script('compressx-twentytwenty', COMPRESSX_URL . '/includes/display/js/twentytwenty/jquery.twentytwenty.js', array('jquery', 'compressx-jquery-event-move'), COMPRESSX_VERSION, $arg);
 
             wp_enqueue_script(COMPRESSX_SLUG.'_image_optimization', COMPRESSX_URL . '/includes/display_v2/js/compressx_image_optimization.js', array('jquery'), COMPRESSX_VERSION, $arg);
+            wp_localize_script(
+                COMPRESSX_SLUG . '_image_optimization',
+                'compressx_image_optimization_i18n',
+                array(
+                    'enable_webp_confirm' => __( 'Are you sure to enable WebP as output format? This will convert your images to WebP format.', 'compressx' ),
+                    'disable_webp_confirm' => __( 'Are you sure to disable WebP as output format?', 'compressx' ),
+                    'imagick6_avif_warning' => __( 'We detect that you use ImageMagick 6.x, this version has a known bug that can cause AVIF conversion timeout. Enabling AVIF conversion with this version is not recommended. Are you sure you wish to proceed?', 'compressx' ),
+                    'enable_avif_confirm' => __( 'Are you sure to enable AVIF as output format? This will convert your images to AVIF format.', 'compressx' ),
+                    'disable_avif_confirm' => __( 'Are you sure to disable AVIF as output format?', 'compressx' ),
+                    'supported' => __( 'Supported', 'compressx' ),
+                    'unsupported' => __( 'Unsupported', 'compressx' ),
+                    'failed_save' => __( 'Failed to save settings.', 'compressx' ),
+                    'save_error' => __( 'An error occurred while saving settings.', 'compressx' ),
+                )
+            );
             wp_enqueue_script(COMPRESSX_SLUG.'_comparison', COMPRESSX_URL . '/includes/display_v2/js/compressx_image_comparison.js', array('jquery'), COMPRESSX_VERSION, $arg);
 
             wp_enqueue_script(COMPRESSX_SLUG.'_bulk', COMPRESSX_URL . '/includes/display_v2/js/compressx_bulk.js', array('jquery'), COMPRESSX_VERSION, $arg);
+            wp_localize_script(
+                COMPRESSX_SLUG . '_bulk',
+                'compressx_bulk_i18n',
+                array(
+                    'cancel_confirm' => __( 'Are you sure to cancel this progressing?', 'compressx' ),
+                    'pause_confirm' => __( 'Are you sure to pause this progressing?', 'compressx' ),
+                    'delete_log_confirm' => __( 'Are you sure you want to delete this log file?', 'compressx' ),
+                    'leave_page_confirm' => __( 'Are you sure you want to leave this page?', 'compressx' ),
+                    'optimization_success' => __( 'Optimization Success', 'compressx' ),
+                )
+            );
+            wp_enqueue_script('compressx-chart', COMPRESSX_URL . '/includes/display_v2/js/chart.umd.min.js', array('jquery'), COMPRESSX_VERSION, $arg);
+
 
         }
 
@@ -385,6 +427,33 @@ class CompressX_Display
             $arg['in_footer']=true;
 
             wp_enqueue_script(COMPRESSX_SLUG.'_logs', COMPRESSX_URL . '/includes/display_v2/js/compressx_log.js', array('jquery'), COMPRESSX_VERSION, $arg);
+        }
+
+        $media_replace_id='media_page_media-replace-compressx';
+        if(get_current_screen()->id==$media_replace_id)
+        {
+            if (array_key_exists("attachment_id", $_GET) && intval($_GET["attachment_id"]) > 0)
+            {
+                $attachment_id = intval($_GET["attachment_id"]);
+            }
+            else
+            {
+                $attachment_id=0;
+            }
+
+            $mime_type=get_post_mime_type($attachment_id);
+            $file = get_attached_file($attachment_id);
+            $ft = wp_check_filetype($file);
+            $ext = !empty($ft['ext']) ? $ft['ext'] : '';
+            $type = $ext ? strtoupper($ext) : '-';
+
+            $url=admin_url("post.php?post=$attachment_id&action=edit");
+            wp_localize_script('CompressX', 'compressx_media_replace', array('redirect_url' => $url,'type'=>$type));
+
+            $arg=array();
+            $arg['in_footer']=true;
+            wp_enqueue_script('CompressX_media_replace', COMPRESSX_URL . '/includes/display_v2/js/compressx_media-replace.js', array('jquery'), COMPRESSX_VERSION, $arg);
+            return;
         }
 
         /*
@@ -431,7 +500,7 @@ class CompressX_Display
         $submenu['parent_slug']=COMPRESSX_SLUG;
         $submenu['page_title']="Settings";
         $submenu['menu_title']="Settings";
-        $submenu['capability']="administrator";
+        $submenu['capability']="manage_options";
         $submenu['index']=1;
         $submenu['menu_slug']=COMPRESSX_SLUG;
         $submenu['function']=array($this->dashboard, 'display');
@@ -443,7 +512,7 @@ class CompressX_Display
             $submenu['parent_slug']=COMPRESSX_SLUG;
             $submenu['page_title']="CDN Integration";
             $submenu['menu_title']="CDN Integration";
-            $submenu['capability']="administrator";
+            $submenu['capability']="manage_options";
             $submenu['menu_slug']="cdn-compressx";
             $submenu['index']=3;
             $submenu['function']=array($this->cdn, 'display');
@@ -462,7 +531,7 @@ class CompressX_Display
             }
             else
             {
-                $submenu['capability']="administrator";
+                $submenu['capability']="manage_options";
             }
             $submenu['menu_slug']="logs-compressx";
             $submenu['index']=19;
@@ -482,7 +551,7 @@ class CompressX_Display
             }
             else
             {
-                $submenu['capability']="administrator";
+                $submenu['capability']="manage_options";
             }
             $submenu['menu_slug']="info-compressx";
             $submenu['index']=20;
@@ -494,7 +563,7 @@ class CompressX_Display
         $submenu['parent_slug']=COMPRESSX_SLUG;
         $submenu['page_title']="Addons";
         $submenu['menu_title']="Addons";
-        $submenu['capability']="administrator";
+        $submenu['capability']="manage_options";
         $submenu['menu_slug']="addons-compressx";
         $submenu['index']=21;
         $submenu['function']=array($this->addons, 'display');
@@ -547,7 +616,7 @@ class CompressX_Display
             {
                 $submenu['capability'] = "compressx-can-convert";
             } else {
-                $submenu['capability'] = "administrator";
+                $submenu['capability'] = "manage_options";
             }
             $submenu['index'] = 1;
             $submenu['menu_slug'] = COMPRESSX_SLUG;
@@ -559,7 +628,7 @@ class CompressX_Display
             $submenu['parent_slug'] = COMPRESSX_SLUG;
             $submenu['page_title'] = "Global Settings";
             $submenu['menu_title'] = "Settings";
-            $submenu['capability'] = "administrator";
+            $submenu['capability'] = "manage_options";
             $submenu['menu_slug'] = "settings-compressx";
             $submenu['index'] = 2;
             $submenu['function'] = array($this->settings, 'display');
@@ -574,7 +643,7 @@ class CompressX_Display
             if (apply_filters('compressx_current_user_has', false, 'compressx-can-use-cdn')) {
                 $submenu['capability'] = "compressx-can-use-cdn";
             } else {
-                $submenu['capability'] = "administrator";
+                $submenu['capability'] = "manage_options";
             }
             $submenu['menu_slug'] = "cdn-compressx";
             $submenu['index'] = 3;
@@ -583,6 +652,7 @@ class CompressX_Display
             $submenus[$submenu['menu_slug']] = $submenu;
         }
 
+
         if (apply_filters('compressx_current_user_can', true, 'compressx-can-use-system-info')) {
             $submenu['parent_slug'] = COMPRESSX_SLUG;
             $submenu['page_title'] = "Logs & System Information";
@@ -590,7 +660,7 @@ class CompressX_Display
             if (apply_filters('compressx_current_user_has', false, 'compressx-can-use-system-info')) {
                 $submenu['capability'] = "compressx-can-use-system-info";
             } else {
-                $submenu['capability'] = "administrator";
+                $submenu['capability'] = "manage_options";
             }
             $submenu['menu_slug'] = "info-compressx";
             $submenu['index'] = 19;
@@ -602,7 +672,7 @@ class CompressX_Display
         $submenu['parent_slug']=COMPRESSX_SLUG;
         $submenu['page_title']="Addons";
         $submenu['menu_title']="Addons";
-        $submenu['capability']="administrator";
+        $submenu['capability']="manage_options";
         $submenu['menu_slug']="addons-compressx";
         $submenu['index']=21;
         $submenu['function']=array($this->addons, 'display');
@@ -630,6 +700,45 @@ class CompressX_Display
                 $submenu['menu_slug'],
                 $submenu['function']);
         }
+    }
+
+    public function add_media_replace_menu()
+    {
+        $has=false;
+        if(apply_filters('compressx_pro_media_replace',$has))
+        {
+            return;
+        }
+        $submenu['parent_slug']='upload.php';
+        $submenu['page_title']="Replace Media";
+        $submenu['menu_title']="Replace Media";
+        $submenu['capability']="upload_files";
+        $submenu['menu_slug']="media-replace-compressx";
+        $submenu['function']=array($this->media_replace, 'display');
+
+        add_submenu_page( $submenu['parent_slug'],$submenu['page_title'],  $submenu['menu_title'],  $submenu['capability'], $submenu['menu_slug'], $submenu['function']);
+    }
+
+    public function hide_media_replace_menu($submenu_file)
+    {
+        $has=false;
+        if(apply_filters('compressx_pro_media_replace',$has))
+        {
+            return $submenu_file;
+        }
+
+        global $plugin_page;
+        // Select another submenu item to highlight (optional).
+        if ( $plugin_page && $plugin_page == 'media-replace-compressx' )
+        {
+            $submenu_file = 'upload.php';
+        }
+
+        // Hide the submenu.
+
+        remove_submenu_page( 'upload.php', 'media-replace-compressx' );
+
+        return $submenu_file;
     }
 
     public function mu_display()
@@ -662,7 +771,7 @@ class CompressX_Display
             <div class="compressx-container compressx-menu">
                 <h2>Compress<span style="color:#175cff;">X</span><span style="font-size:1.2rem;">.io</span>
                 <span class="compressx-pro-version" style="font-size:0.7rem;">
-                    <span><?php echo COMPRESSX_VERSION;?></span><span> FREE</span>
+                    <span><?php echo esc_html(COMPRESSX_VERSION);?></span><span> FREE</span>
                     <?php
                     if($this->check_update())
                     {
@@ -736,7 +845,7 @@ class CompressX_Display
         ?>
         <footer>
             <div class="compressx-container compressx-menu">
-                <div style="margin: auto;"><strong><span>If you like our plugin, a <a href="https://wordpress.org/support/plugin/compressx/reviews/?filter=5#new-post"><span class="dashicons dashicons-star-filled" style="color:#ffb900;"></span>
+                <div style="margin: auto;"><strong><span>If you like our plugin, a <a href="https://wordpress.org/support/plugin/compressx/reviews"><span class="dashicons dashicons-star-filled" style="color:#ffb900;"></span>
                     <span class="dashicons dashicons-star-filled" style="color:#ffb900;"></span>
                     <span class="dashicons dashicons-star-filled" style="color:#ffb900;"></span>
                     <span class="dashicons dashicons-star-filled" style="color:#ffb900;"></span>
@@ -752,7 +861,7 @@ class CompressX_Display
     {
         $defaults = array(
             'show_review_link' => true,
-            'review_url' => 'https://wordpress.org/support/plugin/compressx/reviews/?filter=5',
+            'review_url' => 'https://wordpress.org/support/plugin/compressx/reviews',
             'review_text' => __('Enjoying CompressX? Please', 'compressx') .
                 '<a href="%s" target="_blank">' .
                 __('leave us a', 'compressx') . ' ' .

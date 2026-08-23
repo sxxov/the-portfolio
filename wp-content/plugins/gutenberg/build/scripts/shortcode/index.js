@@ -1,3 +1,4 @@
+(function() {
 "use strict";
 var wp;
 (wp ||= {}).shortcode = (() => {
@@ -219,8 +220,8 @@ var wp;
         this.attrs = attributes;
       } else {
         Object.entries(attributes).forEach(([key, value]) => {
-          if (typeof value === "string" || typeof value === "undefined") {
-            this.set(key, value);
+          if (value !== void 0) {
+            this.set(key, String(value));
           }
         });
       }
@@ -293,4 +294,6 @@ var wp;
   return __toCommonJS(index_exports);
 })();
 if (typeof wp.shortcode === 'object' && wp.shortcode.default) { wp.shortcode = wp.shortcode.default; }
+(window.wp ||= {}).shortcode = wp.shortcode;
+})();
 //# sourceMappingURL=index.js.map

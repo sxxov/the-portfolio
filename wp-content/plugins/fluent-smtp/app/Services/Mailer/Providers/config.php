@@ -28,6 +28,22 @@ return [
             ],
             'note'     => '<a href="https://fluentsmtp.com/docs/set-up-fluent-smtp-with-any-host-or-mailer/" target="_blank" rel="noopener">' . __('Read the documentation', 'fluent-smtp') . '</a>' . __(' for how to configure any SMTP with FluentSMTP.', 'fluent-smtp')
         ],
+        'tosend'      => [
+            'key'      => 'tosend',
+            'title'    => 'toSend',
+            'image'    => fluentMailAssetUrl('images/provider-tosend.svg'),
+            'provider' => 'tosend',
+            'options'  => [
+                'sender_name'       => '',
+                'sender_email'      => '',
+                'force_from_name'   => 'no',
+                'force_from_email'  => 'yes',
+                'api_key'           => '',
+                'key_store'         => 'db',
+                'additional_senders' => []
+            ],
+            'note'     => '<a href="https://fluentsmtp.com/docs/set-up-tosend-in-fluent-smtp/" target="_blank" rel="noopener">' . __('Read the documentation', 'fluent-smtp') . '</a>' . __(' for how to configure toSend with FluentSMTP.', 'fluent-smtp')
+        ],
         'ses'         => [
             'key'      => 'ses',
             'title'    => __('Amazon SES', 'fluent-smtp'),
@@ -56,6 +72,7 @@ return [
                 'eu-central-1'   => __('EU (Frankfurt)', 'fluent-smtp'),
                 'eu-south-1'     => __('Europe (Milan)', 'fluent-smtp'),
                 'eu-north-1'     => __('Europe (Stockholm)', 'fluent-smtp'),
+                'eusc-de-east-1' => __('EU Sovereign Cloud (Germany, Brandenburg)', 'fluent-smtp'),
                 'ap-south-1'     => __('Asia Pacific (Mumbai)', 'fluent-smtp'),
                 'ap-northeast-2' => __('Asia Pacific (Seoul)', 'fluent-smtp'),
                 'ap-southeast-1' => __('Asia Pacific (Singapore)', 'fluent-smtp'),
@@ -220,26 +237,27 @@ return [
                 'key_store'       => 'db',
                 'client_id'       => '',
                 'client_secret'   => '',
+                'tenant_id'       => '',
                 'auth_token'      => '',
                 'access_token'    => '',
                 'refresh_token'   => ''
             ],
             'note'     => __('Outlook/Office365 is not recommended for sending mass marketing emails.', 'fluent-smtp')
         ],
-        'tosend'      => [
-            'key'      => 'tosend',
-            'title'    => 'ToSend',
-            'image'    => fluentMailAssetUrl('images/provider-tosend.svg'),
-            'provider' => 'tosend',
+        'cloudflare'  => [
+            'key'      => 'cloudflare',
+            'title'    => __('Cloudflare Email', 'fluent-smtp'),
+            'image'    => fluentMailAssetUrl('images/provider-cloudflare.svg'),
+            'provider' => 'Cloudflare',
             'options'  => [
-                'sender_name'      => '',
-                'sender_email'     => '',
-                'force_from_name'  => 'no',
-                'force_from_email' => 'yes',
-                'api_key'          => '',
-                'key_store'        => 'db'
+                'sender_name'     => '',
+                'sender_email'    => '',
+                'force_from_name' => 'no',
+                'api_key'         => '',
+                'account_id'      => '',
+                'key_store'       => 'db'
             ],
-            'note'     => '<a href="https://fluentsmtp.com/docs/set-up-tosend-in-fluent-smtp/" target="_blank" rel="noopener">' . __('Read the documentation', 'fluent-smtp') . '</a>' . __(' for how to configure ToSend with FluentSMTP.', 'fluent-smtp')
+            'note'     => __('Cloudflare Email Sending requires a verified domain in your Cloudflare account and an API token with Email Sending permissions.', 'fluent-smtp')
         ],
         'default'     => [
             'key'      => 'default',

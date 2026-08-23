@@ -2727,6 +2727,26 @@ __webpack_require__.r(__webpack_exports__);
     $inputs: function () {
       return this.$('input[type="checkbox"]').not('.acf-checkbox-toggle');
     },
+    setValue: function (val) {
+      if (!Array.isArray(val)) {
+        val = val ? [val] : [];
+      }
+      this.$inputs().each(function () {
+        const $input = $(this);
+        const checked = val.includes($input.val());
+        $input.prop('checked', checked);
+        if (checked) {
+          $input.parent('label').addClass('selected');
+        } else {
+          $input.parent('label').removeClass('selected');
+        }
+      });
+      const $toggle = this.$toggle();
+      if ($toggle.length) {
+        const checked = this.$inputs().not(':checked').length === 0;
+        $toggle.prop('checked', checked);
+      }
+    },
     getValue: function () {
       var val = [];
       this.$(':checked').each(function () {
@@ -2995,6 +3015,21 @@ __webpack_require__.r(__webpack_exports__);
       // action for 3rd party customization
       acf.doAction('date_picker_init', $inputText, args, this);
     },
+    setValue: function (val) {
+      acf.val(this.$input(), val);
+      const $inputText = this.$inputText();
+      if (val && $inputText.length) {
+        try {
+          const date = $.datepicker.parseDate('yymmdd', val);
+          const dateFormat = this.get('date_format') || $inputText.datepicker('option', 'dateFormat');
+          $inputText.val($.datepicker.formatDate(dateFormat, date));
+        } catch (e) {
+          $inputText.val(val);
+        }
+      } else {
+        $inputText.val('');
+      }
+    },
     onBlur: function () {
       if (!this.$inputText().val()) {
         acf.val(this.$input(), '');
@@ -3068,6 +3103,35 @@ __webpack_require__.r(__webpack_exports__);
     type: 'date_time_picker',
     $control: function () {
       return this.$('.acf-date-time-picker');
+    },
+    setValue: function (val) {
+      acf.val(this.$input(), val);
+      const $inputText = this.$inputText();
+      if (val && $inputText.length) {
+        try {
+          const parts = val.split(' ');
+          const dateValue = parts[0] || '';
+          const timeValue = parts[1] || '';
+          const date = $.datepicker.parseDate('yy-mm-dd', dateValue);
+          const dateFormat = this.get('date_format') || $inputText.datetimepicker('option', 'dateFormat');
+          const timeFormat = this.get('time_format') || $inputText.datetimepicker('option', 'timeFormat');
+          const dateText = $.datepicker.formatDate(dateFormat, date);
+          let timeText = timeValue;
+          const matches = timeValue.match(/^(\d{2}):(\d{2}):(\d{2})$/);
+          if (matches && $.datepicker.formatTime) {
+            timeText = $.datepicker.formatTime(timeFormat, {
+              hour: parseInt(matches[1], 10),
+              minute: parseInt(matches[2], 10),
+              second: parseInt(matches[3], 10)
+            });
+          }
+          $inputText.val(dateText + ' ' + timeText);
+        } catch (e) {
+          $inputText.val(val);
+        }
+      } else {
+        $inputText.val('');
+      }
     },
     initialize: function () {
       // vars
@@ -3256,6 +3320,24 @@ __webpack_require__.r(__webpack_exports__);
         }
       } else {
         this.$control().removeClass('has-value');
+      }
+    },
+    setValue: function (val) {
+      val = val ? String(val) : '';
+      if (acf.val(this.$input(), val, true) === false) {
+        return;
+      }
+      if (val) {
+        if (window.wp && wp.media && wp.media.attachment) {
+          const attachment = wp.media.attachment(val);
+          attachment.fetch().then($.proxy(function () {
+            this.render(attachment);
+          }, this));
+        } else {
+          this.$control().addClass('has-value');
+        }
+      } else {
+        this.render(false);
       }
     },
     selectAttachment: function () {
@@ -3929,6 +4011,53 @@ __webpack_require__.r(__webpack_exports__);
     $mediaLibraryButton() {
       return this.$('.acf-icon-picker-media-library-button');
     },
+    $mediaLibraryPreviewImg() {
+      return this.$('.acf-icon-picker-media-library-preview-img img');
+    },
+    getValue() {
+      return {
+        type: this.$typeInput().val(),
+        value: this.$valueInput().val()
+      };
+    },
+    setValue(val) {
+      if (!val || typeof val !== 'object') {
+        val = {
+          type: '',
+          value: ''
+        };
+      }
+      const type = val.type || '';
+      const value = val.value || '';
+      this.updateTypeAndValue(type, value);
+      if (type) {
+        this.$tabButton().filter(`[data-unique-tab-key="${type}"]`).trigger('click');
+        const $iconsList = this.$(`.acf-icon-list[data-parent-tab="${type}"]`);
+        if ($iconsList.length) {
+          $iconsList.find('.acf-icon-picker-list-icon.active').removeClass('active');
+          $iconsList.find('input:checked').prop('checked', false);
+          const $icon = $iconsList.find(`.acf-icon-picker-list-icon[data-icon="${value}"]`);
+          if ($icon.length) {
+            $icon.addClass('active');
+            $icon.find('input').prop('checked', true);
+            this.set('selectedIcon', value);
+          }
+        }
+      }
+      if (type === 'url') {
+        this.$('.acf-icon_url').val(value);
+      }
+      if (type === 'media_library' && value && window.wp?.media?.attachment) {
+        const attachment = wp.media.attachment(value);
+        attachment.fetch().then(() => {
+          const url = attachment.get('url');
+          if (url) {
+            this.set('mediaLibraryPreviewUrl', url);
+            this.$mediaLibraryPreviewImg().attr('src', url);
+          }
+        });
+      }
+    },
     initialize() {
       // Set up actions hook callbacks.
       this.addActions();
@@ -3941,6 +4070,12 @@ __webpack_require__.r(__webpack_exports__);
 
       // Store the type and value object.
       this.set('typeAndValue', typeAndValue);
+      if (typeAndValue.type === 'media_library') {
+        const previewUrl = this.$mediaLibraryPreviewImg().attr('src');
+        if (previewUrl) {
+          this.set('mediaLibraryPreviewUrl', previewUrl);
+        }
+      }
 
       // Any time any acf tab is clicked, we will re-scroll to the selected icon.
       $('.acf-tab-button').on('click', () => {
@@ -3955,10 +4090,20 @@ __webpack_require__.r(__webpack_exports__);
     addActions() {
       // Set up an action listener for when the type and value changes.
       acf.addAction(this.get('name') + '/type_and_value_change', newTypeAndValue => {
-        // Align the visual state of each tab to the current value.
-        this.alignIconListTabsToCurrentValue(newTypeAndValue);
-        this.alignMediaLibraryTabToCurrentValue(newTypeAndValue);
-        this.alignUrlTabToCurrentValue(newTypeAndValue);
+        const currentType = this.$typeInput().val();
+        const currentValue = this.$valueInput().val();
+        if (currentType === newTypeAndValue.type && currentValue === newTypeAndValue.value) {
+          this.alignIconListTabsToCurrentValue(newTypeAndValue);
+          this.alignMediaLibraryTabToCurrentValue(newTypeAndValue);
+          this.alignUrlTabToCurrentValue(newTypeAndValue);
+        } else {
+          const currentTypeAndValue = this.get('typeAndValue');
+          if (currentTypeAndValue) {
+            this.alignIconListTabsToCurrentValue(currentTypeAndValue);
+            this.alignMediaLibraryTabToCurrentValue(currentTypeAndValue);
+            this.alignUrlTabToCurrentValue(currentTypeAndValue);
+          }
+        }
       });
     },
     updateTypeAndValue(type, value) {
@@ -3971,11 +4116,11 @@ __webpack_require__.r(__webpack_exports__);
       acf.val(this.$typeInput(), type);
       acf.val(this.$valueInput(), value);
 
-      // Fire an action to let each tab set itself according to the typeAndValue state.
-      acf.doAction(this.get('name') + '/type_and_value_change', typeAndValue);
-
       // Set the state.
       this.set('typeAndValue', typeAndValue);
+
+      // Fire an action to let each tab set itself according to the typeAndValue state.
+      acf.doAction(this.get('name') + '/type_and_value_change', typeAndValue);
     },
     scrollToSelectedIcon() {
       const innerElement = this.$selectedIcon();
@@ -4283,20 +4428,21 @@ __webpack_require__.r(__webpack_exports__);
     render: function (attachment) {
       attachment = this.validateAttachment(attachment);
 
+      // Update value.
+      acf.val(this.$input(), String(attachment.id || ''), true);
+
       // Update DOM.
       this.$('img').attr({
         src: attachment.url,
         alt: attachment.alt
       });
       if (attachment.id) {
-        this.val(attachment.id);
         this.$control().addClass('has-value');
         const imageWrap = this.$('.image-wrap');
         if (imageWrap.length) {
           imageWrap.trigger('focus');
         }
       } else {
-        this.val('');
         this.$control().removeClass('has-value');
       }
     },
@@ -4332,6 +4478,7 @@ __webpack_require__.r(__webpack_exports__);
 
       // render
       if (field) {
+        acf.val(field.$input(), String(attachment.id || attachment.attributes?.id || ''));
         field.render(attachment);
       }
     },
@@ -4353,6 +4500,7 @@ __webpack_require__.r(__webpack_exports__);
           if (i > 0) {
             this.append(attachment, parent);
           } else {
+            acf.val(this.$input(), String(attachment.id || attachment.attributes?.id || ''));
             this.render(attachment);
           }
         }, this)
@@ -4370,6 +4518,7 @@ __webpack_require__.r(__webpack_exports__);
           attachment: val,
           field: this.get('key'),
           select: $.proxy(function (attachment) {
+            acf.val(this.$input(), String(attachment.id || attachment.attributes?.id || ''));
             this.render(attachment);
           }, this),
           close: $.proxy(function () {
@@ -4389,6 +4538,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     removeAttachment: function () {
+      acf.val(this.$input(), '');
       this.render(false);
     },
     onClickAdd: function (e, $el) {
@@ -4408,6 +4558,24 @@ __webpack_require__.r(__webpack_exports__);
       acf.getFileInputData($el, function (data) {
         $hiddenInput.val($.param(data));
       });
+    },
+    setValue: function (val) {
+      val = val ? String(val) : '';
+      if (acf.val(this.$input(), val, true) === false) {
+        return;
+      }
+      if (val) {
+        if (window.wp && wp.media && wp.media.attachment) {
+          const attachment = wp.media.attachment(val);
+          attachment.fetch().then($.proxy(function () {
+            this.render(attachment);
+          }, this));
+        } else {
+          this.$control().addClass('has-value');
+        }
+      } else {
+        this.render(false);
+      }
     },
     onImageWrapKeydown: function (event, imageWrapElement) {
       // Check if Enter key was pressed (keycode 13)
@@ -4649,6 +4817,12 @@ __webpack_require__.r(__webpack_exports__);
         this.$control().removeClass('has-value');
       }
       acf.val(this.$input(), val);
+      this.$search().val(val || '');
+      if (val) {
+        this.maybeSearch();
+      } else {
+        this.$('.canvas-media').html('');
+      }
     },
     showLoading: function (show) {
       acf.showLoading(this.$('.canvas'));
@@ -4807,6 +4981,26 @@ __webpack_require__.r(__webpack_exports__);
     $inputText: function () {
       return this.$('input[type="text"]');
     },
+    setValue: function (val) {
+      this.$('.selected').removeClass('selected');
+      this.$('input[type="radio"]').prop('checked', false);
+      if (val !== false && val !== null && val !== '') {
+        const $input = this.$('input[type="radio"]').filter(function () {
+          return $(this).val() === val;
+        });
+        if ($input.length) {
+          $input.prop('checked', true);
+          $input.parent('label').addClass('selected');
+          if (this.get('other_choice')) {
+            if (val === 'other') {
+              this.$inputText().prop('disabled', false);
+            } else {
+              this.$inputText().prop('disabled', true);
+            }
+          }
+        }
+      }
+    },
     getValue: function () {
       var val = this.$input().val();
       if (val === 'other' && this.get('other_choice')) {
@@ -4927,7 +5121,9 @@ __webpack_require__.r(__webpack_exports__);
       return this.$list(list).find('.acf-rel-item');
     },
     $listItem: function (list, id) {
-      return this.$list(list).find('.acf-rel-item[data-id="' + id + '"]');
+      return this.$list(list).find('.acf-rel-item').filter(function () {
+        return String($(this).data('id')) === String(id);
+      });
     },
     getValue: function () {
       var val = [];
@@ -4936,11 +5132,30 @@ __webpack_require__.r(__webpack_exports__);
       });
       return val.length ? val : false;
     },
+    setValue: function (value) {
+      if (!Array.isArray(value)) {
+        value = value ? [value] : [];
+      }
+      this.$list('values').html('');
+      this.$listItems('choices').removeClass('disabled');
+      value.forEach(id => {
+        const $choice = this.$listItem('choices', id);
+        const text = $choice.length ? $choice.html() : acf.strEscape(String(id));
+        $choice.addClass('disabled');
+        const valueHtml = this.newValue({
+          id,
+          text
+        });
+        this.$list('values').append(valueHtml);
+      });
+      this.$input().trigger('change');
+    },
     newChoice: function (props) {
-      return ['<li>', '<span tabindex="0" data-id="' + props.id + '" class="acf-rel-item">' + props.text + '</span>', '</li>'].join('');
+      return ['<li>', '<span tabindex="0" data-id="' + acf.strEscape(String(props.id)) + '" class="acf-rel-item">' + props.text + '</span>', '</li>'].join('');
     },
     newValue: function (props) {
-      return ['<li>', '<input type="hidden" name="' + this.getInputName() + '[]" value="' + props.id + '" />', '<span tabindex="0" data-id="' + props.id + '" class="acf-rel-item acf-rel-item-remove">' + props.text, '<a href="#" class="acf-icon -minus small dark" data-name="remove_item"></a>', '</span>', '</li>'].join('');
+      const id = acf.strEscape(String(props.id));
+      return ['<li>', '<input type="hidden" name="' + this.getInputName() + '[]" value="' + id + '" />', '<span tabindex="0" data-id="' + id + '" class="acf-rel-item acf-rel-item-remove">' + props.text, '<a href="#" class="acf-icon -minus small dark" data-name="remove_item"></a>', '</span>', '</li>'].join('');
     },
     initialize: function () {
       // Delay initialization until "interacted with" or "in view".
@@ -5275,6 +5490,13 @@ __webpack_require__.r(__webpack_exports__);
     $input: function () {
       return this.$('select');
     },
+    setValue: function (val) {
+      const $input = this.$input();
+      $input.val(val);
+      if (this.select2) {
+        $input.trigger('change');
+      }
+    },
     initialize: function () {
       // vars
       var $select = this.$input();
@@ -5606,6 +5828,11 @@ __webpack_require__.r(__webpack_exports__);
 
       // set active
       this.setActive(tab);
+
+      // Recalculate admin menu pinning so a previously taller tab (e.g. one
+      // containing WYSIWYG fields) doesn't leave the menu pinned against a
+      // shorter page, which can lock page scroll.
+      $(document).trigger('wp-pin-menu');
     },
     closeTab: function (tab) {
       // close
@@ -6136,6 +6363,30 @@ __webpack_require__.r(__webpack_exports__);
     $control: function () {
       return this.$('.acf-time-picker');
     },
+    setValue: function (val) {
+      acf.val(this.$input(), val);
+      const $inputText = this.$inputText();
+      if (val && $inputText.length) {
+        try {
+          const timeFormat = this.get('time_format') || $inputText.timepicker('option', 'timeFormat');
+          const matches = val.match(/^(\d{2}):(\d{2}):(\d{2})$/);
+          if (matches && $.datepicker && $.datepicker.formatTime) {
+            const timeText = $.datepicker.formatTime(timeFormat, {
+              hour: parseInt(matches[1], 10),
+              minute: parseInt(matches[2], 10),
+              second: parseInt(matches[3], 10)
+            });
+            $inputText.val(timeText);
+          } else {
+            $inputText.val(val);
+          }
+        } catch (e) {
+          $inputText.val(val);
+        }
+      } else {
+        $inputText.val('');
+      }
+    },
     initialize: function () {
       // vars
       var $input = this.$input();
@@ -6219,6 +6470,13 @@ __webpack_require__.r(__webpack_exports__);
     },
     $switch: function () {
       return this.$('.acf-switch');
+    },
+    setValue: function (val) {
+      if (val && val !== '0') {
+        this.switchOn();
+      } else {
+        this.switchOff();
+      }
     },
     getValue: function () {
       return this.$input().prop('checked') ? 1 : 0;
@@ -6379,6 +6637,16 @@ __webpack_require__.r(__webpack_exports__);
     },
     $input: function () {
       return this.$('textarea');
+    },
+    setValue: function (val) {
+      acf.val(this.$input(), val);
+      if (this.getMode() === 'visual') {
+        const id = this.get('id');
+        const editor = window.tinymce && tinymce.get(id);
+        if (editor && !editor.isHidden()) {
+          editor.setContent(val || '');
+        }
+      }
     },
     getMode: function () {
       return this.$control().hasClass('tmce-active') ? 'visual' : 'text';
@@ -11221,13 +11489,18 @@ __webpack_require__.r(__webpack_exports__);
    *
    * @date	20/10/2021
    * @since	ACF 5.11.0
+   *
+   * @param {jQuery} [$form] - Optional form element to scope the input search to. If omitted, searches the entire document.
    */
-  var ensureInvalidFieldVisibility = function () {
-    // Load each ACF input field and check it's browser validation state.
-    var $inputs = $('.acf-field input');
+  const ensureInvalidFieldVisibility = function ($form) {
+    // Load each ACF input field and check its browser validation state.
+    // Scope to the given form if provided, otherwise search the entire document.
+    const $inputs = $form ? $form.find('.acf-field input') : $('.acf-field input');
     $inputs.each(function () {
-      if (!this.checkValidity()) {
-        // Field is invalid, so we need to make sure it's metabox is visible.
+      // Use validity.valid (a property) instead of checkValidity() (a method) to avoid
+      // dispatching the native 'invalid' event, which can trigger ACF validation prematurely.
+      if (!this.validity.valid) {
+        // Field is invalid, so we need to make sure its metabox is visible.
         ensureFieldPostBoxIsVisible($(this));
       }
     });
@@ -11388,19 +11661,33 @@ __webpack_require__.r(__webpack_exports__);
      *
      *  Callback when clicking submit.
      *
+     *  Only acts on submit buttons that are associated with a form containing ACF fields.
+     *  This prevents submit buttons in unrelated UI (e.g. the WP link inserter modal) from
+     *  triggering premature validation of ACF fields on the page behind the modal.
+     *
+     *  Uses the native HTMLButtonElement.form property to resolve the associated form,
+     *  which correctly handles both DOM-ancestor forms and the HTML form="id" attribute.
+     *
      *  @date	4/9/18
      *  @since	ACF 5.7.5
      *
      *  @param	object e The event object.
-     *  @param	jQuery $el The input element.
+     *  @param	jQuery $el The submit button element.
      *  @return	void
      */
     onClickSubmit: function (e, $el) {
-      // Some browsers (safari) force their browser validation before our AJAX validation,
-      // so we need to make sure fields are visible earlier than showErrors()
-      ensureInvalidFieldVisibility();
+      const form = $el.length ? $el[0].form : null;
+      if (!form) {
+        return;
+      }
+      const $form = $(form);
+      if (!$form.find('.acf-field').length) {
+        return;
+      }
 
-      // store the "click event" for later use in this.onSubmit()
+      // Some browsers (safari) force their browser validation before our AJAX validation,
+      // so we need to make sure fields are visible earlier than showErrors().
+      ensureInvalidFieldVisibility($form);
       this.set('originalEvent', e);
     },
     /**
@@ -11538,6 +11825,10 @@ __webpack_require__.r(__webpack_exports__);
         var _args = arguments;
         // Perform validation within a Promise.
         return new Promise(function (resolve, reject) {
+          if (typeof acf.gutenbergEditPost === 'function') {
+            acf.gutenbergEditPost();
+          }
+
           // Bail early if is autosave or preview.
           if (options.isAutosave || options.isPreview) {
             return resolve('Validation ignored (autosave).');

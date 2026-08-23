@@ -1,3 +1,4 @@
+(function() {
 "use strict";
 var wp;
 (wp ||= {}).notices = (() => {
@@ -39,34 +40,34 @@ var wp;
     }
   });
 
+  // package-external:@wordpress/components
+  var require_components = __commonJS({
+    "package-external:@wordpress/components"(exports, module) {
+      module.exports = window.wp.components;
+    }
+  });
+
+  // vendor-external:react/jsx-runtime
+  var require_jsx_runtime = __commonJS({
+    "vendor-external:react/jsx-runtime"(exports, module) {
+      module.exports = window.ReactJSXRuntime;
+    }
+  });
+
   // packages/notices/build-module/index.mjs
   var index_exports = {};
   __export(index_exports, {
+    InlineNotices: () => InlineNotices,
+    SnackbarNotices: () => SnackbarNotices,
     store: () => store
   });
 
   // packages/notices/build-module/store/index.mjs
-  var import_data = __toESM(require_data(), 1);
-
-  // packages/notices/build-module/store/utils/on-sub-key.mjs
-  var onSubKey = (actionProperty) => (reducer) => (state = {}, action) => {
-    const key = action[actionProperty];
-    if (key === void 0) {
-      return state;
-    }
-    const nextKeyState = reducer(state[key], action);
-    if (nextKeyState === state[key]) {
-      return state;
-    }
-    return {
-      ...state,
-      [key]: nextKeyState
-    };
-  };
-  var on_sub_key_default = onSubKey;
+  var import_data2 = __toESM(require_data(), 1);
 
   // packages/notices/build-module/store/reducer.mjs
-  var notices = on_sub_key_default("context")((state = [], action) => {
+  var import_data = __toESM(require_data(), 1);
+  var notices = (0, import_data.keyedReducer)("context")((state = [], action) => {
     switch (action.type) {
       case "CREATE_NOTICE":
         return [
@@ -181,12 +182,111 @@ var wp;
   }
 
   // packages/notices/build-module/store/index.mjs
-  var store = (0, import_data.createReduxStore)("core/notices", {
+  var store = (0, import_data2.createReduxStore)("core/notices", {
     reducer: reducer_default,
     actions: actions_exports,
     selectors: selectors_exports
   });
-  (0, import_data.register)(store);
+  (0, import_data2.register)(store);
+
+  // node_modules/clsx/dist/clsx.mjs
+  function r(e) {
+    var t, f, n = "";
+    if ("string" == typeof e || "number" == typeof e) n += e;
+    else if ("object" == typeof e) if (Array.isArray(e)) {
+      var o = e.length;
+      for (t = 0; t < o; t++) e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
+    } else for (f in e) e[f] && (n && (n += " "), n += f);
+    return n;
+  }
+  function clsx() {
+    for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++) (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
+    return n;
+  }
+  var clsx_default = clsx;
+
+  // packages/notices/build-module/components/inline-notices/index.mjs
+  var import_components = __toESM(require_components(), 1);
+  var import_data3 = __toESM(require_data(), 1);
+  var import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
+  function hasRenderableChildren(children) {
+    return children !== null && children !== void 0 && children !== false && children !== "";
+  }
+  function InlineNotices({
+    children,
+    className,
+    pinnedNoticesClassName,
+    dismissibleNoticesClassName,
+    context
+  }) {
+    const notices2 = (0, import_data3.useSelect)(
+      (select) => select(store).getNotices(context),
+      [context]
+    );
+    const { removeNotice: removeNotice2 } = (0, import_data3.useDispatch)(store);
+    const dismissibleNotices = notices2.filter(
+      ({ isDismissible, type }) => isDismissible && type === "default"
+    );
+    const nonDismissibleNotices = notices2.filter(
+      ({ isDismissible, type }) => !isDismissible && type === "default"
+    );
+    const hasPinnedNotices = nonDismissibleNotices.length > 0;
+    const hasDismissibleNotices = dismissibleNotices.length > 0 || hasRenderableChildren(children);
+    if (!hasPinnedNotices && !hasDismissibleNotices) {
+      return null;
+    }
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: clsx_default("notices-inline-notices-wrapper", className), children: [
+      hasPinnedNotices && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        import_components.NoticeList,
+        {
+          notices: nonDismissibleNotices,
+          className: clsx_default(
+            "components-notices__pinned",
+            pinnedNoticesClassName
+          )
+        }
+      ),
+      hasDismissibleNotices && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        import_components.NoticeList,
+        {
+          notices: dismissibleNotices,
+          className: clsx_default(
+            "components-notices__dismissible",
+            dismissibleNoticesClassName
+          ),
+          onRemove: (id) => removeNotice2(id, context),
+          children
+        }
+      )
+    ] });
+  }
+
+  // packages/notices/build-module/components/snackbar-notices/index.mjs
+  var import_components2 = __toESM(require_components(), 1);
+  var import_data4 = __toESM(require_data(), 1);
+  var import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
+  var MAX_VISIBLE_NOTICES = -3;
+  function SnackbarNotices({
+    className,
+    context
+  }) {
+    const notices2 = (0, import_data4.useSelect)(
+      (select) => select(store).getNotices(context),
+      [context]
+    );
+    const { removeNotice: removeNotice2 } = (0, import_data4.useDispatch)(store);
+    const snackbarNotices = notices2.filter(({ type }) => type === "snackbar").slice(MAX_VISIBLE_NOTICES);
+    return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      import_components2.SnackbarList,
+      {
+        notices: snackbarNotices,
+        className: clsx_default("components-notices__snackbar", className),
+        onRemove: (id) => removeNotice2(id, context)
+      }
+    );
+  }
   return __toCommonJS(index_exports);
+})();
+(window.wp ||= {}).notices = wp.notices;
 })();
 //# sourceMappingURL=index.js.map

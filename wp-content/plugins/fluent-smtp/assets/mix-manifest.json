@@ -13,6 +13,7 @@
     "/images/logo.svg": "/images/logo.svg",
     "/images/mail_signature.png": "/images/mail_signature.png",
     "/images/provider-aws-ses.svg": "/images/provider-aws-ses.svg",
+    "/images/provider-cloudflare.svg": "/images/provider-cloudflare.svg",
     "/images/provider-elastic-email.svg": "/images/provider-elastic-email.svg",
     "/images/provider-gmail-google-workspace.svg": "/images/provider-gmail-google-workspace.svg",
     "/images/provider-mailgun.svg": "/images/provider-mailgun.svg",

@@ -52,43 +52,129 @@ var require_preferences = __commonJS({
   }
 });
 
-// routes/post-list/route.ts
-var import_data4 = __toESM(require_data());
-var import_core_data2 = __toESM(require_core_data());
+// package-external:@wordpress/private-apis
+var require_private_apis = __commonJS({
+  "package-external:@wordpress/private-apis"(exports, module) {
+    module.exports = window.wp.privateApis;
+  }
+});
 
-// packages/views/build-module/preference-keys.mjs
-function generatePreferenceKey(kind, name, slug) {
-  return `dataviews-${kind}-${name}-${slug}`;
-}
+// routes/post-list/route.ts
+var import_data5 = __toESM(require_data());
+var import_core_data3 = __toESM(require_core_data());
+import { notFound } from "@wordpress/route";
 
 // packages/views/build-module/use-view.mjs
 var import_element = __toESM(require_element(), 1);
 var import_data = __toESM(require_data(), 1);
 var import_preferences = __toESM(require_preferences(), 1);
 
+// packages/views/build-module/preference-keys.mjs
+function generatePreferenceKey(kind, name, slug) {
+  return `dataviews-${kind}-${name}-${slug}`;
+}
+
+// packages/views/build-module/resolve-view.mjs
+var QUERY_PARAMS = ["page", "search"];
+function isPlainObject(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function withoutQueryParams(layer) {
+  const result = isPlainObject(layer) ? { ...layer } : {};
+  for (const key of QUERY_PARAMS) {
+    delete result[key];
+  }
+  return result;
+}
+function mergeLayer(lower, upper) {
+  const result = { ...lower };
+  for (const key of Object.keys(upper)) {
+    const value = upper[key];
+    const current = result[key];
+    result[key] = isPlainObject(current) && isPlainObject(value) ? mergeLayer(current, value) : value;
+  }
+  return result;
+}
+function getLockedFilters(overrides) {
+  return (overrides?.filters ?? []).filter((filter) => filter.isLocked);
+}
+function applyLockedFilters(view, overrides) {
+  const locked = getLockedFilters(overrides);
+  if (locked.length === 0) {
+    return view;
+  }
+  const rest = (view.filters ?? []).filter(
+    (filter) => !locked.some((f) => f.field === filter.field)
+  );
+  return { ...view, filters: [...locked, ...rest] };
+}
+function resolveBaseView(layers, effectiveType) {
+  const { defaultView, defaultLayouts, activeViewOverrides } = layers;
+  const layoutDefaults = defaultLayouts?.[effectiveType];
+  return applyLockedFilters(
+    [layoutDefaults, activeViewOverrides].reduce(
+      (lower, upper) => mergeLayer(lower, withoutQueryParams(upper)),
+      withoutQueryParams(defaultView)
+    ),
+    activeViewOverrides
+  );
+}
+function resolveView(args) {
+  const { defaultView, activeViewOverrides, persistedView, page, search } = args;
+  const effectiveType = persistedView?.type ?? activeViewOverrides?.type ?? defaultView?.type;
+  const baseView = resolveBaseView(args, effectiveType);
+  const view = {
+    ...applyLockedFilters(
+      mergeLayer(baseView, withoutQueryParams(persistedView)),
+      activeViewOverrides
+    ),
+    page: Number(page ?? 1),
+    search: search ?? ""
+  };
+  return view;
+}
+
 // packages/views/build-module/load-view.mjs
 var import_data2 = __toESM(require_data(), 1);
 var import_preferences2 = __toESM(require_preferences(), 1);
 async function loadView(config) {
-  const { kind, name, slug, defaultView, queryParams } = config;
+  const {
+    kind,
+    name,
+    slug,
+    defaultView,
+    defaultLayouts,
+    activeViewOverrides,
+    queryParams
+  } = config;
   const preferenceKey = generatePreferenceKey(kind, name, slug);
-  const persistedView = (0, import_data2.select)(import_preferences2.store).get(
-    "core/views",
-    preferenceKey
-  );
-  const baseView = persistedView ?? defaultView;
-  const page = queryParams?.page ?? 1;
-  const search = queryParams?.search ?? "";
-  return {
-    ...baseView,
-    page,
-    search
-  };
+  const persistedView = (0, import_data2.select)(
+    import_preferences2.store
+  ).get("core/views", preferenceKey);
+  return resolveView({
+    defaultView,
+    defaultLayouts,
+    activeViewOverrides,
+    persistedView,
+    page: queryParams?.page,
+    search: queryParams?.search
+  });
 }
 
+// packages/views/build-module/use-view-config.mjs
+var import_data3 = __toESM(require_data(), 1);
+var import_core_data = __toESM(require_core_data(), 1);
+
+// packages/views/build-module/lock-unlock.mjs
+var import_private_apis = __toESM(require_private_apis(), 1);
+var { lock, unlock } = (0, import_private_apis.__dangerousOptInToUnstableAPIsOnlyForCoreModules)(
+  "I acknowledge private features are not for use in themes or plugins and doing so will break in the next version of WordPress.",
+  "@wordpress/views"
+);
+
 // routes/post-list/view-utils.ts
-var import_data3 = __toESM(require_data());
-var import_core_data = __toESM(require_core_data());
+var import_data4 = __toESM(require_data());
+var import_core_data2 = __toESM(require_core_data());
 var DEFAULT_VIEW = {
   type: "table",
   sort: {
@@ -100,106 +186,52 @@ var DEFAULT_VIEW = {
   mediaField: "featured_media",
   descriptionField: "excerpt"
 };
-var DEFAULT_VIEWS = [
-  {
-    slug: "all",
-    label: "All",
-    view: {
-      ...DEFAULT_VIEW
-    }
-  },
-  {
-    slug: "publish",
-    label: "Published",
-    view: {
-      ...DEFAULT_VIEW,
-      filters: [
-        {
-          field: "status",
-          operator: "is",
-          value: "publish"
-        }
-      ]
-    }
-  },
-  {
-    slug: "draft",
-    label: "Draft",
-    view: {
-      ...DEFAULT_VIEW,
-      filters: [
-        {
-          field: "status",
-          operator: "is",
-          value: "draft"
-        }
-      ]
-    }
-  },
-  {
-    slug: "pending",
-    label: "Pending",
-    view: {
-      ...DEFAULT_VIEW,
-      filters: [
-        {
-          field: "status",
-          operator: "is",
-          value: "pending"
-        }
-      ]
-    }
-  },
-  {
-    slug: "private",
-    label: "Private",
-    view: {
-      ...DEFAULT_VIEW,
-      filters: [
-        {
-          field: "status",
-          operator: "is",
-          value: "private"
-        }
-      ]
-    }
-  },
-  {
-    slug: "trash",
-    label: "Trash",
-    view: {
-      ...DEFAULT_VIEW,
-      filters: [
-        {
-          field: "status",
-          operator: "is",
-          value: "trash"
-        }
-      ]
+var DEFAULT_TABLE_LAYOUT = {
+  layout: {
+    styles: {
+      author: {
+        align: "start"
+      }
     }
   }
-];
-function getDefaultView(postType, slug) {
-  const viewConfig = DEFAULT_VIEWS.find((v) => v.slug === slug);
-  const baseView = viewConfig?.view || DEFAULT_VIEW;
+};
+function getActiveViewOverridesForTab(slug) {
+  if (slug === "all") {
+    return {
+      ...DEFAULT_TABLE_LAYOUT
+    };
+  }
   return {
-    ...baseView,
+    ...DEFAULT_TABLE_LAYOUT,
+    filters: [
+      {
+        field: "status",
+        operator: "is",
+        value: slug
+      }
+    ]
+  };
+}
+function getDefaultView(postType) {
+  return {
+    ...DEFAULT_VIEW,
     showLevels: postType?.hierarchical
   };
 }
 async function ensureView(type, slug, search) {
-  const postTypeObject = await (0, import_data3.resolveSelect)(import_core_data.store).getPostType(type);
-  const defaultView = getDefaultView(postTypeObject, slug);
+  const postTypeObject = await (0, import_data4.resolveSelect)(import_core_data2.store).getPostType(type);
+  const defaultView = getDefaultView(postTypeObject);
   return loadView({
     kind: "postType",
     name: type,
-    slug: slug ?? "all",
+    slug: "default-new",
     defaultView,
+    activeViewOverrides: getActiveViewOverridesForTab(slug ?? "all"),
     queryParams: search
   });
 }
 function viewToQuery(view, postType) {
-  const result = {};
+  const result = { _embed: "author,wp:featuredmedia" };
   if (void 0 !== view.perPage) {
     result.per_page = view.perPage;
   }
@@ -270,8 +302,20 @@ function viewToQuery(view, postType) {
 
 // routes/post-list/route.ts
 var route = {
+  beforeLoad: async ({ params }) => {
+    try {
+      const postType = await (0, import_data5.resolveSelect)(import_core_data3.store).getPostType(
+        params.type
+      );
+      if (!postType) {
+        throw notFound();
+      }
+    } catch {
+      throw notFound();
+    }
+  },
   title: async ({ params }) => {
-    const postType = await (0, import_data4.resolveSelect)(import_core_data2.store).getPostType(
+    const postType = await (0, import_data5.resolveSelect)(import_core_data3.store).getPostType(
       params.type
     );
     return postType?.labels?.name || params.type;
@@ -295,7 +339,7 @@ var route = {
       };
     }
     const query = viewToQuery(view, params.type);
-    const posts = await (0, import_data4.resolveSelect)(import_core_data2.store).getEntityRecords(
+    const posts = await (0, import_data5.resolveSelect)(import_core_data3.store).getEntityRecords(
       "postType",
       params.type,
       { ...query, per_page: 1 }

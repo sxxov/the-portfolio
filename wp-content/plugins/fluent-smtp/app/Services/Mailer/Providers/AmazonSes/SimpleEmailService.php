@@ -64,6 +64,25 @@ class SimpleEmailService
     const REQUEST_SIGNATURE_V4 = 'v4';
 
     /**
+     * Build the SES endpoint host for a given region, accounting for AWS
+     * partitions that use a different domain suffix than the commercial one.
+     */
+    public static function regionToHost($region)
+    {
+        if (strpos($region, 'eusc-') === 0) {
+            // AWS European Sovereign Cloud partition (aws-eusc)
+            $domain = 'amazonaws.eu';
+        } elseif (strpos($region, 'cn-') === 0) {
+            // AWS China partition
+            $domain = 'amazonaws.com.cn';
+        } else {
+            $domain = 'amazonaws.com';
+        }
+
+        return 'email.' . $region . '.' . $domain;
+    }
+
+    /**
      * AWS SES Target host of region
      */
     protected $__host;

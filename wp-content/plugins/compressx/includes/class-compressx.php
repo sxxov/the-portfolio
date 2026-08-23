@@ -22,7 +22,8 @@ class CompressX
 
     public function load_meta()
     {
-        include_once COMPRESSX_DIR . '/includes/meta/class-compressx-image-meta.php';
+        //include_once COMPRESSX_DIR . '/includes/meta/class-compressx-image-meta.php';
+        include_once COMPRESSX_DIR . '/includes/meta/class-compressx-image-meta-v2.php';
         include_once COMPRESSX_DIR . '/includes/meta/class-compressx-custom-image-meta.php';
     }
 
