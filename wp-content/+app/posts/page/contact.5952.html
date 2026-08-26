@@ -1,0 +1,39 @@
+<!-- wp:bare/weaver -->
+<div class="flex min-h-svh flex-col"><!-- wp:bare/weaver -->
+<div class="mt-16 p-4"><!-- wp:bare/composite-provider {"name":"app/structure/header/actions"} -->
+<!-- wp:block {"ref":3835,"lock":{"move":true,"remove":true}} /-->
+<!-- /wp:bare/composite-provider --></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div class="mt-16 mb-16 flex grow flex-col justify-end text-center h3 text-fg-2"><!-- wp:heading {"level":1} -->
+<h1 class="wp-block-heading">How can I help?</h1>
+<!-- /wp:heading --></div>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<div id="contact" class="group/contact my-4 px-4"><!-- wp:bare/weaver -->
+<slot class="not-group-has-[.wpcf7]/contact:hidden"><!-- wp:shortcode -->
+[contact-form-7 id="eb40b41" title="Contact"]
+<!-- /wp:shortcode --></slot>
+<!-- /wp:bare/weaver -->
+
+<!-- wp:bare/weaver -->
+<slot class="group-has-[.wpcf7]/contact:hidden"><!-- wp:bare/composite-provider {"name":"app/contact/form"} -->
+<!-- wp:block {"ref":873,"lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:bare/composite-fill {"slot":"button/submit","lock":{"move":true,"remove":false}} /-->
+
+<!-- wp:bare/composite-fill {"slot":"input/message","lock":{"move":true,"remove":false}} /-->
+
+<!-- wp:bare/composite-fill {"slot":"input/subject","lock":{"move":true,"remove":false}} /-->
+
+<!-- wp:bare/composite-fill {"slot":"input/email","lock":{"move":true,"remove":false}} /-->
+
+<!-- wp:bare/composite-fill {"slot":"input/name","lock":{"move":true,"remove":false}} /-->
+
+<!-- wp:bare/composite-fill {"slot":"captcha","lock":{"move":true,"remove":false}} /-->
+<!-- /wp:bare/composite-provider --></slot>
+<!-- /wp:bare/weaver --></div>
+<!-- /wp:bare/weaver --></div>
+<!-- /wp:bare/weaver -->
