@@ -14,7 +14,11 @@ const scripts = [
 });
 
 await Promise.allSettled(
-	Array.from(scripts, (script) => trackScriptResource(script)),
+	scripts
+		// only module scripts can "escape" sequential loading, because they can
+		// have top-level-await. so can we assume all non-module scripts are loaded
+		.filter((script) => script.type === 'module')
+		.map((script) => trackScriptResource(script)),
 );
 
 // just, give the browser (safari, ugh) a little while

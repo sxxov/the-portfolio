@@ -93,7 +93,7 @@ export function trackProgress01(
 }
 
 export function trackProgressBoolean(
-	/** @type {ReadableSignal<Ranged<0 | 1>>} */ load,
+	/** @type {ReadableSignal<boolean>} */ load,
 ) {
 	const numericLoad = load.derive((it) => (it ? 1 : 0));
 	return trackProgress01(numericLoad);
