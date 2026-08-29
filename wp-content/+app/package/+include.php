@@ -2,61 +2,36 @@
 
 namespace app\package;
 
-use FilesystemIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-
 use function bare\module\runtime\use_module_alias;
+use function bare\utilities\url\get_uri;
 
-const DEPENDENCY_DECLARATION_PROXY_SCRIPT_ID = 'package/imports/proxy';
-const DEPENDENCY_DECLARATION_LOADER_SCRIPT_ID = 'package/imports/loader';
+$import_map = [
+	'@lottiefiles/dotlottie-web' => 'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web@0.57.0/+esm',
 
-$imports = get_imports();
-foreach ($imports as $specifier => $url)
-	use_module_alias($specifier, $url);
+	'@pmndrs/vanilla/materials/MeshTransmissionMaterial.js' => 'https://cdn.jsdelivr.net/npm/@pmndrs/vanilla@1.21.1/materials/MeshTransmissionMaterial.min.js',
 
-function get_imports() {
-	$imports = [];
+	'@sparkjsdev/spark' => 'https://cdn.jsdelivr.net/gh/sparkjsdev/spark@7c6e7452fd635f955003e3a885718d47b9f7f2cf/dist/spark.module.js',
 
-	$dir = new RecursiveDirectoryIterator(__DIR__);
-	$dir->setFlags(
-		FilesystemIterator::SKIP_DOTS
-			| FilesystemIterator::CURRENT_AS_FILEINFO
-			| FilesystemIterator::FOLLOW_SYMLINKS
-	);
+	'@theatre/core' => get_uri(__DIR__ . '/overrides/@theatre/core/index.js'),
+	'@theatre/studio' => get_uri(__DIR__ . '/overrides/@theatre/studio/index.js'),
 
-	$iter = new RecursiveIteratorIterator($dir);
+	'iterator-helpers-polyfill' => 'https://cdn.jsdelivr.net/npm/iterator-helpers-polyfill@3.0.1/+esm',
 
-	foreach ($iter as $file) {
-		if (!$file->isFile())
-			continue;
+	'pawe' => 'https://cdn.jsdelivr.net/npm/pawe@0.1.5/+esm',
+	'pawe/api' => 'https://cdn.jsdelivr.net/npm/pawe@0.1.5/api/+esm',
 
-		$path = $file->getPathname();
-		if (!str_ends_with($path, '.js'))
-			continue;
+	'postprocessing' => 'https://cdn.jsdelivr.net/npm/postprocessing@6.37.6/+esm',
 
-		$relFromDir = substr($path, strlen(__DIR__ . '/'));
-		$rel = str_replace(DIRECTORY_SEPARATOR, '/', $relFromDir);
+	'three' => 'https://cdn.jsdelivr.net/npm/three@0.178.0/+esm',
+	'three/addons/controls/OrbitControls.js' => 'https://cdn.jsdelivr.net/npm/three@0.178.0/addons/controls/OrbitControls.js/+esm',
+	'three/addons/controls/TrackballControls.js' => 'https://cdn.jsdelivr.net/npm/three@0.178.0/addons/controls/TrackballControls.js/+esm',
+	'three/addons/controls/TransformControls.js' => 'https://cdn.jsdelivr.net/npm/three@0.178.0/addons/controls/TransformControls.js/+esm',
+	'three/addons/lights/RectAreaLightUniformsLib.js' => 'https://cdn.jsdelivr.net/npm/three@0.178.0/addons/lights/RectAreaLightUniformsLib.js/+esm',
+	'three/addons/loaders/DRACOLoader.js' => 'https://cdn.jsdelivr.net/npm/three@0.178.0/addons/loaders/DRACOLoader.js/+esm',
+	'three/addons/loaders/EXRLoader.js' => 'https://cdn.jsdelivr.net/npm/three@0.178.0/addons/loaders/EXRLoader.js/+esm',
+	'three/addons/loaders/GLTFLoader.js' => 'https://cdn.jsdelivr.net/npm/three@0.178.0/addons/loaders/GLTFLoader.js/+esm',
+	'three/addons/loaders/LUTCubeLoader.js' => 'https://cdn.jsdelivr.net/npm/three@0.178.0/addons/loaders/LUTCubeLoader.js/+esm',
+];
 
-		// derive specifier: drop '/index.js' but keep other filenames (with extension)
-		if ($rel === 'index.js')
-			// top-level index.js has no valid bare specifier, skip
-			continue;
-
-		$specifier = str_ends_with($rel, '/index.js')
-			? substr($rel, 0, -strlen('/index.js'))
-			: $rel;
-
-		// compute public url under wp-content
-		$relFromContent = ltrim(str_replace(WP_CONTENT_DIR, '', $path), DIRECTORY_SEPARATOR);
-		$url = content_url($relFromContent);
-		$url = add_query_arg(['ver' => filemtime($path)], $url);
-
-		$imports[$specifier] = $url;
-	}
-
-	if ($imports)
-		ksort($imports, SORT_NATURAL | SORT_FLAG_CASE);
-
-	return $imports;
-}
+foreach ($import_map as $alias => $uri)
+	use_module_alias($alias, $uri);
