@@ -129,7 +129,7 @@ export const ParkChapterParkLayerBehavior = behavior(
 						const _ = bin();
 
 						const meshLoaded = new PromiseSignal(false);
-						trackProgressPromise(meshLoaded);
+						_._ = trackProgressPromise(meshLoaded);
 
 						const fileBytes = await sceneAsset;
 						if (!fileBytes) return;

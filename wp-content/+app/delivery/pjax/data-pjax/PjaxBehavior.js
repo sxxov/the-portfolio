@@ -195,64 +195,72 @@ async function goto(
 ) {
 	clearProgress();
 
-	const gotoProgress = new PromiseSignal(0);
-	trackProgress01(gotoProgress);
-
 	if (shouldPushState) history.pushState(undefined, '', url);
 	if (memoiseScrollPositionUrl)
 		memoiseScrollPosition(memoiseScrollPositionUrl);
 
+	const gotoProgress = new PromiseSignal(0);
+	trackProgress01(gotoProgress);
+
 	const fetchProgress = new PromiseSignal(0);
 	trackProgress01(fetchProgress);
 
-	const doc = await (async () => {
-		try {
-			let html = htmlContents.get(url);
-			if (!html) {
-				const resp = await fetch(url, {
-					headers: { 'x-pjax-referrer': location.href },
-					signal: signal ?? null,
-				});
-				if (!resp.ok) throw new Error('Failed to fetch PJAX content');
+	try {
+		const doc = await (async () => {
+			try {
+				let html = htmlContents.get(url);
+				if (!html) {
+					const resp = await fetch(url, {
+						headers: { 'x-pjax-referrer': location.href },
+						signal: signal ?? null,
+					});
+					if (!resp.ok)
+						throw new Error('Failed to fetch PJAX content');
 
-				html = await resp.text();
-				htmlContents.set(url, html);
+					html = await resp.text();
+					htmlContents.set(url, html);
+				}
+
+				const parser = new DOMParser();
+				return parser.parseFromString(html, 'text/html');
+			} catch (error) {
+				if (signal?.aborted) return;
+
+				location.href = url;
+				throw error;
+			} finally {
+				fetchProgress.resolve(1);
 			}
+		})();
+		if (!doc) return;
 
-			const parser = new DOMParser();
-			return parser.parseFromString(html, 'text/html');
-		} catch (error) {
-			if (signal?.aborted) return;
+		// prepare for loading head resources
+		performResourceCleanup();
 
-			location.href = url;
-			throw error;
-		} finally {
-			fetchProgress.resolve(1);
-		}
-	})();
-	if (!doc) return;
+		await reconcileHead(document.head, doc.head, {
+			onTransition: () => onBeforeReplace?.({ url, document: doc }),
+		});
 
-	// prepare for loading head resources
-	performResourceCleanup();
+		// replace body
+		for (const { name, value } of doc.body.attributes)
+			document.body.setAttribute(name, value);
+		reconcileChildren(document.body, doc.body);
 
-	await reconcileHead(document.head, doc.head, {
-		onTransition: () => onBeforeReplace?.({ url, document: doc }),
-	});
+		// restore scroll position
+		if (shouldRestoreScrollPosition) restoreScrollPosition(url);
+		else window.scrollTo(0, 0);
 
-	// replace body
-	for (const { name, value } of doc.body.attributes)
-		document.body.setAttribute(name, value);
-	reconcileChildren(document.body, doc.body);
+		await Promise.allSettled([
+			onAfterReplace?.({ url, document }), //
+		]);
+	} catch (error) {
+		if (signal?.aborted) return;
 
-	// restore scroll position
-	if (shouldRestoreScrollPosition) restoreScrollPosition(url);
-	else window.scrollTo(0, 0);
-
-	await Promise.allSettled([
-		onAfterReplace?.({ url, document }), //
-	]);
-
-	gotoProgress.resolve(1);
+		location.href = url;
+		throw error;
+	} finally {
+		gotoProgress.resolve(1);
+	}
 }
 
 function memoiseScrollPosition(/** @type {string} */ url) {

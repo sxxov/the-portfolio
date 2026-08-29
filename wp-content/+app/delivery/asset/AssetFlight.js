@@ -142,15 +142,20 @@ export class AssetFlight {
 
 					try {
 						for (;;) {
-							if (signal.aborted) break;
 							const { done, value } = await reader.read();
 							if (done) break;
+
+							if (signal.aborted) break;
 							chunks.update((it) => {
 								it.push(value);
 								chunks.trigger();
 								return it;
 							});
 						}
+
+						if (signal.aborted) break;
+						value.set(await pipe(chunks.get()));
+						pass();
 					} catch (error) {
 						if (signal.aborted) break;
 						state.set({
@@ -159,10 +164,6 @@ export class AssetFlight {
 						});
 						break;
 					}
-					if (signal.aborted) break;
-
-					value.set(await pipe(chunks.get()));
-					pass();
 					break;
 				}
 				case AssetFlightStep.Landed: {
