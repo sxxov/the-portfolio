@@ -71,6 +71,8 @@ export const PjaxBehavior = behavior(
 		_._ = () => { controller.abort(); };
 		const { signal } = controller;
 
+		let currentUrl = location.href;
+
 		element.addEventListener(
 			'click',
 			async (event) => {
@@ -102,11 +104,13 @@ export const PjaxBehavior = behavior(
 
 				event.preventDefault();
 
+				const previousUrl = currentUrl;
+				const nextUrl = anchor.href;
+
 				const signal = acquireNavigationSignal();
 				if (signal.aborted) return;
 
-				const previousUrl = location.href;
-				const nextUrl = anchor.href;
+				currentUrl = nextUrl;
 				await goto(nextUrl, {
 					signal,
 					pushState: true,
@@ -128,7 +132,6 @@ export const PjaxBehavior = behavior(
 			{ signal },
 		);
 
-		let currentUrl = '';
 		window.addEventListener(
 			'popstate',
 			async () => {
